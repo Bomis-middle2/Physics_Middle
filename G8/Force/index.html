@@ -19,16 +19,15 @@
             touch-action: manipulation;
         }
 
-        /* FAIL-SAFE LOGO SCREEN */
         #logo-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            position: fixed; inset: 0;
             background: #ffffff; display: flex; justify-content: center; align-items: center;
             z-index: 10000; opacity: 1; transition: opacity 0.8s ease;
         }
-        #logo-overlay img { width: 180px; height: auto; display: block; }
+        #logo-overlay img { width: 180px; height: auto; }
 
         #blueprint-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+            position: fixed; inset: 0; z-index: 1;
             background-color: #f1f5f9;
             background-image: linear-gradient(#e2e8f0 1.5px, transparent 1.5px), linear-gradient(90deg, #e2e8f0 1.5px, transparent 1.5px);
             background-size: 30px 30px; pointer-events: none;
@@ -50,18 +49,15 @@
             padding: 15px; border: 2px solid #f1f5f9; border-radius: 12px;
             background: white; cursor: pointer; font-size: 0.95rem; 
             text-align: left; font-weight: 600; color: #475569;
-            -webkit-tap-highlight-color: transparent;
+            transition: 0.2s; -webkit-tap-highlight-color: transparent;
         }
         
-        .btn-opt:active { background: #f1f5f9; }
-
         .is-correct { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
-        .is-wrong { background: var(--error) !important; color: white !important; border-color: var(--error) !important; }
+        .is-wrong { background: var(--error) !important; color: white !important; border-color: var(--error) !important; opacity: 0.7; }
 
         .btn-prime {
             padding: 16px 40px; background: var(--accent); color: white; border: none;
             border-radius: 14px; font-size: 1rem; cursor: pointer; font-weight: 800;
-            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
         }
 
         .timer-track { height: 4px; background: #f1f5f9; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
@@ -74,17 +70,16 @@
 
     <div id="blueprint-bg"></div>
 
-    <div id="logo-overlay">
-        <img src="assets/logo.png" alt="Innovine" id="logo-img">
-    </div>
+    <div id="logo-overlay"><img src="assets/logo.png" alt="Innovine"></div>
 
     <div id="scr-intro" class="card hidden">
         <h2 style="color:var(--accent); margin:0 0 10px 0;">FORCE MASTER</h2>
         <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Grade 8 Physics CBQ</p>
         <div style="text-align: left; background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 25px; font-size: 0.85rem; color: #475569; line-height: 1.5;">
-            • 10 Core Force Questions<br>
-            • 1 Final Challenge Question<br>
-            • 45s Timer per Task
+            • 2 Tries per question!<br>
+            • 10 Core + 1 Final Challenge<br>
+            • Full points for 1st try (10 pts)<br>
+            • Half points for 2nd try (5 pts)
         </div>
         <button class="btn-prime" onclick="initQuiz()">START MISSION</button>
     </div>
@@ -125,21 +120,15 @@
             { q: "Two spring balances in series with a 5kg weight. Top balance reads:", o: ["2.5 kg", "5 kg", "0 kg", "10 kg"], c: 1, e: "Tension is constant in the line." }
         ];
 
-        let quizSet = [], currentIdx = 0, score = 0, timer, timeLeft = 45, locked = false;
+        let quizSet = [], currentIdx = 0, score = 0, timer, timeLeft = 45, locked = false, tries = 0;
 
-        // NEW FAIL-SAFE LOADING LOGIC
         function clearOverlay() {
-            const overlay = document.getElementById('logo-overlay');
-            const intro = document.getElementById('scr-intro');
-            
-            overlay.style.opacity = '0';
+            document.getElementById('logo-overlay').style.opacity = '0';
             setTimeout(() => {
-                overlay.style.display = 'none'; // Force removal from DOM
-                intro.classList.remove('hidden'); // Force show Intro
+                document.getElementById('logo-overlay').style.display = 'none';
+                document.getElementById('scr-intro').classList.remove('hidden');
             }, 850);
         }
-
-        // Auto-run clearOverlay after 3 seconds regardless of window load status
         setTimeout(clearOverlay, 3000);
 
         function initQuiz() {
@@ -151,16 +140,14 @@
 
         function render() {
             if(currentIdx >= quizSet.length) return end();
-            locked = false; timeLeft = 45;
+            locked = false; tries = 0; timeLeft = 45;
             document.getElementById('feedback-box').classList.add('hidden');
             document.getElementById('q-num').innerText = `TASK ${currentIdx + 1}/${quizSet.length}`;
-            
-            const q = quizSet[currentIdx];
-            document.getElementById('q-txt').innerText = q.q;
+            document.getElementById('q-txt').innerText = quizSet[currentIdx].q;
 
             const box = document.getElementById('options-box');
             box.innerHTML = '';
-            q.o.forEach((txt, i) => {
+            quizSet[currentIdx].o.forEach((txt, i) => {
                 const b = document.createElement('button');
                 b.className = 'btn-opt'; b.innerText = txt;
                 b.onclick = () => validate(i, b);
@@ -175,31 +162,38 @@
             timer = setInterval(() => {
                 timeLeft--;
                 bar.style.width = (timeLeft/45*100) + '%';
-                if(timeLeft <= 0) { clearInterval(timer); showCorrect(); }
+                if(timeLeft <= 0) { clearInterval(timer); showCorrect(false); }
             }, 1000);
         }
 
         function validate(idx, btn) {
-            if(locked) return;
-            locked = true; clearInterval(timer);
+            if(locked || btn.classList.contains('is-wrong')) return;
             const correct = quizSet[currentIdx].c;
 
             if(idx === correct) {
+                locked = true; clearInterval(timer);
                 btn.classList.add('is-correct');
-                score += 10;
+                score += (tries === 0) ? 10 : 5;
                 document.getElementById('score').innerText = "PTS: " + score;
-                setTimeout(() => { currentIdx++; render(); }, 1000);
+                setTimeout(() => { currentIdx++; render(); }, 1200);
             } else {
+                tries++;
                 btn.classList.add('is-wrong');
-                showCorrect();
+                if(tries === 1) {
+                    const fb = document.getElementById('feedback-box');
+                    fb.innerText = "Incorrect. Try again! (Hint: Look at the direction or definition closely.)";
+                    fb.classList.remove('hidden');
+                } else {
+                    locked = true; clearInterval(timer); showCorrect(true);
+                }
             }
         }
 
-        function showCorrect() {
+        function showCorrect(wasWrong) {
             const btns = document.querySelectorAll('.btn-opt');
             btns[quizSet[currentIdx].c].classList.add('is-correct');
             const fb = document.getElementById('feedback-box');
-            fb.innerHTML = `<strong>Answer:</strong> ${quizSet[currentIdx].o[quizSet[currentIdx].c]}<br>${quizSet[currentIdx].e}`;
+            fb.innerHTML = `<strong>Concept:</strong> ${quizSet[currentIdx].e}`;
             fb.classList.remove('hidden');
             setTimeout(() => { currentIdx++; render(); }, 3500);
         }
@@ -208,7 +202,7 @@
             document.getElementById('scr-quiz').classList.add('hidden');
             document.getElementById('scr-result').classList.remove('hidden');
             document.getElementById('res-score').innerText = score + "/110";
-            document.getElementById('res-desc').innerText = score >= 90 ? "Excellent Physics Knowledge!" : "Good effort. Review force resultants.";
+            document.getElementById('res-desc').innerText = score >= 90 ? "Physics Legend!" : "Great effort! Review the tricky ones.";
         }
     </script>
 </body>
