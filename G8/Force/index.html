@@ -5,25 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>G8 Physics | Master Challenge</title>
     <style>
-        :root { --p: #1e293b; --acc: #3b82f6; --s: #10b981; --e: #ef4444; --bg: #f1f5f9; --warn: #f59e0b; }
+        :root { --p: #1e293b; --acc: #3b82f6; --s: #10b981; --e: #ef4444; --bg: #0f172a; --warn: #f59e0b; }
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         
         body { 
-            margin: 0; background: var(--bg); color: var(--p); 
+            margin: 0; background: var(--bg); color: white; 
             display: flex; justify-content: center; align-items: center; 
             min-height: 100vh; overflow: hidden; 
         }
 
-        /* Floating Blueprint Background */
+        /* TRUE FLOATING BLUEPRINT THEME */
         #blueprint {
-            position: fixed; top: 0; left: 0; width: 200%; height: 200%; z-index: 1;
+            position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; z-index: 1;
             background-image: 
-                linear-gradient(rgba(59, 130, 246, 0.1) 1.5px, transparent 1.5px), 
-                linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1.5px, transparent 1.5px);
-            background-size: 50px 50px;
-            animation: float 20s linear infinite;
+                linear-gradient(rgba(59, 130, 246, 0.2) 2px, transparent 2px), 
+                linear-gradient(90deg, rgba(59, 130, 246, 0.2) 2px, transparent 2px);
+            background-size: 60px 60px;
+            /* This creates the floating/sliding effect */
+            animation: moveGrid 15s linear infinite;
+            filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.3));
         }
-        @keyframes float { from { transform: translate(0, 0); } to { transform: translate(-50px, -50px); } }
+
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
 
         #logo-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -33,40 +39,52 @@
         #logo-overlay img { width: 240px; }
 
         .card {
-            width: 92%; max-width: 580px; background: rgba(255, 255, 255, 0.95);
-            padding: 35px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.8);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 92%; max-width: 580px; 
+            background: rgba(30, 41, 59, 0.85); /* Transparent dark theme */
+            padding: 35px; border-radius: 24px; 
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(59, 130, 246, 0.1);
             text-align: center; position: relative; z-index: 100;
-            display: none; transform: translateY(20px); transition: all 0.5s ease;
+            display: none; transform: translateY(30px); opacity: 0;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Final Question Drama */
-        .card.final-mode { border: 3px solid var(--warn); background: rgba(255, 252, 240, 0.98); }
-        .final-alert { color: var(--warn); font-weight: 900; letter-spacing: 2px; display: none; }
+        /* Final Question Alert Styling */
+        .card.final-mode { 
+            border: 3px solid var(--warn); 
+            box-shadow: 0 0 50px rgba(245, 158, 11, 0.3);
+        }
+        .final-alert { 
+            color: var(--warn); font-weight: 900; letter-spacing: 3px; 
+            display: none; margin-bottom: 15px; text-shadow: 0 0 10px var(--warn);
+            animation: blink 1s infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         .header { display: flex; justify-content: space-between; font-weight: 800; color: var(--acc); margin-bottom: 12px; font-size: 0.8rem; }
-        .timer-track { height: 4px; background: #e2e8f0; border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
+        .timer-track { height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
         #timer-bar { height: 100%; background: var(--acc); width: 100%; transition: width 1s linear; }
 
-        .q-text { font-size: 1.15rem; font-weight: 600; text-align: left; line-height: 1.5; margin-bottom: 25px; }
+        .q-text { font-size: 1.15rem; font-weight: 600; text-align: left; line-height: 1.5; margin-bottom: 25px; color: #f8fafc; }
         .grid { display: grid; gap: 12px; }
         .btn-opt {
-            padding: 16px; border: 2px solid #e2e8f0; border-radius: 14px;
-            background: white; cursor: pointer; transition: 0.2s;
-            font-size: 0.95rem; text-align: left; font-weight: 500;
+            padding: 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
+            background: rgba(255,255,255,0.05); color: white; cursor: pointer; transition: 0.2s;
+            font-size: 0.95rem; text-align: left;
         }
-        .btn-opt:hover:not(:disabled) { border-color: var(--acc); transform: translateX(5px); }
+        .btn-opt:hover:not(:disabled) { border-color: var(--acc); background: rgba(59, 130, 246, 0.2); transform: scale(1.02); }
         .is-correct { background: var(--s) !important; color: white; border-color: var(--s); }
         .is-wrong { background: var(--e) !important; color: white; border-color: var(--e); }
 
         .btn-main {
             padding: 18px 45px; background: var(--acc); color: white; border: none;
             border-radius: 50px; font-size: 1.1rem; cursor: pointer; font-weight: 800;
-            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4); transition: 0.3s;
         }
+        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(59, 130, 246, 0.6); }
 
-        #feedback { margin-top: 20px; padding: 15px; background: #fffbeb; border-radius: 12px; border-left: 5px solid var(--warn); text-align: left; font-size: 0.9rem; }
+        #feedback { margin-top: 20px; padding: 15px; background: rgba(245, 158, 11, 0.1); border-radius: 12px; border-left: 5px solid var(--warn); text-align: left; font-size: 0.9rem; color: #fed7aa; }
     </style>
 </head>
 <body>
@@ -78,18 +96,18 @@
     </div>
 
     <div id="scr-intro" class="card">
-        <h2 style="color:var(--acc); margin:0;">FORCE LAB G8</h2>
-        <p style="color: #64748b;">Competency-Based Assessment</p>
-        <hr style="border:0; height:1px; background:#e2e8f0; margin: 20px 0;">
-        <p style="font-size: 0.95rem; line-height: 1.6;">Mission: Solve 10 standard problems + 1 High-Pressure Final Challenge.</p>
-        <button class="btn-main" style="margin-top:20px;" onclick="startQuiz()">Initialize Mission</button>
+        <h1 style="color:var(--acc); margin:0; letter-spacing: 2px;">SYSTEM INITIALIZED</h1>
+        <p style="color: #94a3b8; font-weight: 600;">Grade 8 Physics Core Module</p>
+        <hr style="border:0; height:1px; background:rgba(255,255,255,0.1); margin: 25px 0;">
+        <p style="font-size: 1rem; line-height: 1.6; color: #cbd5e1;">Mission Parameters:<br>10 Standard Field Tests<br>1 High-Pressure Logic Challenge</p>
+        <button class="btn-main" style="margin-top:20px;" onclick="startQuiz()">Launch Mission</button>
     </div>
 
     <div id="scr-quiz" class="card">
-        <div id="final-tag" class="final-alert">⚠️ INCOMING TRANSMISSION ⚠️</div>
+        <div id="final-tag" class="final-alert">CRITICAL ALERT: FINAL CHALLENGE</div>
         <div class="header">
-            <span id="q-num">DATA POINT 1/11</span>
-            <span id="score-now">PTS: 0</span>
+            <span id="q-num">SECTOR 1/11</span>
+            <span id="score-now">SCORE: 0</span>
         </div>
         <div class="timer-track"><div id="timer-bar"></div></div>
         <div id="q-txt" class="q-text"></div>
@@ -99,9 +117,9 @@
 
     <div id="scr-result" class="card">
         <h2 id="res-title">Mission Report</h2>
-        <div id="res-score" style="font-size:4rem; font-weight:900; color:var(--acc);"></div>
-        <p id="res-desc" style="color:#64748b; margin-bottom:30px;"></p>
-        <button class="btn-main" onclick="location.reload()">Reset System</button>
+        <div id="res-score" style="font-size:4rem; font-weight:900; color:var(--acc); margin: 20px 0;"></div>
+        <p id="res-desc" style="color:#94a3b8; margin-bottom:30px;"></p>
+        <button class="btn-main" onclick="location.reload()">Re-Sync System</button>
     </div>
 
     <audio id="snd-ok" src="assets/correct.mp3"></audio>
@@ -116,7 +134,11 @@
             setTimeout(function() {
                 overlay.style.display = 'none';
                 intro.style.display = 'block';
-                intro.style.transform = 'translateY(0)';
+                // Trigger entry animation
+                setTimeout(() => {
+                    intro.style.transform = 'translateY(0)';
+                    intro.style.opacity = '1';
+                }, 50);
             }, 600);
         }, 5000);
 
@@ -143,16 +165,27 @@
             { q: "Force applied to squeeze a sponge changes its:", o: ["Direction", "Mass", "Shape", "State of motion"], c: 2, e: "Forces can change the physical form." }
         ];
 
-        const finalChallenge = { q: "ULTIMATE TEST: A block is pushed Right with 45N and Left with 40N. Friction resists with 5N. What is the net force on the block?", o: ["5N Right", "0N (Balanced)", "10N Right", "5N Left"], c: 1, e: "Pushing forces leave 5N Right. Friction acts 5N Left. Resultant = 0N." };
+        const finalChallenge = { q: "ULTIMATE LOGIC TEST: A heavy industrial crate is pulled Right with 45N and Left with 40N. Friction is resisting the movement with exactly 5N. What is the net resultant force acting on the crate?", o: ["5N to the Right", "0N (Forces are Balanced)", "10N to the Right", "5N to the Left"], c: 1, e: "Net pull is 5N Right. Friction is 5N Left. They cancel out perfectly. Result = 0N." };
 
         let session = [], current = 0, score = 0, timer, time = 45, lock = false, tries = 0;
 
         function startQuiz() {
             session = [...pool].sort(() => 0.5 - Math.random()).slice(0, 10);
             session.push(finalChallenge);
-            document.getElementById('scr-intro').style.display = 'none';
-            document.getElementById('scr-quiz').style.display = 'block';
-            render();
+            
+            const intro = document.getElementById('scr-intro');
+            const quiz = document.getElementById('scr-quiz');
+            
+            intro.style.opacity = '0';
+            setTimeout(() => {
+                intro.style.display = 'none';
+                quiz.style.display = 'block';
+                setTimeout(() => {
+                    quiz.style.transform = 'translateY(0)';
+                    quiz.style.opacity = '1';
+                }, 50);
+                render();
+            }, 400);
         }
 
         function render() {
@@ -162,14 +195,13 @@
             const card = document.getElementById('scr-quiz');
             const alertTag = document.getElementById('final-tag');
             
-            // Dramatic Final Check
             if(current === 10) {
                 card.classList.add('final-mode');
                 alertTag.style.display = 'block';
             }
 
             document.getElementById('feedback').style.display = 'none';
-            document.getElementById('q-num').innerText = "DATA POINT " + (current+1) + "/11";
+            document.getElementById('q-num').innerText = "SECTOR " + (current+1) + "/11";
             document.getElementById('q-txt').innerText = session[current].q;
             
             const box = document.getElementById('options');
@@ -200,7 +232,7 @@
                 lock = true; clearInterval(timer);
                 btn.classList.add('is-correct');
                 score += (tries === 0) ? 10 : 5;
-                document.getElementById('score-now').innerText = "PTS: " + score;
+                document.getElementById('score-now').innerText = "SCORE: " + score;
                 playSfx('snd-ok', () => { setTimeout(() => { current++; render(); }, 300); });
             } else {
                 tries++;
@@ -208,7 +240,7 @@
                 playSfx('snd-no', () => {
                     if(tries === 1) {
                         const fb = document.getElementById('feedback');
-                        fb.innerText = "HINT: Re-examine the directions or the constant nature of mass.";
+                        fb.innerText = "SENSORS DETECT ERROR: Re-calculate force directions or mass properties.";
                         fb.style.display = 'block';
                     } else { lock = true; clearInterval(timer); reveal(); }
                 });
@@ -219,7 +251,7 @@
             const btns = document.querySelectorAll('.btn-opt');
             btns[session[current].c].classList.add('is-correct');
             const fb = document.getElementById('feedback');
-            fb.innerHTML = "<strong>Correct Answer: " + session[current].o[session[current].c] + "</strong><br>" + session[current].e;
+            fb.innerHTML = "<strong>ENCRYPTED ANSWER: " + session[current].o[session[current].c] + "</strong><br>" + session[current].e;
             fb.style.display = 'block';
             setTimeout(() => { current++; render(); }, 5000);
         }
@@ -230,13 +262,4 @@
         }
 
         function end() {
-            document.getElementById('scr-quiz').style.display = 'none';
-            const res = document.getElementById('scr-result');
-            res.style.display = 'block';
-            document.getElementById('res-score').innerText = score + "/110";
-            document.getElementById('res-title').innerText = score >= 100 ? "MISSION SUCCESS" : "MISSION COMPLETED";
-            document.getElementById('res-desc').innerText = "Grade 8 Force Assessment Finished.";
-        }
-    </script>
-</body>
-</html>
+            document.
