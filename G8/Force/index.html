@@ -86,9 +86,9 @@
         <h1 style="color:var(--acc); margin: 0 0 10px 0;">PHYSICS LAB</h1>
         <p style="font-weight: 600; color: #64748b;">Grade 8 Force Mastery</p>
         <div style="text-align: left; font-size: 0.85rem; background: #f1f5f9; padding: 15px; border-radius: 12px; margin: 20px 0;">
-            • 10 Random tests + 1 Final Challenge<br>
+            • 10 questions + 1 Final Challenge<br>
             • 2 Tries per question<br>
-            • 45 Seconds per data point
+            • 45 Seconds per question
         </div>
         <button class="btn-main" onclick="startQuiz()">INITIALIZE MISSION</button>
     </div>
@@ -184,7 +184,7 @@
             lock = false; tries = 0; time = 45;
             
             document.getElementById('feedback').style.display = 'none';
-            document.getElementById('q-num').innerText = `DATA POINT ${current+1}/11`;
+            document.getElementById('q-num').innerText = `Question ${current+1}/11`;
             document.getElementById('q-txt').innerText = sessionQuiz[current].q;
             
             const box = document.getElementById('options');
