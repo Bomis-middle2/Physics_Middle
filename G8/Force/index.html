@@ -3,175 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Force Interactive Quiz - Grade 8</title>
+    <title>Force Mastery - Grade 8 Science</title>
     <style>
-        :root {
-            --primary: #4a90e2;
-            --secondary: #f39c12;
-            --success: #2ecc71;
-            --error: #e74c3c;
-            --bg: #f0f4f8;
-            --text: #2c3e50;
-        }
-
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-
-        body {
-            margin: 0;
-            padding: 0;
-            background: var(--bg);
-            color: var(--text);
-            overflow-x: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            transition: box-shadow 0.3s ease;
-        }
-
-        /* Background Animation */
-        .stars-container {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
-        }
+        :root { --primary: #4a90e2; --success: #2ecc71; --error: #e74c3c; --bg: #f0f4f8; --text: #2c3e50; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { margin: 0; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
 
         /* Branding Overlay */
         #branding-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            transition: opacity 0.5s ease;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; z-index: 9999;
+            transition: opacity 0.8s ease; cursor: pointer;
         }
+        #branding-overlay img { width: 250px; max-width: 80%; height: auto; margin-bottom: 20px; }
+        .loader-dots { font-size: 14px; color: #888; }
 
-        #branding-overlay img { width: 200px; height: auto; }
-
-        /* Container */
+        /* Main Container */
         .quiz-container {
-            width: 90%;
-            max-width: 600px;
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
-            position: relative;
+            width: 90%; max-width: 600px; background: white; padding: 2rem;
+            border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center; position: relative; z-index: 10;
         }
+        .hidden { display: none !important; }
 
-        .hidden { display: none; }
-
-        /* UI Elements */
-        .timer-bar {
-            height: 6px;
-            background: #eee;
-            border-radius: 3px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-
-        .timer-progress {
-            height: 100%;
-            background: var(--primary);
-            width: 100%;
-            transition: width 1s linear;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .question-text { font-size: 1.2rem; margin-bottom: 20px; line-height: 1.4; }
+        /* Game UI */
+        .timer-bar { height: 8px; background: #eee; border-radius: 4px; margin: 20px 0; overflow: hidden; }
+        #timer-progress { height: 100%; background: var(--primary); width: 100%; transition: width 1s linear; }
+        .stats { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; color: var(--primary); }
         
-        .q-image { max-width: 100%; height: 150px; object-fit: contain; border-radius: 8px; margin-bottom: 15px; background: #f9f9f9; }
+        .question-text { font-size: 1.25rem; margin-bottom: 20px; line-height: 1.5; font-weight: 600; }
+        .q-image { width: 100%; max-height: 200px; object-fit: contain; margin-bottom: 15px; border-radius: 10px; }
 
-        .options-grid {
-            display: grid;
-            gap: 12px;
-        }
-
+        .options-grid { display: grid; gap: 12px; }
         .option-btn {
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 1rem;
-            text-align: left;
+            padding: 16px; border: 2px solid #e0e0e0; border-radius: 12px;
+            background: white; cursor: pointer; transition: 0.2s;
+            font-size: 1rem; text-align: left; outline: none;
         }
-
-        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #f7f9fc; }
+        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #f0f7ff; }
         .correct { background: var(--success) !important; color: white; border-color: var(--success); }
         .wrong { background: var(--error) !important; color: white; border-color: var(--error); }
 
-        .btn-main {
-            padding: 12px 25px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            margin-top: 20px;
-        }
+        #explanation { margin-top: 15px; padding: 15px; background: #fff8e1; border-radius: 10px; border-left: 5px solid #ffc107; text-align: left; font-size: 0.95rem; }
+        .btn-main { padding: 15px 40px; background: var(--primary); color: white; border: none; border-radius: 30px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(74,144,226,0.3); }
 
         /* Star Animation */
-        @keyframes starPop {
-            0% { transform: scale(0) rotate(0deg); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: scale(1.5) rotate(180deg); opacity: 0; }
-        }
-        .star { position: absolute; color: #f1c40f; font-size: 20px; pointer-events: none; animation: starPop 0.8s ease-out forwards; }
+        @keyframes starPop { 0% { transform: scale(0); opacity: 0; } 50% { opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
+        .star { position: absolute; color: #f1c40f; pointer-events: none; animation: starPop 0.8s ease-out forwards; z-index: 100; }
     </style>
 </head>
 <body>
 
-    <div id="branding-overlay">
-        <img src="assets/innovine-logo.png" alt="Innovine Logo">
+    <div id="branding-overlay" onclick="removeOverlay()">
+        <img src="assets/logo.png" alt="Innovine Logo" onerror="this.style.display='none';">
+        <div class="loader-dots">Loading... (Click to skip)</div>
     </div>
 
-    <div class="stars-container" id="stars"></div>
-
     <div id="intro-screen" class="quiz-container">
-        <h1>Force Mastery</h1>
-        <p>Grade 8 | Science</p>
-        <p>Test your knowledge on motion, gravity, and types of forces!</p>
-        <button class="btn-main" onclick="startQuiz()">Start Challenge</button>
+        <h1 style="color:var(--primary); margin-top:0;">Force & Motion</h1>
+        <p>Grade 8 Science | Chapter Challenge</p>
+        <p style="color:#666;">Apply your knowledge of resultant forces, friction, and gravity!</p>
+        <button class="btn-main" onclick="startQuiz()">Start Quiz</button>
     </div>
 
     <div id="quiz-screen" class="quiz-container hidden">
         <div class="stats">
-            <span>Q: <span id="q-num">1</span>/10</span>
+            <span>Question <span id="q-num">1</span>/10</span>
             <span>Score: <span id="score">0</span></span>
         </div>
-        <div class="timer-bar"><div id="timer" class="timer-progress"></div></div>
-        <div id="question-content">
-            <img id="question-img" class="q-image hidden" src="" alt="Force illustration">
-            <p class="question-text" id="question-text"></p>
-            <div class="options-grid" id="options-container"></div>
+        <div class="timer-bar"><div id="timer-progress"></div></div>
+        <div id="question-area">
+            <img id="q-img" class="q-image hidden" src="" alt="Force Diagram">
+            <p class="question-text" id="q-text"></p>
+            <div class="options-grid" id="options-box"></div>
         </div>
-        <div id="explanation" class="hidden" style="margin-top:15px; padding:12px; background:#fff3cd; border-radius:8px; font-size:0.9rem; border-left: 5px solid var(--secondary);"></div>
+        <div id="explanation" class="hidden"></div>
     </div>
 
     <div id="result-screen" class="quiz-container hidden">
-        <h2 id="result-title">Challenge Complete!</h2>
-        <p style="font-size: 1.5rem;">Total Points: <span id="final-score">0</span>/100</p>
-        <button class="btn-main" onclick="location.reload()">Restart Quiz</button>
+        <h2 style="color:var(--primary);">Quiz Complete!</h2>
+        <p id="final-stats" style="font-size:1.4rem; margin:20px 0;"></p>
+        <button class="btn-main" onclick="location.reload()">Play Again</button>
     </div>
 
-    <audio id="audio-correct" src="assets/correct.mp3"></audio>
-    <audio id="audio-wrong" src="assets/wrong.mp3"></audio>
+    <audio id="snd-correct" src="assets/correct.mp3"></audio>
+    <audio id="snd-wrong" src="assets/wrong.mp3"></audio>
 
     <script>
         const questions = [
-            { q: "Two brothers push a crate. Brother A pushes left with 50 N, Brother B pushes right with 30 N. Resultant force?", options: ["80 N to the right", "20 N to the left", "20 N to the right", "0 N"], correct: 1, explanation: "Opposite forces subtract: 50N (Left) - 30N (Right) = 20N in the direction of the stronger push (Left)." },
-            { q: "Which effect of force is primarily demonstrated in this image?", options: ["Change in state of motion", "Change in direction", "Change in shape and size", "Increase in speed"], correct: 2, img: "assets/q2.png", explanation: "When you squeeze or pull objects like dough or a
+            { q: "Brother A pushes left (50 N), Brother B pushes right (30 N). Resultant force?", options: ["80 N to the right", "20 N to the left", "20 N to the right", "0 N"], correct: 1, exp: "Opposite forces subtract: 50 - 30 = 20 N. It moves toward the stronger force (Left)." },
+            { q: "Which effect of force is shown when squeezing a piece of modeling clay?", options: ["Change in state of motion", "Change in direction", "Change in shape and size", "Increase in speed"], correct: 2, img: "assets/q2.png", exp: "Force can deform objects, changing their physical shape and size." },
+            { q: "Mass is 10 kg and gravity is 10 m/s². What is the object's weight?", options: ["10 N", "1 N", "100 N", "0 N"], correct: 2, exp: "Weight = Mass × Gravity. 10 kg × 10 m/s² = 100 Newtons." },
+            { q: "Iron nails jumping toward a magnet even before touch is an example of:", options: ["Contact Force", "Non-contact Force", "Muscular Force", "Frictional Force"], correct: 1, exp: "Magnetic force is a non-contact force that acts through a field." },
+            { q: "Correct the error: 'Mass and Weight are the same, both measured in kg.'", options: ["Mass is in Newtons.", "Mass is kg; Weight is a force in Newtons.", "Weight is in meters.", "No error."], correct: 1, exp: "Mass measures matter (kg); Weight measures gravitational pull (Newtons)." },
+            { q: "A cricketer pulls his hands back while catching a fast ball to:", options: ["Increase the force", "Reduce impact force by increasing time", "Stop the ball instantly", "Look stylish"], correct: 1, exp: "Increasing the time of the catch reduces the rate of momentum change, softening the impact." },
+            { q: "An astronaut's weight changes on the Moon, but mass stays the same because:", options: ["They eat less in space", "Mass is matter; weight depends on gravity", "The Moon has no air", "Mass depends on temperature"], correct: 1, exp: "Mass is the amount of matter you are made of; weight is how hard gravity pulls on you." },
+            { q: "What does a spring balance primarily measure?", options: ["Mass", "Weight (Force of gravity)", "Volume", "Speed"], correct: 1, img: "assets/q8.png", exp: "Spring balances measure the force of gravity pulling on an object." },
+            { q: "Identify the odd one out based on force type:", options: ["Magnetic force", "Electrostatic force", "Frictional force", "Gravitational force"], correct: 2, exp: "Friction is a contact force; the others act without touching (non-contact)." },
+            { q: "To stop a ball moving to the right, you must apply force toward the:", options: ["Right", "Left", "Upwards", "Downwards"], correct: 1, exp: "Force must be applied in the opposite direction of motion to stop an object." }
+        ];
+
+        let cur = 0, score = 0, timer, timeLeft = 45, attempts = 0, active = true;
+
+        // Branding Logic
+        function removeOverlay() {
+            const overlay = document.getElementById('branding-overlay');
+            if(overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.classList.add('hidden'), 800);
+            }
+        }
+        setTimeout(removeOverlay, 5000);
+
+        function startQuiz() {
+            document.getElementById('intro-screen').classList.add('hidden');
+            document.getElementById('quiz-
