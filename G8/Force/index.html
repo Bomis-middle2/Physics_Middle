@@ -6,73 +6,40 @@
     <title>G8 Physics | Master Challenge</title>
     <style>
         :root { 
-            --p: #f8fafc; /* Very light slate background */
-            --text: #1e293b; 
-            --acc: #3b82f6; 
-            --s: #10b981; 
-            --e: #ef4444; 
-            --warn: #f59e0b; 
-            --glass: rgba(255, 255, 255, 0.8);
+            --p: #f8fafc; --text: #1e293b; --acc: #3b82f6; 
+            --s: #10b981; --e: #ef4444; --warn: #f59e0b; 
+            --glass: rgba(255, 255, 255, 0.88);
         }
 
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        
-        body { 
-            margin: 0; background: var(--p); color: var(--text); 
-            display: flex; justify-content: center; align-items: center; 
-            min-height: 100vh; overflow: hidden; 
-        }
+        body { margin: 0; background: var(--p); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
 
-        /* LAYER 1: LIGHT BLUEPRINT GRID */
+        /* FLOATING BACKGROUND */
         #blueprint {
             position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; z-index: 1;
             background-image: 
                 linear-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px), 
                 linear-gradient(90deg, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: moveGrid 25s linear infinite;
+            background-size: 60px 60px;
+            animation: moveGrid 30s linear infinite;
         }
 
-        /* LAYER 2: FLOATING SYMBOLS (LIGHT MODE) */
         .symbol {
-            position: fixed; color: rgba(59, 130, 246, 0.15); font-weight: 800; 
+            position: fixed; color: rgba(59, 130, 246, 0.12); font-weight: 800; 
             font-family: serif; pointer-events: none; z-index: 2; user-select: none;
         }
 
-        @keyframes moveGrid {
-            from { transform: translate(0, 0); }
-            to { transform: translate(50px, 50px); }
-        }
+        @keyframes moveGrid { from { transform: translate(0, 0); } to { transform: translate(60px, 60px); } }
+        @keyframes floatSymbol { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(var(--mx), var(--my)) rotate(360deg); } }
 
-        @keyframes floatSymbol {
-            from { transform: translate(0, 0) rotate(0deg); }
-            to { transform: translate(var(--mx), var(--my)) rotate(360deg); }
-        }
-
-        /* RESPONSIVE CARD */
+        /* RESPONSIVE UI */
         .card {
-            width: 92%; 
-            max-width: 550px; /* Desktop limit */
-            background: var(--glass); 
-            padding: 2rem; 
-            border-radius: 20px; 
-            border: 1.5px solid rgba(59, 130, 246, 0.2);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
-            text-align: center; 
-            position: relative; 
-            z-index: 100;
-            display: none; 
-            opacity: 0; 
-            transform: scale(0.95);
+            width: 92%; max-width: 550px; background: var(--glass); 
+            padding: 2.5rem; border-radius: 24px; border: 1.5px solid rgba(59, 130, 246, 0.2);
+            backdrop-filter: blur(15px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            text-align: center; position: relative; z-index: 100;
+            display: none; opacity: 0; transform: translateY(20px);
             transition: all 0.4s ease;
-        }
-
-        /* Tablet/Mobile Tweaks */
-        @media (max-width: 600px) {
-            .card { padding: 1.5rem; width: 95%; }
-            h3 { font-size: 1.1rem; }
-            .btn-opt { padding: 12px; font-size: 0.9rem; }
         }
 
         #logo-overlay {
@@ -82,25 +49,28 @@
         }
 
         .btn-opt {
-            display: block; width: 100%; padding: 14px; margin: 8px 0;
-            background: white; border: 1.5px solid #e2e8f0;
-            border-radius: 12px; color: var(--text); cursor: pointer; text-align: left;
-            transition: 0.2s; font-weight: 500;
+            display: block; width: 100%; padding: 14px 20px; margin: 10px 0;
+            background: white; border: 2px solid #e2e8f0;
+            border-radius: 14px; color: var(--text); cursor: pointer; text-align: left;
+            transition: 0.2s; font-weight: 500; font-size: 0.95rem;
         }
-        .btn-opt:hover { background: #f0f9ff; border-color: var(--acc); transform: translateX(3px); }
+        .btn-opt:hover:not(:disabled) { border-color: var(--acc); background: #f0f9ff; transform: translateX(5px); }
         .is-correct { background: var(--s) !important; color: white; border-color: var(--s); }
         .is-wrong { background: var(--e) !important; color: white; border-color: var(--e); }
 
         .btn-main {
-            padding: 16px 36px; background: var(--acc); color: white; border: none;
-            border-radius: 50px; font-weight: 800; cursor: pointer; margin-top: 15px;
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+            padding: 16px 40px; background: var(--acc); color: white; border: none;
+            border-radius: 50px; font-weight: 800; cursor: pointer; margin-top: 20px;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3); transition: 0.3s;
         }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(59, 130, 246, 0.4); }
 
-        #timer-track { height: 6px; background: #e2e8f0; margin: 15px 0; border-radius: 10px; overflow: hidden; }
+        #timer-track { height: 6px; background: #e2e8f0; margin: 20px 0; border-radius: 10px; overflow: hidden; }
         #timer-bar { height: 100%; background: var(--acc); width: 100%; transition: width 1s linear; }
 
-        .final-mode { border: 2.5px solid var(--warn); }
+        #feedback { margin-top: 15px; padding: 12px; background: #fffbeb; border-radius: 10px; border-left: 5px solid var(--warn); text-align: left; font-size: 0.9rem; line-height: 1.4; color: #92400e; }
+
+        @media (max-width: 600px) { .card { padding: 1.5rem; } h3 { font-size: 1.1rem; } }
     </style>
 </head>
 <body>
@@ -109,52 +79,55 @@
     <div id="symbol-container"></div>
 
     <div id="logo-overlay">
-        <img src="assets/logo.png" alt="Innovine" style="width: 200px;" onerror="this.style.display='none'">
+        <img src="assets/logo.png" alt="Innovine" style="width: 220px;" onerror="this.style.display='none'">
     </div>
 
     <div id="scr-intro" class="card">
-        <h1 style="color:var(--acc); margin-top: 0;">PHYSICS LAB</h1>
-        <p style="font-weight: 600;">Grade 8 Master Challenge</p>
-        <p style="font-size: 0.9rem; color: #64748b;">Responsive Test Environment Ready</p>
-        <button class="btn-main" onclick="startQuiz()">INITIALIZE</button>
+        <h1 style="color:var(--acc); margin: 0 0 10px 0;">PHYSICS LAB</h1>
+        <p style="font-weight: 600; color: #64748b;">Grade 8 Force Mastery</p>
+        <div style="text-align: left; font-size: 0.85rem; background: #f1f5f9; padding: 15px; border-radius: 12px; margin: 20px 0;">
+            • 10 Random tests + 1 Final Challenge<br>
+            • 2 Tries per question<br>
+            • 45 Seconds per data point
+        </div>
+        <button class="btn-main" onclick="startQuiz()">INITIALIZE MISSION</button>
     </div>
 
     <div id="scr-quiz" class="card">
-        <div style="display:flex; justify-content: space-between; font-size: 0.75rem; color: var(--acc); font-weight: 700;">
-            <span id="q-num">STEP 1/11</span>
+        <div style="display:flex; justify-content: space-between; font-size: 0.75rem; color: var(--acc); font-weight: 800; letter-spacing: 1px;">
+            <span id="q-num">SECTOR 1/11</span>
             <span id="score-now">PTS: 0</span>
         </div>
         <div id="timer-track"><div id="timer-bar"></div></div>
-        <h3 id="q-txt" style="text-align:left; line-height:1.4; margin-bottom: 20px;"></h3>
+        <h3 id="q-txt" style="text-align:left; line-height: 1.4; margin-bottom: 15px;"></h3>
         <div id="options"></div>
-        <div id="feedback" style="display:none; margin-top:15px; padding:12px; background:#fffbeb; border-radius: 8px; border-left:4px solid var(--warn); font-size:0.85rem; text-align:left; color: #92400e;"></div>
+        <div id="feedback" style="display:none;"></div>
     </div>
 
     <div id="scr-result" class="card">
-        <h2 style="margin-top:0;">DATA RECAP</h2>
-        <div id="res-score" style="font-size:3.5rem; font-weight:900; color:var(--acc);"></div>
-        <p id="res-desc">Mission parameters complete.</p>
-        <button class="btn-main" onclick="location.reload()">RE-RUN TEST</button>
+        <h2 style="margin: 0;">MISSION REPORT</h2>
+        <div id="res-score" style="font-size:4rem; font-weight:900; color:var(--acc); margin: 15px 0;"></div>
+        <p id="res-desc" style="margin-bottom: 25px; color: #64748b;"></p>
+        <button class="btn-main" onclick="location.reload()">RE-SYNC SYSTEM</button>
     </div>
 
     <script>
-        // CREATE FLOATING SYMBOLS
-        const symbols = ['F=ma', 'v=d/t', 'G', 'ΣF', 'm', 'a', 'W=mg', 'Δv', 'N', 'kg'];
+        // SYMBOL ANIMATION
+        const symbols = ['F=ma', 'v=d/t', 'G', 'ΣF', 'm', 'a', 'W=mg', 'N', 'kg', 'Δ'];
         const container = document.getElementById('symbol-container');
-        for(let i=0; i<18; i++) {
+        for(let i=0; i<20; i++) {
             const div = document.createElement('div');
             div.className = 'symbol';
             div.innerText = symbols[Math.floor(Math.random()*symbols.length)];
             div.style.left = Math.random()*100 + 'vw';
             div.style.top = Math.random()*100 + 'vh';
-            div.style.fontSize = (Math.random()*15 + 18) + 'px';
-            div.style.setProperty('--mx', (Math.random()*200 - 100) + 'px');
-            div.style.setProperty('--my', (Math.random()*200 - 100) + 'px');
-            div.style.animation = `floatSymbol ${Math.random()*12 + 10}s linear infinite alternate`;
+            div.style.setProperty('--mx', (Math.random()*300 - 150) + 'px');
+            div.style.setProperty('--my', (Math.random()*300 - 150) + 'px');
+            div.style.animation = `floatSymbol ${Math.random()*15 + 10}s linear infinite alternate`;
             container.appendChild(div);
         }
 
-        // 5s AUTOMATIC TRANSITION
+        // AUTO LOGO TRANSITION (5s)
         setTimeout(() => {
             const overlay = document.getElementById('logo-overlay');
             overlay.style.opacity = '0';
@@ -162,45 +135,61 @@
                 overlay.style.display = 'none';
                 const intro = document.getElementById('scr-intro');
                 intro.style.display = 'block';
-                setTimeout(() => { intro.style.opacity = '1'; intro.style.transform = 'scale(1)'; }, 50);
+                setTimeout(() => { intro.style.opacity = '1'; intro.style.transform = 'translateY(0)'; }, 50);
             }, 800);
         }, 5000);
 
-        const pool = [
-            { q: "Team A pulls with 1500N. Team B pulls with 1550N. B player trips, reducing B force by 100N. Where does the rope go?", o: ["Towards B (50N)", "Stationary", "Towards A (50N)", "Towards A (100N)"], c: 2, e: "B is now 1450N. Resultant = 50N toward A." },
-            { q: "A ball rolls at constant speed. A force is applied perpendicular (90°). How does it change?", o: ["Faster", "Slower", "Direction changes", "Stops"], c: 2, e: "90° force changes direction, not speed magnitude." },
-            { q: "Mass 60kg on Earth. Moon gravity is 1/6th. Mass on Moon?", o: ["10kg", "60kg", "360kg", "0kg"], c: 1, e: "Mass is the amount of matter and is constant everywhere." },
-            { q: "Two spring balances in series. 10N weight hung at bottom. Top reading?", o: ["5N", "10N", "20N", "0N"], c: 1, e: "Tension is equal throughout the line." },
-            { q: "Attracting paper bits with a rubbed scale is what force?", o: ["Magnetic", "Electrostatic", "Muscular", "Friction"], c: 1, e: "A non-contact electrical force." },
-            { q: "If net force is zero, an object can be:", o: ["Accelerating", "Moving at constant speed", "Only at rest", "Gaining mass"], c: 1, e: "Balanced forces allow for uniform motion." },
-            { q: "Direction of force to stop a trolley moving toward you?", o: ["Same way", "Sideways", "Opposite way", "Downward"], c: 2, e: "Force must oppose velocity to stop it." },
-            { q: "Balanced force example?", o: ["Braking car", "Book still on table", "Falling rock", "Rising elevator"], c: 1, e: "Rest = balanced vertical forces." },
-            { q: "Stretching a spring changes its:", o: ["Mass", "Weight", "Shape and length", "Temperature"], c: 2, e: "Force causes deformation." },
-            { q: "Mass 10kg on Earth (g=10). Weight?", o: ["10N", "1N", "100N", "100kg"], c: 2, e: "Weight = m * g = 100N." }
+        // DATA POOL (20 QUESTIONS)
+        const fullPool = [
+            { q: "Team A (1500N) vs Team B (1550N). B player trips, losing 100N of force. Effect?", o: ["Move to B (50N)", "Stationary", "Move to A (50N)", "Move to A (100N)"], c: 2, e: "New B is 1450N. Resultant is 50N toward A." },
+            { q: "A ball rolls at constant speed. You apply force exactly perpendicular (90°). Effect?", o: ["Speeds up", "Slows down", "Changes direction", "Stops"], c: 2, e: "Side-force changes path direction without changing speed." },
+            { q: "Mass on Earth is 60kg. Gravity is 1/6th on Moon. Mass on Moon?", o: ["10kg", "60kg", "360kg", "0kg"], c: 1, e: "Mass (matter) is constant; only weight changes." },
+            { q: "Two spring balances are connected in a line (series). 10N hung. Top reading?", o: ["5N", "10N", "20N", "0N"], c: 1, e: "Tension is identical throughout the connected line." },
+            { q: "Rubbing a comb to lift paper bits is an example of:", o: ["Magnetic Force", "Electrostatic Force", "Muscular Force", "Friction"], c: 1, e: "Static electricity creates a non-contact attraction." },
+            { q: "Student: 'Zero net force means no motion.' Why is this wrong?", o: ["Always moving", "Can move at constant speed", "Friction is zero", "Needs acceleration"], c: 1, e: "Balanced forces allow for uniform velocity (Newton's 1st Law)." },
+            { q: "To stop a trolley moving toward you, you must apply force:", o: ["Same way", "Sideways", "Opposite way", "Downward"], c: 2, e: "Opposing force is required for deceleration." },
+            { q: "Which of these is a Balanced Force?", o: ["Braking car", "Book sitting on a shelf", "Falling rain", "Launching rocket"], c: 1, e: "Rest indicates Gravity and Normal force are equal." },
+            { q: "Squeezing a clay model changes its:", o: ["Mass", "Weight", "Shape", "Inertia"], c: 2, e: "Force causes physical deformation." },
+            { q: "Mass is 10kg on Earth (g=10). What is its weight?", o: ["10N", "100N", "1N", "100kg"], c: 1, e: "Weight = m * g = 10 * 10 = 100N." },
+            { q: "50N is pushed Right and 30N is pushed Left. Net Force?", o: ["80N Right", "20N Left", "20N Right", "0N"], c: 2, e: "50 - 30 = 20N in the direction of the larger force." },
+            { q: "Magnets pull nails without touching. This is a:", o: ["Contact Force", "Non-contact Force", "Muscular Force", "Friction"], c: 1, e: "Magnetic fields act over a distance." },
+            { q: "Pulling hands back while catching a fast ball helps because:", o: ["Looks professional", "Reduces force by increasing time", "Stops ball faster", "Reduces mass"], c: 1, e: "Increasing impact time lowers the force (Impulse)." },
+            { q: "Which property does NOT change on different planets?", o: ["Weight", "Gravity", "Mass", "Pressure"], c: 2, e: "Mass is an intrinsic property of matter." },
+            { q: "A spring balance is designed to measure:", o: ["Mass", "Weight", "Volume", "Density"], c: 1, e: "It measures the pull of gravity (Force)." },
+            { q: "Odd one out: Gravity, Magnetic, Friction, Electrostatic.", o: ["Gravity", "Magnetic", "Friction", "Electrostatic"], c: 2, e: "Friction is the only contact force listed." },
+            { q: "When a car suddenly stops, you jerk forward. This is due to:", o: ["Friction", "Inertia", "Gravity", "Magnetic pull"], c: 1, e: "Inertia keeps your body in motion." },
+            { q: "Unit of Force is named after:", o: ["Einstein", "Newton", "Galileo", "Pascal"], c: 1, e: "Force is measured in Newtons (N)." },
+            { q: "If you double the mass of an object, its inertia:", o: ["Halves", "Stays same", "Doubles", "Becomes zero"], c: 2, e: "Inertia is directly proportional to mass." },
+            { q: "A force that opposes motion between two surfaces is:", o: ["Gravity", "Electrostatic", "Friction", "Magnetic"], c: 2, e: "Friction always acts against the direction of movement." }
         ];
-        const finalChallenge = { q: "ULTIMATE TEST: Pull 45N Right, 40N Left. Friction is 5N Left. Net Force?", o: ["5N Right", "0N (Balanced)", "10N Right", "5N Left"], c: 1, e: "Applied 5N Right - Friction 5N Left = 0N." };
 
-        let session = [], current = 0, score = 0, timer, time = 45, lock = false;
+        const finalChallenge = { q: "ULTIMATE TEST: A block is pushed Right (45N) and Left (40N). Friction resists with 5N. Net Force?", o: ["5N Right", "0N (Balanced)", "10N Right", "5N Left"], c: 1, e: "Net applied is 5N Right. Friction is 5N Left. Total Resultant = 0N." };
+
+        let sessionQuiz = [], current = 0, score = 0, timer, time = 45, lock = false, tries = 0;
 
         function startQuiz() {
-            session = [...pool].sort(() => 0.5 - Math.random()).slice(0, 10);
-            session.push(finalChallenge);
+            // TRUE SHUFFLE LOGIC
+            let shuffled = [...fullPool].sort(() => 0.5 - Math.random());
+            sessionQuiz = shuffled.slice(0, 10);
+            sessionQuiz.push(finalChallenge);
+
             document.getElementById('scr-intro').style.display = 'none';
             document.getElementById('scr-quiz').style.display = 'block';
-            setTimeout(() => { document.getElementById('scr-quiz').style.opacity = '1'; document.getElementById('scr-quiz').style.transform = 'scale(1)'; }, 50);
+            setTimeout(() => { document.getElementById('scr-quiz').style.opacity = '1'; document.getElementById('scr-quiz').style.transform = 'translateY(0)'; }, 50);
             render();
         }
 
         function render() {
-            if(current >= session.length) return end();
-            lock = false; time = 45;
-            if(current === 10) document.getElementById('scr-quiz').classList.add('final-mode');
+            if(current >= sessionQuiz.length) return end();
+            lock = false; tries = 0; time = 45;
+            
             document.getElementById('feedback').style.display = 'none';
-            document.getElementById('q-num').innerText = `STEP ${current+1}/11`;
-            document.getElementById('q-txt').innerText = session[current].q;
+            document.getElementById('q-num').innerText = `DATA POINT ${current+1}/11`;
+            document.getElementById('q-txt').innerText = sessionQuiz[current].q;
+            
             const box = document.getElementById('options');
             box.innerHTML = '';
-            session[current].o.forEach((txt, i) => {
+            sessionQuiz[current].o.forEach((txt, i) => {
                 const b = document.createElement('button');
                 b.className = 'btn-opt'; b.innerText = txt;
                 b.onclick = () => check(i, b);
@@ -215,37 +204,52 @@
             timer = setInterval(() => {
                 time--;
                 bar.style.width = (time/45*100) + '%';
-                if(time <= 0) reveal();
+                if(time <= 0) { clearInterval(timer); reveal(); }
             }, 1000);
         }
 
         function check(idx, btn) {
-            if(lock) return; lock = true; clearInterval(timer);
-            const correct = session[current].c;
+            if(lock) return;
+            const correct = sessionQuiz[current].c;
+
             if(idx === correct) {
-                btn.classList.add('is-correct'); score += 10;
+                lock = true; clearInterval(timer);
+                btn.classList.add('is-correct');
+                score += (tries === 0) ? 10 : 5;
                 document.getElementById('score-now').innerText = "PTS: " + score;
                 setTimeout(() => { current++; render(); }, 1200);
             } else {
+                tries++;
                 btn.classList.add('is-wrong');
-                reveal();
+                btn.disabled = true;
+
+                if(tries === 1) {
+                    const fb = document.getElementById('feedback');
+                    fb.innerText = "HINT: Re-read the directions or check if you're confusing mass with weight.";
+                    fb.style.display = 'block';
+                } else {
+                    lock = true; clearInterval(timer);
+                    reveal();
+                }
             }
         }
 
         function reveal() {
             const btns = document.querySelectorAll('.btn-opt');
-            btns[session[current].c].classList.add('is-correct');
+            btns[sessionQuiz[current].c].classList.add('is-correct');
             const fb = document.getElementById('feedback');
-            fb.innerHTML = `<b>Solution:</b> ${session[current].o[session[current].c]}<br>${session[current].e}`;
+            fb.innerHTML = `<b>Solution:</b> ${sessionQuiz[current].o[sessionQuiz[current].c]}<br>${sessionQuiz[current].e}`;
             fb.style.display = 'block';
-            setTimeout(() => { current++; render(); }, 4000);
+            setTimeout(() => { current++; render(); }, 5000);
         }
 
         function end() {
             document.getElementById('scr-quiz').style.display = 'none';
-            document.getElementById('scr-result').style.display = 'block';
-            setTimeout(() => { document.getElementById('scr-result').style.opacity = '1'; document.getElementById('scr-result').style.transform = 'scale(1)'; }, 50);
+            const res = document.getElementById('scr-result');
+            res.style.display = 'block';
+            setTimeout(() => { res.style.opacity = '1'; res.style.transform = 'translateY(0)'; }, 50);
             document.getElementById('res-score').innerText = score + "/110";
+            document.getElementById('res-desc').innerText = score >= 90 ? "Excellent. You are a Force Specialist." : "Good effort. Review basic motion principles.";
         }
     </script>
 </body>
