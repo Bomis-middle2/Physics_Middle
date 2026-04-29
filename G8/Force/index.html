@@ -18,7 +18,7 @@
         #logo-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: white; display: flex; justify-content: center; align-items: center;
-            z-index: 10000; transition: opacity 0.8s ease, visibility 0.8s;
+            z-index: 10000; transition: opacity 0.5s ease;
         }
         #logo-overlay img { width: 220px; }
 
@@ -28,13 +28,13 @@
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
             text-align: center; position: relative; z-index: 100;
         }
-        .hidden { display: none !important; visibility: hidden; }
+        .hidden { display: none !important; }
 
         .header { display: flex; justify-content: space-between; font-weight: 800; color: var(--acc); margin-bottom: 12px; font-size: 0.85rem; letter-spacing: 1px; }
         .timer-track { height: 6px; background: #e2e8f0; border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
         #timer-bar { height: 100%; background: var(--acc); width: 100%; transition: width 1s linear; }
 
-        .q-text { font-size: 1.1rem; font-weight: 600; text-align: left; line-height: 1.5; margin-bottom: 25px; min-height: 60px; }
+        .q-text { font-size: 1.1rem; font-weight: 600; text-align: left; line-height: 1.5; margin-bottom: 25px; }
         .grid { display: grid; gap: 10px; }
         .btn-opt {
             padding: 14px; border: 2px solid #e2e8f0; border-radius: 12px;
@@ -48,7 +48,6 @@
         .btn-main {
             padding: 18px 45px; background: var(--acc); color: white; border: none;
             border-radius: 50px; font-size: 1.1rem; cursor: pointer; font-weight: 800;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
         }
 
         #feedback { margin-top: 20px; padding: 15px; background: #fffbeb; border-radius: 12px; border-left: 5px solid #f59e0b; text-align: left; font-size: 0.9rem; }
@@ -65,7 +64,7 @@
     <div id="scr-intro" class="card hidden">
         <h1 style="color:var(--acc); margin-bottom: 5px;">PHYSICS LAB</h1>
         <p style="color: #64748b; font-weight: 600;">Grade 8 Mastery Set</p>
-        <p style="margin: 25px 0; font-size: 0.95rem;">20 Questions | Logic & Reasoning</p>
+        <p style="margin: 25px 0; font-size: 0.95rem;">20 Practice Pool | 11 Question Mission</p>
         <button class="btn-main" onclick="startQuiz()">Launch Mission</button>
     </div>
 
@@ -91,135 +90,31 @@
     <audio id="snd-no" src="assets/wrong.mp3"></audio>
 
     <script>
-        // Automatic Transition Logic
-        window.onload = () => {
+        // FORCED 3-SECOND TRANSITION
+        document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const overlay = document.getElementById('logo-overlay');
                 const intro = document.getElementById('scr-intro');
                 
                 overlay.style.opacity = '0';
-                overlay.style.visibility = 'hidden';
-                
-                // Show game intro screen
-                intro.classList.remove('hidden');
-            }, 3000); // Exactly 3 seconds
-        };
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    intro.classList.remove('hidden');
+                }, 500);
+            }, 3000); 
+        });
 
+        // POOL OF ALL 20 QUESTIONS
         const fullPool = [
-            { q: "Two teams are pulling a rope. Team A pulls with 1500 N. Team B pulls with 1550 N. A player on Team B trips and stops pulling, reducing force by 100 N. What happens?", o: ["Moves to B with 50 N", "Remains stationary", "Moves to A with 50 N", "Moves to A with 100 N"], c: 2, e: "New Force B = 1450 N. Resultant = 1500 - 1450 = 50 N towards Team A." },
-            { q: "A football is rolling at a constant speed. A player kicks it perpendicular (90°) to its current path. How does motion change?", o: ["Faster same way", "Stops immediately", "Direction changes, speed same", "Moves backward"], c: 2, e: "Force perpendicular to motion changes direction without changing speed magnitude." },
-            { q: "An astronaut has a mass of 60 kg on Earth. If the gravity on the Moon is 1/6th of Earth's, what will be their mass on the Moon?", o: ["10 kg", "360 kg", "60 kg", "0 kg"], c: 2, e: "Mass is the amount of matter and is constant everywhere." },
-            { q: "Two identical spring balances are connected in a vertical line (series). A 10 N weight is hung from the bottom. Top reading?", o: ["5 N", "10 N", "20 N", "0 N"], c: 1, e: "In series, tension is uniform. Both balances show 10 N." },
-            { q: "A plastic scale rubbed against a woolen sweater attracts small bits of paper. This demonstrates:", o: ["Magnetic force", "Electrostatic non-contact force", "Muscular transfer", "Friction pulling"], c: 1, e: "Rubbing creates a charge; electrostatic force acts without contact." },
-            { q: "Student: 'If the resultant force is Zero, the object cannot be moving.' Why is this incorrect?", o: ["Always move", "Can move at constant speed in straight line", "Causes speed up", "Gravity prevents zero"], c: 1, e: "Zero net force means zero acceleration, but current motion continues." },
-            { q: "To stop a heavy trolley moving toward you, apply force in which direction?", o: ["90° angle", "Same direction", "Opposite direction", "Downward"], c: 2, e: "To reduce velocity, force must oppose the direction of motion." },
-            { q: "Which scenario describes 'Balanced Forces'?", o: ["Car speeding up", "Heavy book lying still on a table", "Ball falling", "Plane taking off"], c: 1, e: "At rest, the table's upward force balances the downward weight." },
-            { q: "Why does a baker apply force to a piece of dough?", o: ["Change motion", "Increase mass", "Change shape and size", "Increase gravity"], c: 2, e: "Force can change the shape of non-rigid objects." },
-            { q: "Object weighs 120 N on Earth (g=10). Gravity on Planet X is 5 m/s². Weight on X?", o: ["60 N", "120 N", "24 N", "240 N"], c: 0, e: "Mass = 120/10 = 12 kg. Weight = 12 * 5 = 60 N." },
-            { q: "Brother A pushes Right (50 N), Brother B pushes Left (30 N). Resultant force?", o: ["80 N Right", "20 N Left", "20 N Right", "0 N"], c: 2, e: "50 - 30 = 20 N towards the stronger force (Right)." },
-            { q: "Which effect of force is primarily demonstrated in squeezing a wet sponge?", o: ["Motion change", "Direction change", "Shape and size change", "Speed increase"], c: 2, e: "Squeezing alters the physical form." },
-            { q: "An object has a mass of 10 kg on Earth (g=10). What is its weight?", o: ["10 N", "1 N", "100 N", "0 N"], c: 2, e: "Weight = Mass * Gravity = 10 * 10 = 100 N." },
-            { q: "A magnet attracts iron nails even before touching them. This is:", o: ["Contact Force", "Non-contact Force (Magnetic)", "Muscular Force", "Friction"], c: 1, e: "Magnetic force acts through a field without touching." },
-            { q: "Student: 'Mass and Weight both measured in kg.' Error?", o: ["Mass in Newtons", "Mass is kg, Weight is Newtons", "Weight in meters", "No error"], c: 1, e: "Mass is kg; Weight is a force (N)." },
-            { q: "Why does a cricketer pull his hands back when catching a fast ball?", o: ["Increase force", "Reduce impact by increasing time", "Stop instantly", "Style"], c: 1, e: "Increasing time reduces the impact force on the hands." },
-            { q: "Astronaut weight changes on Moon, but mass stays same. Why?", o: ["Eat less", "Mass is matter, weight is gravity-based", "No air", "Temperature"], c: 1, e: "Gravity varies by location; matter is constant." },
-            { q: "What does a spring balance specifically measure?", o: ["Mass", "Weight (Force of gravity)", "Volume", "Speed"], c: 1, e: "Spring balances respond to the downward pull of gravity." },
-            { q: "Identify the odd one out: Magnetic, Electrostatic, Frictional, Gravitational.", o: ["Magnetic", "Electrostatic", "Frictional", "Gravitational"], c: 2, e: "Friction requires surface contact; others do not." },
-            { q: "To stop a stationary ball that was just pushed, apply force:", o: ["Same direction", "Opposite to motion", "Upwards", "Not needed"], c: 1, e: "Force must oppose motion to bring an object to rest." }
-        ];
-
-        const finalChallenge = { q: "FINAL CHALLENGE: A crate is pushed Right with 40N and Left with 35N. Friction provides 5N of resistance. Net Force?", o: ["5 N Right", "0 N (Balanced)", "10 N Left", "80 N"], c: 1, e: "Applied result = 5N Right. Friction = 5N Left. 5 - 5 = 0 N." };
-
-        let sessionQuiz = [], current = 0, score = 0, timer, time = 45, lock = false, tries = 0;
-
-        function startQuiz() {
-            sessionQuiz = [...fullPool].sort(() => 0.5 - Math.random()).slice(0, 10);
-            sessionQuiz.push(finalChallenge);
-            document.getElementById('scr-intro').classList.add('hidden');
-            document.getElementById('scr-quiz').classList.remove('hidden');
-            render();
-        }
-
-        function render() {
-            if(current >= sessionQuiz.length) return end();
-            lock = false; tries = 0; time = 45;
-            document.getElementById('feedback').classList.add('hidden');
-            document.getElementById('q-num').innerText = `QUESTION ${current + 1}/11`;
-            document.getElementById('q-txt').innerText = sessionQuiz[current].q;
-            
-            const box = document.getElementById('options');
-            box.innerHTML = '';
-            sessionQuiz[current].o.forEach((txt, i) => {
-                const b = document.createElement('button');
-                b.className = 'btn-opt'; b.innerText = txt;
-                b.onclick = () => check(i, b);
-                box.appendChild(b);
-            });
-            startTimer();
-        }
-
-        function startTimer() {
-            clearInterval(timer);
-            const bar = document.getElementById('timer-bar');
-            timer = setInterval(() => {
-                time--;
-                bar.style.width = (time/45*100) + '%';
-                if(time <= 0) { clearInterval(timer); reveal(); }
-            }, 1000);
-        }
-
-        function check(idx, btn) {
-            if(lock) return;
-            const correct = sessionQuiz[current].c;
-
-            if(idx === correct) {
-                lock = true; clearInterval(timer);
-                btn.classList.add('is-correct');
-                score += (tries === 0) ? 10 : 5;
-                document.getElementById('score-now').innerText = "SCORE: " + score;
-                playSfx('snd-ok', () => {
-                    setTimeout(() => { current++; render(); }, 300);
-                });
-            } else {
-                tries++;
-                btn.classList.add('is-wrong'); btn.disabled = true;
-                playSfx('snd-no', () => {
-                    if(tries === 1) {
-                        const fb = document.getElementById('feedback');
-                        fb.innerText = "Incorrect. Think about whether the physical property changes!";
-                        fb.classList.remove('hidden');
-                    } else {
-                        lock = true; clearInterval(timer); reveal();
-                    }
-                });
-            }
-        }
-
-        function reveal() {
-            const btns = document.querySelectorAll('.btn-opt');
-            btns[sessionQuiz[current].c].classList.add('is-correct');
-            const fb = document.getElementById('feedback');
-            fb.innerHTML = `<strong>Answer: ${sessionQuiz[current].o[sessionQuiz[current].c]}</strong><br>${sessionQuiz[current].e}`;
-            fb.classList.remove('hidden');
-            setTimeout(() => { current++; render(); }, 5000);
-        }
-
-        function playSfx(id, cb) {
-            const a = document.getElementById(id);
-            if(a) {
-                a.currentTime = 0;
-                a.onended = cb;
-                a.play().catch(() => setTimeout(cb, 1000));
-            } else cb();
-        }
-
-        function end() {
-            document.getElementById('scr-quiz').classList.add('hidden');
-            document.getElementById('scr-result').classList.remove('hidden');
-            document.getElementById('res-score').innerText = score + "/110";
-            document.getElementById('res-title').innerText = score >= 90 ? "Force Specialist" : "Physics Apprentice";
-            document.getElementById('res-desc').innerText = "Mission completed. Grade 8 Competency confirmed.";
-        }
-    </script>
-</body>
-</html>
+            { q: "Two teams are pulling a rope. Team A pulls with 1500 N. Team B pulls with 1550 N. A player on Team B trips and stops pulling, reducing force by 100 N. What happens?", o: ["Moves to B with 50 N", "Remains stationary", "Moves to A with 50 N", "Moves to A with 100 N"], c: 2, e: "New B = 1450N. Resultant = 1500-1450 = 50N toward A." },
+            { q: "A football is rolling at constant speed. A player kicks it perpendicular (90°). How does motion change?", o: ["Faster same way", "Stops immediately", "Direction changes, speed same", "Moves backward"], c: 2, e: "Perpendicular force changes direction, not speed magnitude." },
+            { q: "An astronaut has a mass of 60 kg on Earth. Moon gravity is 1/6th of Earth. Mass on Moon?", o: ["10 kg", "360 kg", "60 kg", "0 kg"], c: 2, e: "Mass is constant; only weight changes with gravity." },
+            { q: "Two identical spring balances are connected in series. A 10 N weight is hung from bottom. Top reading?", o: ["5 N", "10 N", "20 N", "0 N"], c: 1, e: "Tension is transmitted equally through both balances." },
+            { q: "A scale rubbed against a sweater attracts paper bits. Demonstrates:", o: ["Magnetic force", "Electrostatic non-contact force", "Muscular transfer", "Friction"], c: 1, e: "Static charge attracts objects without contact." },
+            { q: "Student: 'If net force is Zero, the object cannot be moving.' Incorrect because:", o: ["Always move", "Can move at constant speed in straight line", "Zero force speeds it up", "Gravity prevents zero"], c: 1, e: "Zero net force means no acceleration (uniform motion)." },
+            { q: "To stop a trolley moving toward you, apply force in which direction?", o: ["90° angle", "Same direction", "Opposite to motion", "Downward"], c: 2, e: "Deceleration requires force opposite to velocity." },
+            { q: "Which scenario describes 'Balanced Forces'?", o: ["Car speeding up", "Book lying still on a table", "Ball falling", "Plane taking off"], c: 1, e: "At rest, vertical forces cancel each other out." },
+            { q: "Why does a baker apply force to a piece of dough?", o: ["Change motion", "Increase mass", "Change shape and size", "Increase gravity"], c: 2, e: "Force can physically deform non-rigid objects." },
+            { q: "Object weighs 120 N on Earth (g=10). Planet X gravity is 5 m/s². Weight on X?", o: ["60 N", "120 N", "24 N", "240 N"], c: 0, e: "Mass = 12kg. Weight = 12 * 5 = 60N." },
+            { q: "Brother A pushes Right (50 N), Brother B pushes Left (30 N). Resultant?", o: ["80 N Right", "20 N Left", "20 N Right", "0 N"], c: 2, e: "50R - 30L = 20N Right." },
+            { q: "Effect of force demonstrated in squeezing a sponge?", o: ["Motion change", "Direction change", "Shape change", "Speed increase"], c:
