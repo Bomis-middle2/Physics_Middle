@@ -5,39 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>G8 Physics | Master Challenge</title>
     <style>
-        :root { --p: #0f172a; --acc: #3b82f6; --s: #10b981; --e: #ef4444; --warn: #f59e0b; }
+        :root { 
+            --p: #f8fafc; /* Very light slate background */
+            --text: #1e293b; 
+            --acc: #3b82f6; 
+            --s: #10b981; 
+            --e: #ef4444; 
+            --warn: #f59e0b; 
+            --glass: rgba(255, 255, 255, 0.8);
+        }
+
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         
         body { 
-            margin: 0; background: var(--p); color: white; 
+            margin: 0; background: var(--p); color: var(--text); 
             display: flex; justify-content: center; align-items: center; 
             min-height: 100vh; overflow: hidden; 
         }
 
-        /* LAYER 1: MOVING GRID */
+        /* LAYER 1: LIGHT BLUEPRINT GRID */
         #blueprint {
             position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; z-index: 1;
             background-image: 
-                linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), 
-                linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
-            background-size: 80px 80px;
-            animation: moveGrid 20s linear infinite;
+                linear-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px), 
+                linear-gradient(90deg, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 25s linear infinite;
         }
 
-        /* LAYER 2: FLOATING SYMBOLS */
+        /* LAYER 2: FLOATING SYMBOLS (LIGHT MODE) */
         .symbol {
-            position: fixed; color: rgba(59, 130, 246, 0.15); font-weight: 900; 
+            position: fixed; color: rgba(59, 130, 246, 0.15); font-weight: 800; 
             font-family: serif; pointer-events: none; z-index: 2; user-select: none;
         }
 
         @keyframes moveGrid {
             from { transform: translate(0, 0); }
-            to { transform: translate(80px, 80px); }
+            to { transform: translate(50px, 50px); }
         }
 
         @keyframes floatSymbol {
             from { transform: translate(0, 0) rotate(0deg); }
             to { transform: translate(var(--mx), var(--my)) rotate(360deg); }
+        }
+
+        /* RESPONSIVE CARD */
+        .card {
+            width: 92%; 
+            max-width: 550px; /* Desktop limit */
+            background: var(--glass); 
+            padding: 2rem; 
+            border-radius: 20px; 
+            border: 1.5px solid rgba(59, 130, 246, 0.2);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            text-align: center; 
+            position: relative; 
+            z-index: 100;
+            display: none; 
+            opacity: 0; 
+            transform: scale(0.95);
+            transition: all 0.4s ease;
+        }
+
+        /* Tablet/Mobile Tweaks */
+        @media (max-width: 600px) {
+            .card { padding: 1.5rem; width: 95%; }
+            h3 { font-size: 1.1rem; }
+            .btn-opt { padding: 12px; font-size: 0.9rem; }
         }
 
         #logo-overlay {
@@ -46,37 +81,26 @@
             z-index: 10000; transition: opacity 0.8s;
         }
 
-        .card {
-            width: 92%; max-width: 580px; 
-            background: rgba(15, 23, 42, 0.9); 
-            padding: 35px; border-radius: 24px; 
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            backdrop-filter: blur(20px);
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
-            text-align: center; position: relative; z-index: 100;
-            display: none; opacity: 0; transform: scale(0.9);
-            transition: all 0.5s ease;
-        }
-
-        .final-mode { border: 2px solid var(--warn); box-shadow: 0 0 40px rgba(245, 158, 11, 0.2); }
-
         .btn-opt {
-            display: block; width: 100%; padding: 15px; margin: 10px 0;
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; color: white; cursor: pointer; text-align: left;
-            transition: 0.2s;
+            display: block; width: 100%; padding: 14px; margin: 8px 0;
+            background: white; border: 1.5px solid #e2e8f0;
+            border-radius: 12px; color: var(--text); cursor: pointer; text-align: left;
+            transition: 0.2s; font-weight: 500;
         }
-        .btn-opt:hover { background: rgba(59, 130, 246, 0.2); border-color: var(--acc); }
-        .is-correct { background: var(--s) !important; border-color: var(--s); }
-        .is-wrong { background: var(--e) !important; border-color: var(--e); }
+        .btn-opt:hover { background: #f0f9ff; border-color: var(--acc); transform: translateX(3px); }
+        .is-correct { background: var(--s) !important; color: white; border-color: var(--s); }
+        .is-wrong { background: var(--e) !important; color: white; border-color: var(--e); }
 
         .btn-main {
-            padding: 18px 40px; background: var(--acc); color: white; border: none;
-            border-radius: 50px; font-weight: 800; cursor: pointer; margin-top: 20px;
+            padding: 16px 36px; background: var(--acc); color: white; border: none;
+            border-radius: 50px; font-weight: 800; cursor: pointer; margin-top: 15px;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
         }
 
-        #timer-track { height: 4px; background: rgba(255,255,255,0.1); margin: 20px 0; overflow: hidden; }
+        #timer-track { height: 6px; background: #e2e8f0; margin: 15px 0; border-radius: 10px; overflow: hidden; }
         #timer-bar { height: 100%; background: var(--acc); width: 100%; transition: width 1s linear; }
+
+        .final-mode { border: 2.5px solid var(--warn); }
     </style>
 </head>
 <body>
@@ -85,54 +109,57 @@
     <div id="symbol-container"></div>
 
     <div id="logo-overlay">
-        <img src="assets/logo.png" alt="Innovine" onerror="this.style.display='none'">
+        <img src="assets/logo.png" alt="Innovine" style="width: 200px;" onerror="this.style.display='none'">
     </div>
 
     <div id="scr-intro" class="card">
-        <h1 style="color:var(--acc);">PHYSICS CORE</h1>
-        <p>Grade 8 Force & Motion Mastery</p>
-        <button class="btn-main" onclick="startQuiz()">Launch Mission</button>
+        <h1 style="color:var(--acc); margin-top: 0;">PHYSICS LAB</h1>
+        <p style="font-weight: 600;">Grade 8 Master Challenge</p>
+        <p style="font-size: 0.9rem; color: #64748b;">Responsive Test Environment Ready</p>
+        <button class="btn-main" onclick="startQuiz()">INITIALIZE</button>
     </div>
 
     <div id="scr-quiz" class="card">
-        <div style="display:flex; justify-content: space-between; font-size: 0.8rem; color: var(--acc);">
-            <span id="q-num">TEST 1/11</span>
-            <span id="score-now">SCORE: 0</span>
+        <div style="display:flex; justify-content: space-between; font-size: 0.75rem; color: var(--acc); font-weight: 700;">
+            <span id="q-num">STEP 1/11</span>
+            <span id="score-now">PTS: 0</span>
         </div>
         <div id="timer-track"><div id="timer-bar"></div></div>
-        <h3 id="q-txt" style="text-align:left; line-height:1.4;"></h3>
+        <h3 id="q-txt" style="text-align:left; line-height:1.4; margin-bottom: 20px;"></h3>
         <div id="options"></div>
-        <div id="feedback" style="display:none; margin-top:15px; padding:10px; background:rgba(245,158,11,0.1); border-left:4px solid var(--warn); font-size:0.85rem; text-align:left;"></div>
+        <div id="feedback" style="display:none; margin-top:15px; padding:12px; background:#fffbeb; border-radius: 8px; border-left:4px solid var(--warn); font-size:0.85rem; text-align:left; color: #92400e;"></div>
     </div>
 
     <div id="scr-result" class="card">
-        <h2>MISSION END</h2>
+        <h2 style="margin-top:0;">DATA RECAP</h2>
         <div id="res-score" style="font-size:3.5rem; font-weight:900; color:var(--acc);"></div>
-        <button class="btn-main" onclick="location.reload()">Reset System</button>
+        <p id="res-desc">Mission parameters complete.</p>
+        <button class="btn-main" onclick="location.reload()">RE-RUN TEST</button>
     </div>
 
     <script>
         // CREATE FLOATING SYMBOLS
-        const symbols = ['F=ma', 'v=d/t', 'G', 'ΣF', 'm', 'a', 'W=mg', 'Δ', 'Ω', 'μ'];
+        const symbols = ['F=ma', 'v=d/t', 'G', 'ΣF', 'm', 'a', 'W=mg', 'Δv', 'N', 'kg'];
         const container = document.getElementById('symbol-container');
-        for(let i=0; i<15; i++) {
+        for(let i=0; i<18; i++) {
             const div = document.createElement('div');
             div.className = 'symbol';
             div.innerText = symbols[Math.floor(Math.random()*symbols.length)];
             div.style.left = Math.random()*100 + 'vw';
             div.style.top = Math.random()*100 + 'vh';
-            div.style.fontSize = (Math.random()*20 + 20) + 'px';
+            div.style.fontSize = (Math.random()*15 + 18) + 'px';
             div.style.setProperty('--mx', (Math.random()*200 - 100) + 'px');
             div.style.setProperty('--my', (Math.random()*200 - 100) + 'px');
-            div.style.animation = `floatSymbol ${Math.random()*10 + 10}s linear infinite alternate`;
+            div.style.animation = `floatSymbol ${Math.random()*12 + 10}s linear infinite alternate`;
             container.appendChild(div);
         }
 
-        // TRANSITION LOGIC
+        // 5s AUTOMATIC TRANSITION
         setTimeout(() => {
-            document.getElementById('logo-overlay').style.opacity = '0';
+            const overlay = document.getElementById('logo-overlay');
+            overlay.style.opacity = '0';
             setTimeout(() => {
-                document.getElementById('logo-overlay').style.display = 'none';
+                overlay.style.display = 'none';
                 const intro = document.getElementById('scr-intro');
                 intro.style.display = 'block';
                 setTimeout(() => { intro.style.opacity = '1'; intro.style.transform = 'scale(1)'; }, 50);
@@ -140,18 +167,18 @@
         }, 5000);
 
         const pool = [
-            { q: "Team A (1500N) vs Team B (1550N). B player stops, reducing B force by 100N. Movement?", o: ["Towards B (50N)", "Stationary", "Towards A (50N)", "Towards A (100N)"], c: 2, e: "B is now 1450N. Resultant = 50N toward A." },
-            { q: "A rolling ball is hit perpendicular (90°). What changes?", o: ["Speed", "Mass", "Direction", "Volume"], c: 2, e: "90° force changes direction, not speed." },
-            { q: "Mass 60kg on Earth. Moon gravity is 1/6. Mass on Moon?", o: ["10kg", "60kg", "360kg", "0kg"], c: 1, e: "Mass is constant everywhere." },
-            { q: "Two spring balances in series. 10N weight hung. Top reading?", o: ["5N", "10N", "20N", "0N"], c: 1, e: "Tension is equal throughout the line." },
-            { q: "Rubbed scale attracting paper demonstrates:", o: ["Magnetic", "Electrostatic", "Muscular", "Friction"], c: 1, e: "Static charge is a non-contact force." },
-            { q: "Zero net force means:", o: ["No motion possible", "Constant speed possible", "Acceleration", "Gravity is zero"], c: 1, e: "Balanced forces = constant velocity." },
-            { q: "Force direction to stop a trolley moving toward you?", o: ["Same way", "Side way", "Opposite way", "Down"], c: 2, e: "Opposing force decelerates." },
-            { q: "Balanced force example?", o: ["Car speeding up", "Book at rest", "Falling apple", "Plane take-off"], c: 1, e: "Rest = balanced vertical forces." },
-            { q: "Squeezing dough changes its:", o: ["Mass", "Weight", "Shape", "Color"], c: 2, e: "Force deforms the dough." },
-            { q: "Mass 10kg on Earth (g=10). Weight?", o: ["10N", "1N", "100N", "100kg"], c: 2, e: "W = m * g = 100N." }
+            { q: "Team A pulls with 1500N. Team B pulls with 1550N. B player trips, reducing B force by 100N. Where does the rope go?", o: ["Towards B (50N)", "Stationary", "Towards A (50N)", "Towards A (100N)"], c: 2, e: "B is now 1450N. Resultant = 50N toward A." },
+            { q: "A ball rolls at constant speed. A force is applied perpendicular (90°). How does it change?", o: ["Faster", "Slower", "Direction changes", "Stops"], c: 2, e: "90° force changes direction, not speed magnitude." },
+            { q: "Mass 60kg on Earth. Moon gravity is 1/6th. Mass on Moon?", o: ["10kg", "60kg", "360kg", "0kg"], c: 1, e: "Mass is the amount of matter and is constant everywhere." },
+            { q: "Two spring balances in series. 10N weight hung at bottom. Top reading?", o: ["5N", "10N", "20N", "0N"], c: 1, e: "Tension is equal throughout the line." },
+            { q: "Attracting paper bits with a rubbed scale is what force?", o: ["Magnetic", "Electrostatic", "Muscular", "Friction"], c: 1, e: "A non-contact electrical force." },
+            { q: "If net force is zero, an object can be:", o: ["Accelerating", "Moving at constant speed", "Only at rest", "Gaining mass"], c: 1, e: "Balanced forces allow for uniform motion." },
+            { q: "Direction of force to stop a trolley moving toward you?", o: ["Same way", "Sideways", "Opposite way", "Downward"], c: 2, e: "Force must oppose velocity to stop it." },
+            { q: "Balanced force example?", o: ["Braking car", "Book still on table", "Falling rock", "Rising elevator"], c: 1, e: "Rest = balanced vertical forces." },
+            { q: "Stretching a spring changes its:", o: ["Mass", "Weight", "Shape and length", "Temperature"], c: 2, e: "Force causes deformation." },
+            { q: "Mass 10kg on Earth (g=10). Weight?", o: ["10N", "1N", "100N", "100kg"], c: 2, e: "Weight = m * g = 100N." }
         ];
-        const finalChallenge = { q: "ULTIMATE TEST: Pull 45N Right, 40N Left. Friction is 5N. Net Force?", o: ["5N Right", "0N (Balanced)", "10N Right", "5N Left"], c: 1, e: "Applied 5N Right - Friction 5N Left = 0N." };
+        const finalChallenge = { q: "ULTIMATE TEST: Pull 45N Right, 40N Left. Friction is 5N Left. Net Force?", o: ["5N Right", "0N (Balanced)", "10N Right", "5N Left"], c: 1, e: "Applied 5N Right - Friction 5N Left = 0N." };
 
         let session = [], current = 0, score = 0, timer, time = 45, lock = false;
 
@@ -169,7 +196,7 @@
             lock = false; time = 45;
             if(current === 10) document.getElementById('scr-quiz').classList.add('final-mode');
             document.getElementById('feedback').style.display = 'none';
-            document.getElementById('q-num').innerText = `TEST ${current+1}/11`;
+            document.getElementById('q-num').innerText = `STEP ${current+1}/11`;
             document.getElementById('q-txt').innerText = session[current].q;
             const box = document.getElementById('options');
             box.innerHTML = '';
@@ -197,8 +224,8 @@
             const correct = session[current].c;
             if(idx === correct) {
                 btn.classList.add('is-correct'); score += 10;
-                document.getElementById('score-now').innerText = "SCORE: " + score;
-                setTimeout(() => { current++; render(); }, 1000);
+                document.getElementById('score-now').innerText = "PTS: " + score;
+                setTimeout(() => { current++; render(); }, 1200);
             } else {
                 btn.classList.add('is-wrong');
                 reveal();
@@ -209,7 +236,7 @@
             const btns = document.querySelectorAll('.btn-opt');
             btns[session[current].c].classList.add('is-correct');
             const fb = document.getElementById('feedback');
-            fb.innerHTML = `<b>Correct:</b> ${session[current].o[session[current].c]}<br>${session[current].e}`;
+            fb.innerHTML = `<b>Solution:</b> ${session[current].o[session[current].c]}<br>${session[current].e}`;
             fb.style.display = 'block';
             setTimeout(() => { current++; render(); }, 4000);
         }
