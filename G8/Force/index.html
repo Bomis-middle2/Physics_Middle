@@ -118,4 +118,101 @@
 
         function startQuiz() {
             document.getElementById('intro-screen').classList.add('hidden');
-            document.getElementById('quiz-
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if(cur >= questions.length) return showFinal();
+            
+            active = true; attempts = 0; timeLeft = 45;
+            document.getElementById('explanation').classList.add('hidden');
+            document.getElementById('q-num').innerText = cur + 1;
+            
+            const data = questions[cur];
+            document.getElementById('q-text').innerText = data.q;
+            
+            const img = document.getElementById('q-img');
+            if(data.img) { img.src = data.img; img.classList.remove('hidden'); }
+            else { img.classList.add('hidden'); }
+
+            const box = document.getElementById('options-box');
+            box.innerHTML = '';
+            data.options.forEach((opt, i) => {
+                const b = document.createElement('button');
+                b.className = 'option-btn';
+                b.innerText = opt;
+                b.onclick = () => handleInput(i, b);
+                box.appendChild(b);
+            });
+            runTimer();
+        }
+
+        function runTimer() {
+            clearInterval(timer);
+            const bar = document.getElementById('timer-progress');
+            timer = setInterval(() => {
+                timeLeft--;
+                bar.style.width = (timeLeft / 45 * 100) + '%';
+                if(timeLeft <= 0) { clearInterval(timer); forceReveal(); }
+            }, 1000);
+        }
+
+        function handleInput(idx, btn) {
+            if(!active) return;
+            const correct = questions[cur].correct;
+
+            if(idx === correct) {
+                active = false; clearInterval(timer);
+                btn.classList.add('correct');
+                score += (attempts === 0) ? 10 : 5;
+                document.getElementById('score').innerText = score;
+                triggerStars(btn);
+                playSafe('snd-correct');
+                setTimeout(() => { cur++; showQuestion(); }, 1500);
+            } else {
+                attempts++;
+                btn.classList.add('wrong');
+                btn.disabled = true;
+                playSafe('snd-wrong');
+                document.body.style.boxShadow = "inset 0 0 50px rgba(231,76,60,0.4)";
+                setTimeout(() => document.body.style.boxShadow = "none", 400);
+                
+                if(attempts >= 2) { active = false; clearInterval(timer); forceReveal(); }
+            }
+        }
+
+        function forceReveal() {
+            const btns = document.querySelectorAll('.option-btn');
+            btns[questions[cur].correct].classList.add('correct');
+            const exp = document.getElementById('explanation');
+            exp.innerText = questions[cur].exp;
+            exp.classList.remove('hidden');
+            setTimeout(() => { cur++; showQuestion(); }, 4000);
+        }
+
+        function playSafe(id) {
+            const s = document.getElementById(id);
+            if(s) { s.currentTime = 0; s.play().catch(() => {}); }
+        }
+
+        function triggerStars(el) {
+            const r = el.getBoundingClientRect();
+            for(let i=0; i<12; i++) {
+                const s = document.createElement('div');
+                s.className = 'star'; s.innerText = '★';
+                s.style.left = (r.left + Math.random()*r.width) + 'px';
+                s.style.top = (r.top + Math.random()*r.height) + 'px';
+                document.body.appendChild(s);
+                setTimeout(() => s.remove(), 800);
+            }
+        }
+
+        function showFinal() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-stats').innerText = `Final Score: ${score}/100`;
+        }
+    </script>
+</body>
+</html>
