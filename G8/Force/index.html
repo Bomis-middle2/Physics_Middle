@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>G8 Physics | CBSE Force Mastery</title>
+    <title>G8 Physics | Force Mastery</title>
     <style>
         :root { 
             --p: #f8fafc; --text: #1e293b; --acc: #3b82f6; 
@@ -81,13 +81,13 @@
 
     <div id="scr-intro" class="card">
         <h1 style="color:var(--acc); margin-bottom: 5px;">CBSE PHYSICS</h1>
-        <p style="font-weight: 600; color: #64748b;">Force & Pressure Mastery</p>
+        <p style="font-weight: 600; color: #64748b;">Force & Pressure: Final Logic Pool</p>
         <div style="text-align: left; font-size: 0.85rem; background: #f1f5f9; padding: 15px; border-radius: 12px; margin: 15px 0;">
             • 10 Randomized Core Questions<br>
-            • 1 Randomized FINAL CHALLENGE<br>
-            • 2 Attempts | 45s Timer
+            • 1 Ultimate Logic Challenge (Set of 5)<br>
+            • 2 Attempts Per Question
         </div>
-        <button class="btn-main" onclick="startQuiz()">INITIALIZE</button>
+        <button class="btn-main" onclick="startQuiz()">START MISSION</button>
     </div>
 
     <div id="scr-quiz" class="card">
@@ -102,11 +102,11 @@
     </div>
 
     <div id="scr-result" class="card">
-        <h2 style="margin: 0;">REPORT GENERATED</h2>
+        <h2 style="margin: 0;">MISSION REPORT</h2>
         <div id="res-score" style="font-size:3.5rem; font-weight:900; color:var(--acc); margin: 10px 0;"></div>
         <p id="res-rank" style="font-weight: 800; color: var(--warn); margin: 5px 0;"></p>
         <p id="res-desc" style="margin-bottom: 20px; color: #64748b; font-size: 0.9rem;"></p>
-        <button class="btn-main" onclick="location.reload()">RE-SYNC SYSTEM</button>
+        <button class="btn-main" onclick="location.reload()">RE-INITIALIZE</button>
     </div>
 
     <script>
@@ -136,64 +136,83 @@
             }, 800);
         }, 5000);
 
-        const bigPool = [
-            { q: "Two toy cars: A pushed with 5N Right. B pushed with 10N Right and 5N Left. Effect?", o: ["A moves faster", "B moves slower", "Both have same resultant (5N Right)", "B stays stationary"], c: 2, e: "10N - 5N = 5N resultant for Car B." },
-            { q: "Forces: 10N North, 10N South, 5N West. Movement?", o: ["North", "South", "West", "None"], c: 2, e: "Vertical forces cancel; only 5N West remains." },
-            { q: "Rocket thrust equals gravity + air resistance. It will:", o: ["Fall", "Stop mid-air", "Move at constant speed", "Accelerate"], c: 2, e: "Balanced forces = constant velocity." },
-            { q: "Crate needs 50N to slide. People pull with 20N and 25N in same direction. Move?", o: ["Yes (45N)", "No (Resultant 45N < 50N)", "Yes (Any force)", "No (Must be equal)"], c: 1, e: "Static friction threshold not met." },
-            { q: "Error check: 'Force only moves objects at rest.' Why?", o: ["Stops only", "Changes shape only", "Can change speed/direction of moving objects", "Stationary objects ignore force"], c: 2, e: "Force affects motion in all states." },
-            { q: "Skydiver: gravity pull and upward drag. Classify:", o: ["Both contact", "Both non-contact", "Gravity non-contact; Drag contact", "Gravity contact; Drag non-contact"], c: 2, e: "Drag requires contact with air particles." },
-            { q: "Why is 'Magnetic Force' non-contact?", o: ["Metal based", "Acts without touch", "Vacuum only", "Friction strength"], c: 1, e: "Magnetic fields interact over distances." },
-            { q: "Which is NOT a contact force?", o: ["Muscular", "Frictional", "Electrostatic", "Tension"], c: 2, e: "Electrostatic attraction works without touch." },
-            { q: "Force preventing slipping while walking?", o: ["Gravitational", "Muscular", "Frictional", "Electrostatic"], c: 2, e: "Friction provides ground grip." },
-            { q: "Static scale Rubbed with silk held near copper wire. No attraction. Why?", o: ["Copper not magnetic", "Metals allow charge flow away", "Silk removes force", "Not rubbed enough"], c: 1, e: "Conductors dissipate static charge immediately." },
-            { q: "Mass 12kg on Earth. Weight (g=10)?", o: ["1.2 N", "12 N", "120 N", "120 kg"], c: 2, e: "W = 12 x 10 = 120N." },
-            { q: "Moon vs Earth: Which instrument reads differently?", o: ["Beam balance", "Spring balance", "Ruler", "Stopwatch"], c: 1, e: "Weight changes with gravity; mass doesn't." },
-            { q: "Gravity doubles on Planet X. Effect?", o: ["Mass doubles", "Both same", "Mass same, Weight doubles", "Both double"], c: 2, e: "Mass is constant; weight is gravity-dependent." },
-            { q: "Stone on spring balance submerged in water. Reading will:", o: ["Decrease (Buoyancy)", "Increase", "Stay same", "Zero"], c: 0, e: "Buoyant force acts upward." },
-            { q: "Why measure Weight in Newtons?", o: ["It is speed", "It is force of gravity", "KG is for liquids", "Newton discovered Moon"], c: 1, e: "Weight is the force gravity exerts on mass." },
-            { q: "Baker pressing dough. Primary effect?", o: ["Change speed", "Change direction", "Change shape/size", "Change mass"], c: 2, e: "Force deforms materials." },
-            { q: "Goalkeeper catches a ball. Effect?", o: ["Changing state of motion", "Changing direction", "Changing mass", "Non-contact"], c: 0, e: "Motion to rest transition." },
-            { q: "Compass needle deflects near magnet. Force can:", o: ["Change shape", "Change direction of motion", "Increase weight", "Stop vibration"], c: 1, e: "Magnetism alters the needle's orientation." },
-            { q: "Push heavy wall, no move. Why?", o: ["No force", "Wall no mass", "Resultant didn't overcome inertia", "Small objects only"], c: 2, e: "Net force insufficient to initiate motion." },
-            { q: "Same force on tennis vs bowling ball. Higher speed change?", o: ["Tennis (less mass)", "Bowling (larger)", "Both same", "Neither"], c: 0, e: "F=ma; less mass = more acceleration." }
+        // THE 30 CORE QUESTIONS
+        const corePool = [
+            { q: "Car A is pushed with 5N Right. Car B is pushed with 10N Right and 5N Left. Which statement is correct?", o: ["Car A moves faster", "Car B moves slower", "Both move with same resultant force (5N Right)", "Car B stays stationary"], c: 2, e: "Net force on B = 10 - 5 = 5 N. Both match." },
+            { q: "A block is acted upon by: F1=10N (North), F2=10N (South), and F3=5N (West). Direction of motion?", o: ["North", "South", "West", "No move"], c: 2, e: "Vertical forces cancel out, leaving 5N West." },
+            { q: "Upward thrust on a rocket is exactly equal to gravity and air resistance combined. The rocket will:", o: ["Fall back", "Stop mid-air", "Continue moving upward at constant speed", "Accelerate faster"], c: 2, e: "Zero net force means constant velocity (Newton's 1st Law)." },
+            { q: "A crate needs 50N to slide. Two people pull it in the same direction with 20N and 25N. Will it move?", o: ["Yes (45N)", "No (Resultant 45N < 50N)", "Yes (Any force)", "No (Forces must be equal)"], c: 1, e: "Resultant must exceed required force." },
+            { q: "Error check: 'Force can only move an object at rest.' Why is this wrong?", o: ["Force only stops objects", "Force only changes shape", "Force can change speed/direction of objects already in motion", "Force ignores stationary objects"], c: 2, e: "Force affects objects in any state of motion." },
+            { q: "Skydiver experiences downward gravity and upward air drag. Classify these forces:", o: ["Both contact", "Both non-contact", "Gravity non-contact; Air drag contact", "Gravity contact; Air drag non-contact"], c: 2, e: "Gravity acts at a distance; drag needs contact with air particles." },
+            { q: "Why is 'Magnetic Force' a non-contact force?", o: ["Magnets are metal", "Attracts/repels without physical touch", "Vacuum only", "Stronger than friction"], c: 1, e: "Magnetic fields exert force through space." },
+            { q: "Which is NOT a contact force?", o: ["Muscular force", "Frictional force", "Electrostatic force", "Tension in rope"], c: 2, e: "Electrostatic force is non-contact." },
+            { q: "Which contact force prevents us from slipping while walking?", o: ["Gravitational", "Muscular", "Frictional", "Electrostatic"], c: 2, e: "Friction provides ground grip." },
+            { q: "Rubbed plastic scale held near neutral copper wire shows no attraction. Why?", o: ["Copper not magnetic", "Metals allow charge flow away", "Silk removes force", "Not rubbed hard enough"], c: 1, e: "Conductors dissipate static charge immediately." },
+            { q: "An object has a mass of 12kg on Earth. What is its weight? (g=10)", o: ["1.2 N", "12 N", "120 N", "120 kg"], c: 2, e: "Weight = 12 x 10 = 120N." },
+            { q: "Which instrument will show a different reading on the Moon vs Earth?", o: ["Beam balance", "Spring balance", "Ruler", "Stopwatch"], c: 1, e: "Spring balance measures gravity-dependent weight." },
+            { q: "If you go to a planet where gravity is double Earth's:", o: ["Mass doubles, Weight same", "Mass same, Weight same", "Mass same, Weight doubles", "Both double"], c: 2, e: "Mass stays constant; Weight is proportional to gravity." },
+            { q: "A stone hanging from a spring balance is submerged in water. The reading will:", o: ["Decrease (Buoyancy)", "Increase", "Stay same", "Become zero"], c: 0, e: "Buoyant force acts upward, opposing gravity." },
+            { q: "Why is Weight measured in 'Newtons'?", o: ["It is speed", "It is a force exerted by gravity", "KG is only for liquids", "Newton discovered Moon"], c: 1, e: "Weight is a force, not just mass." },
+            { q: "Baker pressing down on a ball of dough. Primary effect of force?", o: ["Change speed", "Change direction", "Change shape and size", "Change mass"], c: 2, e: "Force deforms the dough." },
+            { q: "Goalkeeper catches a football and brings it to rest. Effect?", o: ["Changing state of motion", "Changing direction", "Changing mass", "Non-contact force"], c: 0, e: "Motion to rest transition." },
+            { q: "Compass needle deflects near a magnet. Shows force can:", o: ["Change shape", "Change direction of motion", "Increase weight", "Stop vibration"], c: 1, e: "Force changes the needle's alignment." },
+            { q: "Apply force to heavy wall, wall doesn't move. Why?", o: ["No force applied", "Wall no mass", "Resultant didn't overcome inertia/friction", "Only works on small objects"], c: 2, e: "Unbalanced force was insufficient." },
+            { q: "Same force on tennis ball and bowling ball. Greater change in speed?", o: ["Tennis ball (less mass)", "Bowling ball (larger)", "Both same", "Neither move"], c: 0, e: "Less mass = more acceleration (F=ma)." },
+            { q: "Team A pulls 1500N. Team B pulls 1550N. B player trips (-100N). Rope goes:", o: ["To B (50N)", "Stationary", "To A (50N)", "To A (100N)"], c: 2, e: "Team B becomes 1450N. Net = 50N to Team A." },
+            { q: "Ball rolls constant speed. Player kicks at exactly 90°. Effect?", o: ["Faster", "Stops", "Direction changes, speed same initially", "Moves backward"], c: 2, e: "Perpendicular force alters path direction." },
+            { q: "Astronaut mass 60kg on Earth. Mass on Moon (1/6th gravity)?", o: ["10 kg", "360 kg", "60 kg", "0 kg"], c: 2, e: "Mass remains constant everywhere." },
+            { q: "Two identical spring balances in series. 10N hung at bottom. Top reading?", o: ["5 N", "10 N", "20 N", "0 N"], c: 1, e: "Force is transmitted equally through the line." },
+            { q: "Paper bits 'jump' to a rubbed scale. Demonstrates:", o: ["Magnetic force", "Electrostatic acts at a distance", "Muscular transfer", "Friction pulling"], c: 1, e: "Static charge is a non-contact force." },
+            { q: "Student: 'Zero resultant force means object cannot move.' Incorrect because:", o: ["Always move", "Can move at constant speed", "Causes speed up", "Net force is never zero"], c: 1, e: "Balanced forces allow for uniform velocity." },
+            { q: "Stop a trolley moving toward you. Apply force in:", o: ["90° angle", "Same direction", "Opposite direction", "Downward"], c: 2, e: "Opposing motion causes deceleration." },
+            { q: "Which scenario describes 'Balanced Forces'?", o: ["Car speeding up", "Book lying still on table", "Ball falling", "Plane takeoff"], c: 1, e: "Static rest implies all forces are equal and opposite." },
+            { q: "Why apply force to dough?", o: ["Change motion", "Increase mass", "Change shape/size", "Increase gravity"], c: 2, e: "Forces cause physical deformation." },
+            { q: "Weight 120N on Earth (g=10). Weight on Planet X (g=5)?", o: ["60 N", "120 N", "24 N", "240 N"], c: 0, e: "Mass is 12kg. 12 x 5 = 60N." }
         ];
 
+        // THE 5 FINAL CHALLENGES
         const finalChallenges = [
             { 
-                q: "FINAL CHALLENGE: Team A and B are balanced in tug-of-war. Both suddenly pull twice as hard. Result?", 
-                o: ["Rope moves to A", "Resultant stays Zero, Tension increases", "Resultant doubles", "Rope moves to B"], 
+                q: "LOGIC CHALLENGE 1: Balanced tug-of-war. Both teams suddenly pull twice as hard. Result?", 
+                o: ["Rope moves to side with larger area", "Resultant stays Zero, Tension increases", "Resultant doubles", "Rope moves to A"], 
                 c: 1, 
-                e: "Forces still cancel (Resultant 0), but internal tension doubles, risking rope breakage." 
+                e: "Force increase is equal on both sides; they cancel out, but the rope is under higher stress." 
             },
             { 
-                q: "FINAL CHALLENGE: Astronaut in ISS orbits Earth. Spring balance shows 0N weight. Why?", 
-                o: ["No gravity in space", "Moving too fast", "State of Free Fall", "Vacuum effect"], 
+                q: "LOGIC CHALLENGE 2: Astronaut in ISS orbits Earth. Scale shows 0N. Gravity is actually 90% there. Why?", 
+                o: ["Zero gravity in space", "Moving too fast for weight", "Astronaut & ISS are in Free Fall", "Vacuum removes weight"], 
                 c: 2, 
-                e: "Both scale and astronaut fall at the same rate, removing the support force needed for a reading." 
+                e: "Both the scale and person fall together; there is no support force to create a reading." 
             },
             { 
-                q: "FINAL CHALLENGE: Pulling a brick on its broad side vs its narrow side. Higher friction?", 
-                o: ["Narrow side (Higher pressure)", "Broad side", "Same reading", "Depends on speed"], 
+                q: "LOGIC CHALLENGE 3: Brick pulled on broad side vs narrow side (same speed). Spring balance reading?", 
+                o: ["Higher on narrow side (Pressure)", "Higher on broad side", "The reading will be the same", "Depends on table length"], 
                 c: 2, 
-                e: "Friction depends on weight and surface nature, not contact area." 
+                e: "Friction depends on surface nature and weight, not the area of contact." 
             },
             { 
-                q: "FINAL CHALLENGE: Car travels constant 100km/h in a straight line. Resultant force?", 
-                o: ["100 N", "Equal to engine force", "Zero", "Depends on tire size"], 
+                q: "LOGIC CHALLENGE 4: Car traveling perfectly constant 100km/h in a straight line. Resultant force?", 
+                o: ["100 N", "Equal to engine's forward force", "Resultant is Zero", "Equal to total friction"], 
                 c: 2, 
-                e: "Constant speed/straight line means all forces (engine vs drag) are perfectly balanced." 
+                e: "Constant speed in a straight line means forward and backward forces are perfectly balanced." 
+            },
+            {
+                q: "LOGIC CHALLENGE 5: A balloon is squeezed. The air inside pushes back. What type of force is the internal air pressure?",
+                o: ["Non-contact Force", "Contact Force", "Gravitational Force", "Magnetic Force"],
+                c: 1,
+                e: "Air particles must collide with (contact) the inner surface of the balloon to exert pressure."
             }
         ];
 
         let session = [], current = 0, score = 0, timer, time = 45, lock = false, tries = 0;
-        let finalCorrect = false;
+        let finalStatus = 0; // 0: missed, 1: got it
 
         function startQuiz() {
-            let shuffled = [...bigPool].sort(() => 0.5 - Math.random());
-            session = shuffled.slice(0, 10);
-            let finalRandom = finalChallenges[Math.floor(Math.random()*finalChallenges.length)];
-            session.push(finalRandom);
+            let shuffledCore = [...corePool].sort(() => 0.5 - Math.random());
+            session = shuffledCore.slice(0, 10);
+            
+            let shuffledFinal = [...finalChallenges].sort(() => 0.5 - Math.random());
+            session.push(shuffledFinal[0]);
 
             document.getElementById('scr-intro').style.display = 'none';
             document.getElementById('scr-quiz').style.display = 'block';
@@ -205,7 +224,7 @@
             if(current >= session.length) return end();
             lock = false; tries = 0; time = 45;
             document.getElementById('feedback').style.display = 'none';
-            document.getElementById('q-num').innerText = (current === 10) ? "FINAL CHALLENGE" : `STEP ${current+1}/11`;
+            document.getElementById('q-num').innerText = (current === 10) ? "ULTIMATE CHALLENGE" : `STEP ${current+1}/11`;
             document.getElementById('q-txt').innerText = session[current].q;
             const box = document.getElementById('options');
             box.innerHTML = '';
@@ -234,7 +253,7 @@
                 lock = true; clearInterval(timer);
                 btn.classList.add('is-correct');
                 score += (tries === 0) ? 10 : 5;
-                if(current === 10) finalCorrect = true;
+                if(current === 10) finalStatus = 1;
                 document.getElementById('score-now').innerText = "PTS: " + score;
                 setTimeout(() => { current++; render(); }, 1200);
             } else {
@@ -242,7 +261,7 @@
                 btn.classList.add('is-wrong'); btn.disabled = true;
                 if(tries === 1) {
                     const fb = document.getElementById('feedback');
-                    fb.innerText = "HINT: Review the state of motion and force balancing.";
+                    fb.innerText = "HINT: Re-examine the interaction of forces in this state.";
                     fb.style.display = 'block';
                 } else {
                     lock = true; clearInterval(timer); reveal();
@@ -254,7 +273,7 @@
             const btns = document.querySelectorAll('.btn-opt');
             btns[session[current].c].classList.add('is-correct');
             const fb = document.getElementById('feedback');
-            fb.innerHTML = `<b>Correct Answer:</b> ${session[current].o[session[current].c]}<br>${session[current].e}`;
+            fb.innerHTML = `<b>Logic:</b> ${session[current].o[session[current].c]}<br>${session[current].e}`;
             fb.style.display = 'block';
             setTimeout(() => { current++; render(); }, 5000);
         }
@@ -269,22 +288,18 @@
             const rank = document.getElementById('res-rank');
             const desc = document.getElementById('res-desc');
             
-            // Mastery Scorecard Logic based on Final Challenge Correctness
-            if(finalCorrect) {
-                rank.innerText = "FORCE EXPERT";
-                desc.innerText = "You handled the complex Final Challenge scenarios with ease!";
-            } else if(score >= 80) {
-                rank.innerText = "PHYSICS PRACTITIONER";
-                desc.innerText = "Solid basics! Work on your conceptual depth for the final challenges.";
-            } else {
-                rank.innerText = "FORCE APPRENTICE";
-                desc.innerText = "Review the 'Resultant Force' section and try again.";
-            }
-
             if(score === 110) {
                 rank.innerText = "PHYSICS MASTER";
-                rank.style.color = "var(--s)";
-                desc.innerText = "Perfect sync! You have a deep, conceptual understanding of Grade 8 Physics.";
+                desc.innerText = "Unmatched conceptual depth! You are a master of Grade 8 Physics.";
+            } else if(finalStatus === 1) {
+                rank.innerText = "FORCE EXPERT";
+                desc.innerText = "Excellent handling of complex scenarios. You crushed the Final Challenge!";
+            } else if(score >= 60) {
+                rank.innerText = "PHYSICS PRACTITIONER";
+                desc.innerText = "You have a solid handle on the basics, but the complex logic needs review.";
+            } else {
+                rank.innerText = "FORCE APPRENTICE";
+                desc.innerText = "Review the 'Resultant Force' principles and try the mission again.";
             }
         }
     </script>
