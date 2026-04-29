@@ -207,4 +207,39 @@
         }
 
         function showCorrect() {
-            const btns = document
+            const btns = document.querySelectorAll('.btn-opt');
+            btns[quizSet[currentIdx].c].classList.add('is-correct');
+            const fb = document.getElementById('feedback-box');
+            fb.innerHTML = `<strong>Explanation:</strong> ${quizSet[currentIdx].e}`;
+            fb.classList.remove('hidden');
+            setTimeout(() => { currentIdx++; renderQuestion(); }, 4000);
+        }
+
+        function doSparkles(el) {
+            const r = el.getBoundingClientRect();
+            for(let i=0; i<8; i++) {
+                const s = document.createElement('div');
+                s.className = 'sparkle'; s.innerHTML = '★';
+                s.style.left = (r.left + Math.random()*r.width) + 'px';
+                s.style.top = r.top + 'px';
+                document.body.appendChild(s);
+                setTimeout(() => s.remove(), 800);
+            }
+        }
+
+        function endQuiz() {
+            document.getElementById('scr-quiz').classList.add('hidden');
+            document.getElementById('scr-result').classList.remove('hidden');
+            document.getElementById('res-score').innerText = score + "/110";
+            
+            let t, d;
+            if(score >= 90) { t = "Force Specialist"; d = "Masterful! You fully understand the interaction of forces."; }
+            else if(score >= 60) { t = "Junior Engineer"; d = "Good logic. Review the difference between mass and weight to perfect your score."; }
+            else { t = "Physics Trainee"; d = "Keep studying the non-contact forces and resultant math!"; }
+            
+            document.getElementById('res-title').innerText = t;
+            document.getElementById('res-desc').innerText = d;
+        }
+    </script>
+</body>
+</html>
