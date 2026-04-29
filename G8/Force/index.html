@@ -3,201 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade 8 | Science | Force Mastery</title>
+    <title>Grade 8 | Physics Mastery Interactive</title>
     <style>
-        :root { --p: #4a90e2; --s: #2ecc71; --e: #e74c3c; --bg: #f8fafc; --txt: #1e293b; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { margin: 0; background: var(--bg); color: var(--txt); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        :root {
+            --primary: #1e293b; --accent: #3b82f6; --success: #10b981;
+            --error: #ef4444; --bg: #f8fafc;
+        }
 
-        /* MANDATORY LOGO SCREEN (Fixed to never block) */
-        #logo-screen {
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { margin: 0; background: var(--bg); color: var(--primary); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+
+        /* SCIENTIFIC GRID BACKGROUND */
+        #blueprint-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+            background-color: #f1f5f9;
+            background-image: linear-gradient(#e2e8f0 1.5px, transparent 1.5px), linear-gradient(90deg, #e2e8f0 1.5px, transparent 1.5px);
+            background-size: 40px 40px; pointer-events: none;
+        }
+
+        /* LOGO OVERLAY */
+        #logo-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: white; display: flex; justify-content: center; align-items: center;
-            z-index: 9999; transition: opacity 0.5s ease;
+            z-index: 10000; transition: opacity 0.6s ease;
         }
-        #logo-screen img { width: 240px; max-width: 80%; }
+        #logo-overlay img { width: 220px; height: auto; }
 
-        /* THEME LAYER */
-        #theme-layer { position: fixed; top:0; left:0; width:100%; height:100%; z-index: 1; background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%); pointer-events: none; }
-
-        /* MAIN CARD */
+        /* INTERACTIVE CARD */
         .card {
-            width: 92%; max-width: 500px; background: white; padding: 30px;
-            border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            text-align: center; position: relative; z-index: 10;
+            width: 94%; max-width: 580px; background: rgba(255, 255, 255, 0.98);
+            padding: 30px; border-radius: 20px; border: 2px solid #cbd5e1;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            text-align: center; position: relative; z-index: 100;
         }
         .hidden { display: none !important; }
 
         /* UI ELEMENTS */
-        .stats { display: flex; justify-content: space-between; font-weight: 700; color: var(--p); margin-bottom: 10px; }
-        .timer-track { height: 8px; background: #eee; border-radius: 10px; margin: 15px 0; overflow: hidden; }
-        #timer-bar { height: 100%; background: var(--p); width: 100%; transition: width 1s linear; }
+        .header-box { display: flex; justify-content: space-between; font-weight: 800; color: var(--accent); margin-bottom: 12px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; }
+        .timer-track { height: 6px; background: #e2e8f0; border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
+        #timer-bar { height: 100%; background: var(--accent); width: 100%; transition: width 1s linear; }
 
-        .q-img { width: 100%; max-height: 180px; object-fit: contain; margin-bottom: 15px; border-radius: 12px; background: #f1f5f9; }
-        .q-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 25px; line-height: 1.4; color: #334155; }
+        .q-tag { display: inline-block; padding: 4px 12px; border-radius: 20px; background: #dbeafe; color: var(--accent); font-size: 0.75rem; font-weight: 700; margin-bottom: 15px; }
+        .q-text { font-size: 1.15rem; font-weight: 600; text-align: left; line-height: 1.4; margin-bottom: 25px; color: #0f172a; }
 
-        .grid { display: grid; gap: 12px; }
+        .options-grid { display: grid; gap: 10px; }
         .btn-opt {
-            padding: 16px; border: 2px solid #e2e8f0; border-radius: 14px;
-            background: white; cursor: pointer; transition: 0.2s; font-size: 1rem; text-align: left;
+            padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px;
+            background: white; cursor: pointer; transition: 0.2s;
+            font-size: 0.95rem; text-align: left; font-weight: 500;
         }
-        .btn-opt:hover:not(:disabled) { border-color: var(--p); background: #f0f7ff; }
-        .is-correct { background: var(--s) !important; color: white; border-color: var(--s); }
-        .is-wrong { background: var(--e) !important; color: white; border-color: var(--e); }
+        .btn-opt:hover:not(:disabled) { border-color: var(--accent); background: #f0f9ff; }
+        .is-correct { background: var(--success) !important; color: white; border-color: var(--success); }
+        .is-wrong { background: var(--error) !important; color: white; border-color: var(--error); }
 
-        .btn-go { padding: 18px 45px; background: var(--p); color: white; border: none; border-radius: 50px; font-size: 1.1rem; cursor: pointer; font-weight: 700; box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3); position: relative; z-index: 20; }
-        
-        #feedback { margin-top: 15px; padding: 15px; background: #fef3c7; border-radius: 12px; border-left: 5px solid #f59e0b; text-align: left; font-size: 0.9rem; }
+        .btn-prime {
+            padding: 18px 45px; background: var(--accent); color: white; border: none;
+            border-radius: 50px; font-size: 1.1rem; cursor: pointer; font-weight: 800;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
 
-        .sparkle { position: absolute; pointer-events: none; animation: fly 0.8s forwards; font-size: 24px; color: #facc15; }
-        @keyframes fly { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(1.5) translateY(-100px); opacity: 0; } }
+        #feedback-box { margin-top: 20px; padding: 15px; background: #fffbeb; border-radius: 12px; border-left: 5px solid #f59e0b; text-align: left; font-size: 0.9rem; line-height: 1.5; color: #92400e; }
+
+        /* SPARKLES */
+        .sparkle { position: absolute; pointer-events: none; animation: fly 0.8s forwards; font-size: 20px; color: #facc15; z-index: 200; }
+        @keyframes fly { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(1.5) translateY(-80px); opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <div id="theme-layer"></div>
+    <div id="blueprint-bg"></div>
 
-    <div id="logo-screen">
-        <img src="assets/logo.png" alt="Innovine Logo" onerror="this.style.display='none'">
+    <div id="logo-overlay">
+        <img src="assets/logo.png" alt="Innovine" onerror="this.style.display='none'">
     </div>
 
     <div id="scr-intro" class="card">
-        <h1 style="color:var(--p); margin-top:0;">Force Mastery</h1>
-        <p>Grade 8 | Science</p>
-        <p style="color:#64748b; margin-bottom:30px;">Identify, reason, and solve real-world force problems.</p>
-        <button class="btn-go" id="real-start-btn" onclick="init()">Start Quiz</button>
+        <h1 style="color:var(--accent); margin-bottom: 5px;">PHYSICS MASTERY</h1>
+        <p style="color: #64748b; font-weight: 600;">Grade 8 Comprehensive Challenge</p>
+        <div style="text-align: left; background: #f8fafc; padding: 15px; border-radius: 12px; margin: 20px 0; font-size: 0.9rem;">
+            <p>• 9 Random Concepts + 2 Final Challenges</p>
+            <p>• 45 Seconds per question</p>
+            <p>• reasoning-based learning</p>
+        </div>
+        <button class="btn-prime" onclick="initQuiz()">Start Mission</button>
     </div>
 
-    <div id="scr-game" class="card hidden">
-        <div class="stats">
-            <span>Q: <span id="q-now">1</span>/10</span>
-            <span id="score-now">Score: 0</span>
+    <div id="scr-quiz" class="card hidden">
+        <div class="header-box">
+            <span id="q-number-display">QUESTION 1/11</span>
+            <span id="score-display">SCORE: 0</span>
         </div>
         <div class="timer-track"><div id="timer-bar"></div></div>
-        <div id="game-body">
-            <img id="q-image" class="q-img hidden" src="">
+        <div id="q-content">
+            <div id="q-category" class="q-tag">FORCE</div>
             <div id="q-txt" class="q-text"></div>
-            <div id="options" class="grid"></div>
+            <div id="options-box" class="options-grid"></div>
         </div>
-        <div id="feedback" class="hidden"></div>
+        <div id="feedback-box" class="hidden"></div>
     </div>
 
     <div id="scr-result" class="card hidden">
-        <h2 id="res-msg">Loading Result...</h2>
-        <p id="res-score" style="font-size:2.2rem; margin:20px 0; font-weight:800; color:var(--p);"></p>
-        <p id="res-comment" style="margin-bottom:30px; color:#64748b;"></p>
-        <button class="btn-go" onclick="location.reload()">Retry Now</button>
+        <h2 id="res-title">Mission Complete</h2>
+        <p id="res-score" style="font-size:3rem; font-weight:900; margin:10px 0; color:var(--accent);"></p>
+        <p id="res-desc" style="color:#64748b; line-height:1.5; margin-bottom:25px;"></p>
+        <button class="btn-prime" onclick="location.reload()">Restart Challenge</button>
     </div>
 
     <audio id="aud-right" src="assets/correct.mp3"></audio>
     <audio id="aud-wrong" src="assets/wrong.mp3"></audio>
 
     <script>
-        const db = [
-            { q: "Brother A pushes left (50N), Brother B pushes right (30N). What is the resultant force?", o: ["80N to the right", "20N to the left", "20N to the right", "0N"], c: 1, e: "Subtract opposite forces: 50N - 30N = 20N. Force follows the stronger push (Left)." },
-            { q: "Which effect of force is demonstrated when squeezing a balloon or kneading dough?", o: ["Change in state of motion", "Change in direction", "Change in shape and size", "Increase in speed"], c: 2, i: "assets/q2.png", e: "Force applied to soft objects results in physical deformation (shape/size change)." },
-            { q: "A block has a mass of 10 kg. Taking gravity as 10 m/s², what is its weight?", o: ["10 N", "1 N", "100 N", "0 N"], c: 2, e: "Weight = Mass × Gravity. 10 kg × 10 m/s² = 100 Newtons." },
-            { q: "Iron nails jumping toward a magnet before touching is an example of:", o: ["Contact Force", "Non-contact Force", "Muscular Force", "Frictional Force"], c: 1, e: "Magnetic force is non-contact as it acts through a field without physical touch." },
-            { q: "A student says 'Mass and Weight are the same, both measured in kg.' Correct them:", o: ["Mass is in Newtons.", "Mass is in kg; Weight is in Newtons.", "Weight is in meters.", "No error."], c: 1, e: "Mass is amount of matter (kg); Weight is the pull of gravity (Newtons)." },
-            { q: "Why pull hands back when catching a fast cricket ball?", o: ["To increase force", "To reduce impact force by increasing time", "To stop ball instantly", "For style"], c: 1, e: "Increasing the time of the catch reduces the rate of momentum change, softening the impact." },
-            { q: "Astronaut weight changes on the Moon, but mass stays the same because:", o: ["Space has no air", "Mass is matter; weight depends on gravity", "Gravity is the same everywhere", "Mass depends on speed"], c: 1, e: "Mass is constant matter; weight varies based on the local gravitational pull." },
-            { q: "What does a spring balance primarily measure?", o: ["Mass", "Weight", "Volume", "Density"], c: 1, i: "assets/q8.png", e: "Spring balances measure the force of gravity pulling on an object (Weight)." },
-            { q: "Identify the odd one out based on the type of force:", o: ["Magnetic", "Electrostatic", "Frictional", "Gravitational"], c: 2, e: "Friction is a contact force; the others are non-contact forces." },
-            { q: "To stop a ball rolling right, force must be applied towards the:", o: ["Right", "Left", "Upward", "Downward"], c: 1, e: "Force must be applied in the opposite direction of motion to stop an object." }
+        const rawPool = [
+            // Chapter 1: Force
+            { tag: "FORCE", q: "Team A pulls with 1200 N. Team B pulls with 1250 N. A player from B slips, reducing force by 80 N. Which way will the rope move?", o: ["Towards Team B with 50 N", "Towards Team B with 30 N", "Towards Team A with 30 N", "Stationary"], c: 2, e: "New Team B = 1170N (1250-80). Net Force = 1200 - 1170 = 30 N towards Team A." },
+            { tag: "FORCE", q: "A ball rolls on a frictionless surface. A force is applied exactly perpendicular (90°) to its motion. What is the effect?", o: ["Speed increases", "Speed decreases", "Speed same, direction changes", "Immediately stops"], c: 2, e: "Force perpendicular to motion acts as centripetal force, changing direction only." },
+            { tag: "FORCE", q: "An object weighs 600 N on Earth (g=10). On a planet with 1/3 gravity, what are its Mass and Weight?", o: ["Mass=20kg, Weight=200N", "Mass=60kg, Weight=200N", "Mass=60kg, Weight=600N", "Mass=20kg, Weight=600N"], c: 1, e: "Mass (60kg) is constant. New Weight = 600/3 = 200 N." },
+            { tag: "FORCE", q: "A plastic comb rubbed on hair attracts a water stream. This demonstrates:", o: ["Magnetic force", "Gravitational pull", "Electrostatic force", "Air pressure"], c: 2, e: "Friction transfers electrons, creating a non-contact electrostatic force." },
+            // Chapter 2: Pressure
+            { tag: "PRESSURE", q: "Three containers (Water, Oil, Mercury) are filled to the same height. Mercury is densest. Where is base pressure highest?", o: ["Oil", "Mercury", "All same", "Depends on shape"], c: 1, e: "Pressure = hρg. Since height is same, the fluid with higher density (Mercury) exerts more pressure." },
+            { tag: "PRESSURE", q: "Why are the foundations of high-rise buildings made very wide?", o: ["Save materials", "Reduce pressure on ground", "Look taller", "Increase friction"], c: 1, e: "P = Force/Area. Increasing Area reduces Pressure, preventing the building from sinking." },
+            { tag: "PRESSURE", q: "A fountain pen leaks at a mountain summit. Why?", o: ["Low temperature", "Low atmospheric pressure", "Stronger gravity", "Magnetic rocks"], c: 1, e: "External pressure drops; air inside the pen expands and pushes the ink out." },
+            // Chapter 3: Friction
+            { tag: "FRICTION", q: "To make an underwater drone move faster, which modification is most effective?", o: ["Bright color", "Streamlined shape", "Increase weight", "Rough surface"], c: 1, e: "Streamlining reduces 'drag' (fluid friction) by allowing water to flow smoothly." },
+            { tag: "FRICTION", q: "A student says: 'Oil can reduce machine friction to zero.' Is this true?", o: ["Yes, with enough oil", "No, irregularities always remain", "No, oil increases friction", "Depends on speed"], c: 1, e: "Microscopic irregularities always exist; lubricants reduce but never eliminate friction." },
+            // Chapter 4: Sound
+            { tag: "SOUND", q: "Guitar string vibrates 400 times in 2s. Drum vibrates 100 times in 2s. Compare them:", o: ["Drum has higher pitch", "Guitar has higher pitch (200 Hz)", "Same pitch", "Guitar has 0.5 Hz frequency"], c: 1, e: "Frequency = 400/2 = 200Hz. Higher frequency = higher pitch." },
+            { tag: "SOUND", q: "Why is an approaching train heard clearly through a steel rail vs through air?", o: ["Steel is magnetic", "Sound travels faster in solids", "Air is too noisy", "Rail acts as microphone"], c: 1, e: "Densely packed particles in solids transfer vibrations much faster than in gases." },
+            // Chapter 5: Light
+            { tag: "LIGHT", q: "An archer sees a fish in water. To hit it, where should he aim?", o: ["Directly at the fish", "Slightly below", "Slightly above", "Aiming doesn't matter"], c: 1, e: "Refraction makes the fish appear shallower (Virtual Image) than its actual position." },
+            // Chapter 6: Electricity
+            { tag: "ELECTRICITY", q: "How can you increase the strength of an electromagnet to pick up more clips?", o: ["Use plastic core", "Shorten wire", "Increase turns or current", "Reverse battery"], c: 2, e: "Electromagnet strength is proportional to the number of coils and the current flow." },
+            // Chapter 7: Natural Phenomena
+            { tag: "NATURAL PHENOMENA", q: "Touching a doorknob after walking on carpet causes a 'zap'. Why?", o: ["Knob was plugged in", "Static discharge after friction", "Magnetic carpet", "Electric eel effect"], c: 1, e: "Friction transfers electrons to you; metal allows them to discharge quickly." }
         ];
 
-        let idx = 0, score = 0, clock, time = 45, tries = 0, lock = false;
+        // The "Final Challenge" high-difficulty items
+        const finalPool = [
+            { tag: "FINAL CHALLENGE", q: "If two identical spring balances are connected in a line (series) and a 5 kg weight is hung from the bottom, the top balance reads:", o: ["2.5 kg", "5 kg", "0 kg", "10 kg"], c: 1, e: "Tension is identical throughout a series connection; both balances feel the full load." },
+            { tag: "FINAL CHALLENGE", q: "A 2kg toy car is pulled left with 10N and right with 10N. A third force of 2N is added to the right. The resultant is:", o: ["22 N right", "0 N", "2 N right", "2 N left"], c: 2, e: "Balanced forces (10N-10N) cancel; the 2N force becomes the net unbalanced force." },
+            { tag: "FINAL CHALLENGE", q: "A metal sphere stops and dents a clay block. Which effect of force is NOT present?", o: ["Change in speed", "Change in shape", "Change in mass", "Contact force"], c: 2, e: "Force can change speed/shape but cannot alter the amount of matter (mass)." }
+        ];
 
-        // FORCE REMOVAL OF LOGO
+        let quizSet = [], currentIdx = 0, score = 0, timer, timeLeft = 45, tries = 0, locked = false;
+
+        // Branding Removal
         setTimeout(() => {
-            const ls = document.getElementById('logo-screen');
-            if(ls) {
-                ls.style.opacity = '0';
-                ls.style.zIndex = '-100'; // Move to back so buttons work
-                ls.style.pointerEvents = 'none'; // Disable all clicks on logo
-                setTimeout(() => ls.classList.add('hidden'), 500);
-            }
+            const overlay = document.getElementById('logo-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.display = 'none', 600);
         }, 5000);
 
-        function init() {
+        function initQuiz() {
+            // Shuffle and pick 9 from raw, then add 2 from final challenge
+            const shuffledRaw = [...rawPool].sort(() => 0.5 - Math.random());
+            const shuffledFinal = [...finalPool].sort(() => 0.5 - Math.random());
+            quizSet = [...shuffledRaw.slice(0, 9), ...shuffledFinal.slice(0, 2)];
+            
             document.getElementById('scr-intro').classList.add('hidden');
-            document.getElementById('scr-game').classList.remove('hidden');
-            render();
+            document.getElementById('scr-quiz').classList.remove('hidden');
+            renderQuestion();
         }
 
-        function render() {
-            if(idx >= db.length) return result();
-            lock = false; tries = 0; time = 45;
-            document.getElementById('feedback').classList.add('hidden');
-            document.getElementById('q-now').innerText = idx + 1;
+        function renderQuestion() {
+            if(currentIdx >= quizSet.length) return endQuiz();
+            locked = false; tries = 0; timeLeft = 45;
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('q-number-display').innerText = `QUESTION ${currentIdx + 1}/11`;
             
-            const item = db[idx];
-            document.getElementById('q-txt').innerText = item.q;
-            const img = document.getElementById('q-image');
-            if(item.i) { img.src = item.i; img.classList.remove('hidden'); }
-            else { img.classList.add('hidden'); }
+            const q = quizSet[currentIdx];
+            document.getElementById('q-category').innerText = q.tag;
+            document.getElementById('q-category').style.background = (q.tag === "FINAL CHALLENGE") ? "#fee2e2" : "#dbeafe";
+            document.getElementById('q-category').style.color = (q.tag === "FINAL CHALLENGE") ? "#ef4444" : "#3b82f6";
+            document.getElementById('q-txt').innerText = q.q;
 
-            const box = document.getElementById('options');
+            const box = document.getElementById('options-box');
             box.innerHTML = '';
-            item.o.forEach((t, i) => {
+            q.o.forEach((txt, i) => {
                 const b = document.createElement('button');
-                b.className = 'btn-opt'; b.innerText = t;
-                b.onclick = () => check(i, b);
+                b.className = 'btn-opt'; b.innerText = txt;
+                b.onclick = () => checkAnswer(i, b);
                 box.appendChild(b);
             });
-            startClock();
+            startTimer();
         }
 
-        function startClock() {
-            clearInterval(clock);
+        function startTimer() {
+            clearInterval(timer);
             const bar = document.getElementById('timer-bar');
-            clock = setInterval(() => {
-                time--;
-                bar.style.width = (time/45*100) + '%';
-                if(time <= 0) { clearInterval(clock); reveal(); }
+            timer = setInterval(() => {
+                timeLeft--;
+                bar.style.width = (timeLeft/45*100) + '%';
+                if(timeLeft <= 0) { clearInterval(timer); showCorrect(); }
             }, 1000);
         }
 
-        function check(i, btn) {
-            if(lock) return;
-            const correct = db[idx].c;
+        function checkAnswer(idx, btn) {
+            if(locked) return;
+            const correct = quizSet[currentIdx].c;
 
-            if(i === correct) {
-                lock = true; clearInterval(clock);
+            if(idx === correct) {
+                locked = true; clearInterval(timer);
                 btn.classList.add('is-correct');
                 score += (tries === 0) ? 10 : 5;
-                document.getElementById('score-now').innerText = "Score: " + score;
-                play('aud-right'); fx(btn);
-                setTimeout(() => { idx++; render(); }, 1500);
+                document.getElementById('score-display').innerText = "SCORE: " + score;
+                playSfx('aud-right', () => {
+                    setTimeout(() => { currentIdx++; renderQuestion(); }, 400);
+                });
+                doSparkles(btn);
             } else {
                 tries++;
                 btn.classList.add('is-wrong'); btn.disabled = true;
-                play('aud-wrong');
-                if(tries === 1) {
-                    const fb = document.getElementById('feedback');
-                    fb.innerText = "Hint: Re-read carefully. Think of non-contact vs contact or force directions.";
-                    fb.classList.remove('hidden');
-                } else {
-                    lock = true; clearInterval(clock); reveal();
-                }
+                playSfx('aud-wrong', () => {
+                    if(tries === 1) {
+                        const fb = document.getElementById('feedback-box');
+                        fb.innerText = "Hint: Re-evaluate the scientific principle or math logic involved.";
+                        fb.classList.remove('hidden');
+                    } else {
+                        locked = true; clearInterval(timer); showCorrect();
+                    }
+                });
             }
         }
 
-        function reveal() {
+        function showCorrect() {
             const btns = document.querySelectorAll('.btn-opt');
-            btns[db[idx].c].classList.add('is-correct');
-            const fb = document.getElementById('feedback');
-            fb.innerText = "Explanation: " + db[idx].e;
+            btns[quizSet[currentIdx].c].classList.add('is-correct');
+            const fb = document.getElementById('feedback-box');
+            fb.innerHTML = `<strong>Answer: ${quizSet[currentIdx].o[quizSet[currentIdx].c]}</strong><br>${quizSet[currentIdx].e}`;
             fb.classList.remove('hidden');
-            setTimeout(() => { idx++; render(); }, 4000);
+            setTimeout(() => { currentIdx++; renderQuestion(); }, 5000);
         }
 
-        function play(id) { 
-            const s = document.getElementById(id); 
-            if(s) { s.currentTime=0; s.play().catch(()=>{}); }
+        function playSfx(id, cb) {
+            const a = document.getElementById(id);
+            if(a) {
+                a.currentTime = 0; a.onended = cb;
+                a.play().catch(() => setTimeout(cb, 800));
+            } else cb();
         }
 
-        function fx(el) {
+        function doSparkles(el) {
             const r = el.getBoundingClientRect();
             for(let i=0; i<10; i++) {
                 const s = document.createElement('div');
@@ -209,19 +254,20 @@
             }
         }
 
-        function result() {
-            document.getElementById('scr-game').classList.add('hidden');
+        function endQuiz() {
+            document.getElementById('scr-quiz').classList.add('hidden');
             document.getElementById('scr-result').classList.remove('hidden');
-            const p = (score / 100) * 100;
-            document.getElementById('res-score').innerText = score + "/100";
+            const p = (score/110)*100;
+            document.getElementById('res-score').innerText = score + "/110";
             
-            let m, c;
-            if(p >= 75) { m = "Good job!"; c = "#2ecc71"; }
-            else if(p >= 40) { m = "Review this chapter and try again."; c = "#f59e0b"; }
-            else { m = "Let's practise more."; c = "#e74c3c"; }
+            let t, d, c;
+            if(p >= 75) { t = "Force Specialist"; d = "Exceptional reasoning! You’ve mastered Grade 8 Physics mechanics."; c = "#10b981"; }
+            else if(p >= 40) { t = "Junior Engineer"; d = "Good progress. Review refraction and liquid pressure to reach Specialist rank."; c = "#f59e0b"; }
+            else { t = "Physics Trainee"; d = "Let's apply some more force to your studies. Try re-reading the chapters."; c = "#ef4444"; }
             
-            document.getElementById('res-msg').innerText = m;
-            document.getElementById('res-msg').style.color = c;
+            document.getElementById('res-title').innerText = t;
+            document.getElementById('res-title').style.color = c;
+            document.getElementById('res-desc').innerText = d;
         }
     </script>
 </body>
