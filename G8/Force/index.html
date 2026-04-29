@@ -10,7 +10,7 @@
             --error: #dc2626; --bg: #f8fafc;
         }
 
-        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        * { box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
         
         body { 
             margin: 0; background: var(--bg); color: var(--primary); 
@@ -19,6 +19,14 @@
             touch-action: manipulation;
         }
 
+        /* FAIL-SAFE LOGO SCREEN */
+        #logo-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: #ffffff; display: flex; justify-content: center; align-items: center;
+            z-index: 10000; opacity: 1; transition: opacity 0.8s ease;
+        }
+        #logo-overlay img { width: 180px; height: auto; display: block; }
+
         #blueprint-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
             background-color: #f1f5f9;
@@ -26,37 +34,26 @@
             background-size: 30px 30px; pointer-events: none;
         }
 
-        /* LOGO OVERLAY - Fixed to ensure it clears */
-        #logo-overlay {
-            position: fixed; inset: 0;
-            background: white; display: flex; justify-content: center; align-items: center;
-            z-index: 9999; opacity: 1; transition: opacity 0.8s ease-out;
-        }
-        #logo-overlay img { width: 180px; height: auto; }
-
         .card {
-            width: 90%; max-width: 500px; background: white;
+            width: 90%; max-width: 480px; background: white;
             padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
             text-align: center; position: relative; z-index: 100;
-            transition: transform 0.3s ease;
         }
 
-        .hidden { display: none !important; visibility: hidden; pointer-events: none; }
+        .hidden { display: none !important; }
 
-        /* Mobile specific adjustments */
         .q-text { font-size: 1.1rem; font-weight: 700; text-align: left; line-height: 1.4; margin-bottom: 20px; color: #1e293b; }
-        
         .options-grid { display: grid; gap: 10px; }
         
         .btn-opt {
-            padding: 14px 18px; border: 2px solid #f1f5f9; border-radius: 12px;
+            padding: 15px; border: 2px solid #f1f5f9; border-radius: 12px;
             background: white; cursor: pointer; font-size: 0.95rem; 
             text-align: left; font-weight: 600; color: #475569;
             -webkit-tap-highlight-color: transparent;
         }
         
-        .btn-opt:active { background: #f1f5f9; transform: scale(0.98); }
+        .btn-opt:active { background: #f1f5f9; }
 
         .is-correct { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
         .is-wrong { background: var(--error) !important; color: white !important; border-color: var(--error) !important; }
@@ -64,7 +61,7 @@
         .btn-prime {
             padding: 16px 40px; background: var(--accent); color: white; border: none;
             border-radius: 14px; font-size: 1rem; cursor: pointer; font-weight: 800;
-            box-shadow: 0 8px 15px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
         }
 
         .timer-track { height: 4px; background: #f1f5f9; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
@@ -78,14 +75,16 @@
     <div id="blueprint-bg"></div>
 
     <div id="logo-overlay">
-        <img src="assets/logo.png" alt="Innovine" onerror="this.src='https://via.placeholder.com/150?text=Innovine'">
+        <img src="assets/logo.png" alt="Innovine" id="logo-img">
     </div>
 
     <div id="scr-intro" class="card hidden">
-        <h2 style="color:var(--accent); margin:0 0 5px 0;">FORCE MASTERY</h2>
-        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">G8 Physics Challenge</p>
-        <div style="text-align: left; background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 0.8rem; color: #475569;">
-            • 10 Core Force Questions<br>• 1 Final Master Task<br>• 45s per Challenge
+        <h2 style="color:var(--accent); margin:0 0 10px 0;">FORCE MASTER</h2>
+        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Grade 8 Physics CBQ</p>
+        <div style="text-align: left; background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 25px; font-size: 0.85rem; color: #475569; line-height: 1.5;">
+            • 10 Core Force Questions<br>
+            • 1 Final Challenge Question<br>
+            • 45s Timer per Task
         </div>
         <button class="btn-prime" onclick="initQuiz()">START MISSION</button>
     </div>
@@ -128,19 +127,20 @@
 
         let quizSet = [], currentIdx = 0, score = 0, timer, timeLeft = 45, locked = false;
 
-        // LOAD LOGIC - Explicitly handles screen switching
-        window.addEventListener('DOMContentLoaded', () => {
+        // NEW FAIL-SAFE LOADING LOGIC
+        function clearOverlay() {
             const overlay = document.getElementById('logo-overlay');
             const intro = document.getElementById('scr-intro');
             
+            overlay.style.opacity = '0';
             setTimeout(() => {
-                overlay.style.opacity = '0';
-                setTimeout(() => {
-                    overlay.style.display = 'none'; // Completely remove
-                    intro.classList.remove('hidden'); // Show intro
-                }, 800); 
-            }, 2500); 
-        });
+                overlay.style.display = 'none'; // Force removal from DOM
+                intro.classList.remove('hidden'); // Force show Intro
+            }, 850);
+        }
+
+        // Auto-run clearOverlay after 3 seconds regardless of window load status
+        setTimeout(clearOverlay, 3000);
 
         function initQuiz() {
             quizSet = [...corePool.sort(() => 0.5 - Math.random()).slice(0, 10), ...finalPool];
@@ -208,7 +208,7 @@
             document.getElementById('scr-quiz').classList.add('hidden');
             document.getElementById('scr-result').classList.remove('hidden');
             document.getElementById('res-score').innerText = score + "/110";
-            document.getElementById('res-desc').innerText = score >= 90 ? "Physics Expert!" : "Keep practicing your force concepts.";
+            document.getElementById('res-desc').innerText = score >= 90 ? "Excellent Physics Knowledge!" : "Good effort. Review force resultants.";
         }
     </script>
 </body>
