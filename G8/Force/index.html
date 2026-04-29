@@ -3,56 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade 8 | Science | Force</title>
+    <title>Grade 8 | Science | Force Mastery</title>
     <style>
         :root { --p: #4a90e2; --s: #2ecc71; --e: #e74c3c; --bg: #f8fafc; --txt: #1e293b; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { margin: 0; background: var(--bg); color: var(--txt); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+
+        /* Branding Overlay - 5 Seconds */
+        #logo-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; display: flex; justify-content: center; align-items: center;
+            z-index: 10000; transition: opacity 0.8s ease;
+            pointer-events: all; /* Blocks clicks initially */
+        }
+        #logo-screen img { width: 240px; max-width: 80%; }
 
         /* Background Theme */
         #canvas-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%); }
 
-        /* Branding Overlay */
-        #logo-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; display: flex; justify-content: center; align-items: center;
-            z-index: 1000; transition: opacity 0.8s ease;
-        }
-        #logo-screen img { width: 240px; max-width: 80%; }
-
-        /* Container */
+        /* Main Card */
         .card {
-            width: 92%; max-width: 500px; background: white; padding: 25px;
-            border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            text-align: center; position: relative; z-index: 10;
+            width: 92%; max-width: 500px; background: white; padding: 30px;
+            border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center; position: relative; z-index: 100;
         }
         .hidden { display: none !important; }
 
         /* UI Elements */
-        .stats { display: flex; justify-content: space-between; font-weight: 700; color: var(--p); margin-bottom: 10px; font-size: 0.9rem; }
-        .timer-track { height: 6px; background: #eee; border-radius: 10px; margin: 15px 0; overflow: hidden; }
+        .stats { display: flex; justify-content: space-between; font-weight: 700; color: var(--p); margin-bottom: 10px; }
+        .timer-track { height: 8px; background: #eee; border-radius: 10px; margin: 15px 0; overflow: hidden; }
         #timer-bar { height: 100%; background: var(--p); width: 100%; transition: width 1s linear; }
 
-        .q-img { width: 100%; max-height: 160px; object-fit: contain; margin-bottom: 15px; border-radius: 10px; background: #f1f5f9; }
-        .q-text { font-size: 1.15rem; font-weight: 600; margin-bottom: 20px; line-height: 1.4; color: #334155; }
+        .q-img { width: 100%; max-height: 180px; object-fit: contain; margin-bottom: 15px; border-radius: 12px; background: #f1f5f9; }
+        .q-text { font-size: 1.25rem; font-weight: 600; margin-bottom: 25px; line-height: 1.4; }
 
-        .grid { display: grid; gap: 10px; }
+        .grid { display: grid; gap: 12px; }
         .btn-opt {
-            padding: 14px; border: 2px solid #e2e8f0; border-radius: 12px;
-            background: white; cursor: pointer; transition: 0.2s; font-size: 1rem; text-align: left;
+            padding: 16px; border: 2px solid #e2e8f0; border-radius: 14px;
+            background: white; cursor: pointer; transition: 0.2s; font-size: 1.05rem; text-align: left;
         }
-        .btn-opt:hover:not(:disabled) { border-color: var(--p); background: #f8fafc; }
+        .btn-opt:hover:not(:disabled) { border-color: var(--p); background: #f0f7ff; }
         .is-correct { background: var(--s) !important; color: white; border-color: var(--s); }
         .is-wrong { background: var(--e) !important; color: white; border-color: var(--e); }
 
-        .btn-go { padding: 16px 40px; background: var(--p); color: white; border: none; border-radius: 50px; font-size: 1.1rem; cursor: pointer; font-weight: 700; margin-top: 10px; transition: transform 0.2s; }
-        .btn-go:hover { transform: scale(1.05); }
+        .btn-go { padding: 18px 45px; background: var(--p); color: white; border: none; border-radius: 50px; font-size: 1.2rem; cursor: pointer; font-weight: 700; box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3); }
+        
+        #feedback { margin-top: 15px; padding: 15px; background: #fef3c7; border-radius: 12px; border-left: 5px solid #f59e0b; text-align: left; font-size: 0.95rem; }
 
-        #feedback { margin-top: 15px; padding: 12px; background: #fef3c7; border-radius: 10px; border-left: 4px solid #f59e0b; text-align: left; font-size: 0.9rem; }
-
-        /* Animations */
-        .sparkle { position: absolute; pointer-events: none; animation: fly 0.7s ease-out forwards; font-size: 20px; color: #facc15; }
-        @keyframes fly { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(1.5) translateY(-80px); opacity: 0; } }
+        .sparkle { position: absolute; pointer-events: none; animation: fly 0.8s forwards; font-size: 24px; color: #facc15; }
+        @keyframes fly { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(1.5) translateY(-100px); opacity: 0; } }
     </style>
 </head>
 <body>
@@ -60,23 +59,23 @@
     <div id="canvas-bg"></div>
 
     <div id="logo-screen">
-        <img src="assets/logo.png" alt="Innovine" onerror="this.parentNode.style.display='none'">
+        <img src="assets/logo.png" alt="Innovine" onerror="this.style.display='none'">
     </div>
 
     <div id="scr-intro" class="card">
-        <h1 style="color:var(--p); margin-top:0;">Force</h1>
-        <p>Science | Grade 8</p>
-        <p style="color:#64748b; margin-bottom:25px;">Test your ability to apply force concepts to real-world scenarios.</p>
+        <h1 style="color:var(--p); margin-top:0;">Force & Pressure</h1>
+        <p>Grade 8 | Science</p>
+        <p style="color:#64748b; margin-bottom:35px;">Apply your knowledge of friction, gravity, and net forces to solve real-world problems.</p>
         <button class="btn-go" onclick="init()">Start Challenge</button>
     </div>
 
     <div id="scr-game" class="card hidden">
         <div class="stats">
-            <span>Question <span id="q-now">1</span>/10</span>
+            <span>Q: <span id="q-now">1</span>/10</span>
             <span id="score-now">Score: 0</span>
         </div>
         <div class="timer-track"><div id="timer-bar"></div></div>
-        <div id="content">
+        <div id="game-body">
             <img id="q-image" class="q-img hidden" src="">
             <div id="q-txt" class="q-text"></div>
             <div id="options" class="grid"></div>
@@ -85,22 +84,6 @@
     </div>
 
     <div id="scr-result" class="card hidden">
-        <h2 id="res-msg">Quiz Finished</h2>
-        <p id="res-score" style="font-size:1.8rem; margin:20px 0; font-weight:800;"></p>
-        <p id="res-comment" style="margin-bottom:25px; color:#64748b;"></p>
-        <button class="btn-go" onclick="location.reload()">Retry Chapter</button>
-    </div>
-
-    <audio id="aud-right" src="assets/correct.mp3"></audio>
-    <audio id="aud-wrong" src="assets/wrong.mp3"></audio>
-
-    <script>
-        const db = [
-            { q: "Two brothers push a crate. Brother A pushes left (50N), Brother B pushes right (30N). Resultant force?", o: ["80N to the right", "20N to the left", "20N to the right", "0N"], c: 1, e: "Subtract opposite forces: 50N - 30N = 20N. It moves in the direction of the stronger force (Left)." },
-            { q: "Which effect of force is primarily demonstrated in this image?", o: ["Change in state of motion", "Change in direction", "Change in shape and size", "Increase in speed"], c: 2, i: "assets/q2.png", e: "Force applied to dough or clay changes its physical shape." },
-            { q: "An object is 10 kg. If gravity is 10 m/s², what is the weight?", o: ["10 N", "1 N", "100 N", "0 N"], c: 2, e: "Weight = Mass × Gravity (10kg × 10m/s² = 100N)." },
-            { q: "Iron nails jumping toward a magnet before touching it is an example of:", o: ["Contact Force", "Non-contact Force", "Muscular Force", "Frictional Force"], c: 1, e: "Magnetic force acts at a distance without physical contact." },
-            { q: "Student says: 'Mass and Weight are both measured in kg.' What is the error?", o: ["Mass is in Newtons.", "Mass is kg; Weight is Newtons.", "Weight is in meters.", "No error."], c: 1, e: "Mass is the amount of matter (kg); Weight is a force (Newtons)." },
-            { q: "A cricketer pulls his hands back while catching a fast ball to:", o: ["Increase force", "Reduce force by increasing time", "Stop ball instantly", "Look stylish"], c: 1, e: "Increasing time reduces the impact force felt by the hands." },
-            { q: "Astronaut weight changes on the Moon, but mass stays the same because:", o: ["Less food", "Mass is matter; weight is gravity", "No air", "Cold temperature"], c: 1, e: "Mass is constant everywhere, but weight depends on local gravitational pull." },
-            { q: "What does a spring balance measure?", o: ["Mass", "Weight", "Volume", "Speed"], c: 1, i
+        <h2 id="res-msg">Well Done!</h2>
+        <p id="res-score" style="font-size:2rem; margin:20px 0; font-weight:800; color:var(--p);"></p>
+        <p
