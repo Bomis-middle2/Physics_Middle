@@ -100,4 +100,134 @@
         const quizData = [
             { q: "Two teams play tug-of-war. Team A pulls with 1200 N. Team B pulls with 1250 N. A player from Team B slips, reducing their force by 80 N. Where will the rope move?", o: ["Towards Team B with 50 N", "Towards Team B with 30 N", "Towards Team A with 30 N", "It will remain stationary"], c: 2, e: "Initial Team B = 1250N. New Team B = 1170N (1250-80). Net Force = 1200 - 1170 = 30 N towards Team A." },
             { q: "A ball rolls on a frictionless surface. A force is applied exactly perpendicular (90°) to its motion. What happens?", o: ["The ball will speed up", "The ball will slow down and stop", "Speed remains same, but direction changes", "The ball will immediately stop"], c: 2, e: "A force perpendicular to motion changes the direction (centripetal effect) without changing the speed magnitude." },
-            { q: "Two identical spring balances are connected in series. A
+            { q: "Two identical spring balances are connected in series. A 5 kg weight is hung from the bottom one. What is the reading on the top balance?", o: ["2.5 kg", "5 kg", "0 kg", "10 kg"], c: 1, i: "assets/q8.png", e: "In a series connection, tension is the same throughout; both balances feel the full weight." },
+            { q: "An object weighs 600 N on Earth (g=10). On a planet with 1/3 Earth's gravity, what are its new Mass and Weight?", o: ["Mass = 20 kg, Weight = 200 N", "Mass = 60 kg, Weight = 200 N", "Mass = 60 kg, Weight = 600 N", "Mass = 20 kg, Weight = 600 N"], c: 1, e: "Mass = Weight/g = 600/10 = 60kg (constant). New Weight = 600 × 1/3 = 200 N." },
+            { q: "A plastic comb rubbed on hair makes a water stream bend toward it. What does this demonstrate?", o: ["Magnetic force", "High gravitational pull", "Electrostatic force (Non-contact)", "Air pressure"], c: 2, e: "Friction charges the comb, which exerts a non-contact electrostatic force on the water." },
+            { q: "Student claims: 'If net force is Zero, the object MUST be at rest.' Why is this incomplete?", o: ["Zero force means disappearing", "Object could be in Uniform Motion", "Zero force means accelerating", "Friction is always present"], c: 1, e: "Newton’s First Law: zero net force means no change in motion (could be moving at constant speed)." },
+            { q: "You feel tired holding a heavy box still at chest height even if it's not moving. Why?", o: ["Doing work on the box", "Muscles must counteract gravity", "Mass increases while holding", "Muscular force is non-contact"], c: 1, e: "To keep it still, your muscular force must exactly balance the downward force of gravity." },
+            { q: "A skydiver falls before the parachute opens. Which two forces are primarily acting?", o: ["Muscular and Magnetic", "Gravity (Non-contact) and Air Friction (Contact)", "Electrostatic and Gravitational", "Magnetic and Air Friction"], c: 1, e: "Gravity pulls without contact; air resistance (drag) is a contact force between body and air." },
+            { q: "A 2kg toy car is pulled left with 10N and right with 10N. A third force of 2N is added to the right. Resultant force?", o: ["22 N to the right", "0 N", "2 N to the right", "2 N to the left"], c: 2, e: "Initial 10N forces cancel out (10-10=0). The new 2N force becomes the net unbalanced force." },
+            { q: "A metal sphere stops and dents a clay block. Which effect of force is NOT present?", o: ["Change in speed", "Change in shape", "Change in mass of clay", "Application of contact force"], c: 2, e: "Force can change motion and shape, but it cannot change the amount of matter (mass) in an object." }
+        ];
+
+        let index = 0, score = 0, timer, timeLeft = 45, tries = 0, locked = false;
+
+        // Branding Logic
+        setTimeout(() => {
+            const b = document.getElementById('branding');
+            b.style.opacity = '0';
+            setTimeout(() => b.remove(), 600);
+        }, 5000);
+
+        function begin() {
+            document.getElementById('scr-intro').classList.add('hidden');
+            document.getElementById('scr-quiz').classList.remove('hidden');
+            loadQ();
+        }
+
+        function loadQ() {
+            if(index >= quizData.length) return showResults();
+            locked = false; tries = 0; timeLeft = 45;
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('q-idx').innerText = index + 1;
+            
+            const q = quizData[index];
+            document.getElementById('q-txt').innerText = q.q;
+            
+            const img = document.getElementById('q-img');
+            if(q.i) { img.src = q.i; img.classList.remove('hidden'); }
+            else { img.classList.add('hidden'); }
+
+            const box = document.getElementById('options');
+            box.innerHTML = '';
+            q.o.forEach((txt, i) => {
+                const b = document.createElement('button');
+                b.className = 'opt';
+                b.innerText = txt;
+                b.onclick = () => validate(i, b);
+                box.appendChild(b);
+            });
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            const bar = document.getElementById('timer-fill');
+            timer = setInterval(() => {
+                timeLeft--;
+                bar.style.width = (timeLeft/45*100) + '%';
+                if(timeLeft <= 0) { clearInterval(timer); revealCorrect(); }
+            }, 1000);
+        }
+
+        function validate(idx, btn) {
+            if(locked) return;
+            const correct = quizData[index].c;
+
+            if(idx === correct) {
+                locked = true; clearInterval(timer);
+                btn.classList.add('correct');
+                score += (tries === 0) ? 10 : 5;
+                document.getElementById('live-score').innerText = "Score: " + score;
+                playSfx('snd-ok');
+                spawnSparkles(btn);
+                setTimeout(() => { index++; loadQ(); }, 1500);
+            } else {
+                tries++;
+                btn.classList.add('wrong');
+                btn.disabled = true;
+                playSfx('snd-no');
+                if(tries === 1) {
+                    const f = document.getElementById('feedback');
+                    f.innerText = "Try again! Hint: Look closer at the net force or the specific physics definition.";
+                    f.classList.remove('hidden');
+                } else {
+                    locked = true; clearInterval(timer); revealCorrect();
+                }
+            }
+        }
+
+        function revealCorrect() {
+            const btns = document.querySelectorAll('.opt');
+            btns[quizData[index].c].classList.add('correct');
+            const f = document.getElementById('feedback');
+            f.innerText = "Correct Answer: " + quizData[index].o[quizData[index].c] + ". " + quizData[index].e;
+            f.classList.remove('hidden');
+            setTimeout(() => { index++; loadQ(); }, 5000);
+        }
+
+        function playSfx(id) {
+            const s = document.getElementById(id);
+            if(s) { s.currentTime = 0; s.play().catch(()=>{}); }
+        }
+
+        function spawnSparkles(el) {
+            const r = el.getBoundingClientRect();
+            for(let i=0; i<8; i++) {
+                const s = document.createElement('div');
+                s.className = 'sparkle'; s.innerHTML = '★';
+                s.style.left = (r.left + Math.random()*r.width) + 'px';
+                s.style.top = r.top + 'px';
+                s.style.color = "#facc15";
+                document.body.appendChild(s);
+                setTimeout(() => s.remove(), 800);
+            }
+        }
+
+        function showResults() {
+            document.getElementById('scr-quiz').classList.add('hidden');
+            document.getElementById('scr-end').classList.remove('hidden');
+            const p = (score/100)*100;
+            document.getElementById('res-score').innerText = score + "/100";
+            
+            let m, comment;
+            if(p >= 75) { m = "Good job!"; comment = "You have a solid understanding of Force concepts."; }
+            else if(p >= 40) { m = "Review this chapter and try again."; comment = "Focus on non-contact forces and resultant force calculations."; }
+            else { m = "Let's practise more."; comment = "Try reading the basic force laws again and retake the quiz."; }
+            
+            document.getElementById('res-msg').innerText = m;
+            document.getElementById('res-comment').innerText = comment;
+        }
+    </script>
+</body>
+</html>
