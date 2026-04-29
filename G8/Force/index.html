@@ -3,47 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Innovine | G8 Physics Force Mastery</title>
+    <title>Innovine | Force Mastery</title>
     <style>
         :root { --p: #3b82f6; --s: #10b981; --e: #ef4444; --bg: #f8fafc; --txt: #1e293b; }
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { margin: 0; background: var(--bg); color: var(--txt); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
 
-        /* LOGO SCREEN */
+        /* MANDATORY LOGO SCREEN */
         #logo-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 9999; transition: opacity 0.5s ease;
+            background: white; display: flex; justify-content: center; align-items: center;
+            z-index: 9999; transition: opacity 0.6s ease;
         }
-        #logo-screen h1 { color: var(--p); letter-spacing: 4px; margin: 0; font-size: 2.5rem; }
+        #logo-screen img { width: 220px; max-width: 80%; }
 
         #theme-layer { position: fixed; top:0; left:0; width:100%; height:100%; z-index: 1; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); pointer-events: none; }
 
         .card {
-            width: 92%; max-width: 500px; background: white; padding: 30px;
-            border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 92%; max-width: 520px; background: white; padding: 35px;
+            border-radius: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.08);
             text-align: center; position: relative; z-index: 10;
         }
         .hidden { display: none !important; }
 
-        .stats { display: flex; justify-content: space-between; font-weight: 700; color: var(--p); margin-bottom: 10px; font-size: 0.9rem; }
-        .timer-track { height: 6px; background: #eee; border-radius: 10px; margin: 15px 0; overflow: hidden; }
+        .stats { display: flex; justify-content: space-between; font-weight: 700; color: var(--p); margin-bottom: 10px; font-size: 0.85rem; letter-spacing: 1px; }
+        .timer-track { height: 6px; background: #e2e8f0; border-radius: 10px; margin: 15px 0; overflow: hidden; }
         #timer-bar { height: 100%; background: var(--p); width: 100%; transition: width 1s linear; }
 
-        .q-text { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; line-height: 1.5; color: #334155; text-align: left; }
+        .q-text { font-size: 1.15rem; font-weight: 600; margin-bottom: 25px; line-height: 1.5; color: #334155; text-align: left; }
 
-        .grid { display: grid; gap: 10px; }
+        .grid { display: grid; gap: 12px; }
         .btn-opt {
-            padding: 14px; border: 2px solid #e2e8f0; border-radius: 12px;
-            background: white; cursor: pointer; transition: 0.2s; font-size: 0.95rem; text-align: left; font-weight: 500;
+            padding: 16px; border: 2px solid #e2e8f0; border-radius: 14px;
+            background: white; cursor: pointer; transition: 0.2s; font-size: 1rem; text-align: left; font-weight: 500;
         }
-        .btn-opt:hover:not(:disabled) { border-color: var(--p); background: #f0f7ff; }
+        .btn-opt:hover:not(:disabled) { border-color: var(--p); background: #f0f7ff; transform: scale(1.01); }
         .is-correct { background: var(--s) !important; color: white; border-color: var(--s); }
         .is-wrong { background: var(--e) !important; color: white; border-color: var(--e); }
 
-        .btn-go { padding: 16px 40px; background: var(--p); color: white; border: none; border-radius: 50px; font-size: 1rem; cursor: pointer; font-weight: 700; box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3); }
+        .btn-go { padding: 18px 50px; background: var(--p); color: white; border: none; border-radius: 50px; font-size: 1.1rem; cursor: pointer; font-weight: 700; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); transition: 0.3s; }
+        .btn-go:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(59, 130, 246, 0.4); }
         
-        #feedback { margin-top: 15px; padding: 15px; background: #fffbeb; border-radius: 12px; border-left: 5px solid #f59e0b; text-align: left; font-size: 0.85rem; color: #92400e; line-height: 1.4; }
+        #feedback { margin-top: 20px; padding: 18px; background: #fffbeb; border-radius: 14px; border-left: 6px solid #f59e0b; text-align: left; font-size: 0.9rem; color: #92400e; line-height: 1.4; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
 
         .sparkle { position: absolute; pointer-events: none; animation: fly 0.8s forwards; font-size: 20px; color: #facc15; }
         @keyframes fly { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(1.5) translateY(-80px); opacity: 0; } }
@@ -54,24 +56,23 @@
     <div id="theme-layer"></div>
 
     <div id="logo-screen">
-        <h1>INNOVINE</h1>
-        <p style="color: #64748b; font-weight: 600;">G8 PHYSICS SYNCED</p>
+        <img src="assets/logo.png" alt="Innovine Logo" onerror="this.parentElement.innerHTML='<h1>INNOVINE</h1>'">
     </div>
 
-    <div id="scr-intro" class="card">
-        <h2 style="color:var(--p); margin-top:0;">Force & Weight</h2>
-        <p style="font-weight: 600; color: #475569;">Competency Evaluation</p>
-        <div style="text-align: left; font-size: 0.85rem; background: #f1f5f9; padding: 15px; border-radius: 12px; margin: 20px 0; color: #64748b;">
-            • 10 Randomized Core Questions<br>
-            • 45s Time Limit per question<br>
-            • 2 Attempts allowed per question
+    <div id="scr-intro" class="card hidden">
+        <h1 style="color:var(--p); margin-top:0; font-size: 2rem;">G8 Physics</h1>
+        <p style="font-weight: 600; color: #475569; margin-top: -10px;">Chapter 1: Force Mastery</p>
+        <div style="text-align: left; font-size: 0.85rem; background: #f1f5f9; padding: 20px; border-radius: 16px; margin: 25px 0; color: #64748b; line-height: 1.6;">
+            • 10 Randomized Competency Questions<br>
+            • Focused on Logic and Real-world Physics<br>
+            • 45s per task | Double Attempt protocol active
         </div>
-        <button class="btn-go" onclick="init()">Begin Module</button>
+        <button class="btn-go" onclick="init()">Start Mission</button>
     </div>
 
     <div id="scr-game" class="card hidden">
         <div class="stats">
-            <span>TASK: <span id="q-now">1</span>/10</span>
+            <span>TASK <span id="q-now">1</span>/10</span>
             <span id="score-now">PTS: 0</span>
         </div>
         <div class="timer-track"><div id="timer-bar"></div></div>
@@ -82,9 +83,9 @@
 
     <div id="scr-result" class="card hidden">
         <h2 id="res-msg">Analysis Complete</h2>
-        <div id="res-score" style="font-size:3rem; margin:10px 0; font-weight:800; color:var(--p);"></div>
-        <p id="res-comment" style="margin-bottom:25px; font-weight: 600;"></p>
-        <button class="btn-go" onclick="location.reload()">Restart Module</button>
+        <div id="res-score" style="font-size:3.5rem; margin:15px 0; font-weight:900; color:var(--p);"></div>
+        <p id="res-comment" style="margin-bottom:30px; font-weight: 600; color: #64748b;"></p>
+        <button class="btn-go" onclick="location.reload()">Re-Initialize</button>
     </div>
 
     <script>
@@ -113,16 +114,20 @@
 
         let quizSet = [], idx = 0, score = 0, clock, time = 45, tries = 0, lock = false;
 
-        // AUTO-REMOVE LOGO
-        setTimeout(() => {
-            const ls = document.getElementById('logo-screen');
-            ls.style.opacity = '0';
-            ls.style.pointerEvents = 'none';
-            setTimeout(() => ls.classList.add('hidden'), 500);
-        }, 3000);
+        // LOGO HANDLER
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const ls = document.getElementById('logo-screen');
+                ls.style.opacity = '0';
+                setTimeout(() => {
+                    ls.classList.add('hidden');
+                    const intro = document.getElementById('scr-intro');
+                    intro.classList.remove('hidden');
+                }, 600);
+            }, 3000);
+        });
 
         function init() {
-            // Shuffle and pick 10
             quizSet = [...fullDb].sort(() => 0.5 - Math.random()).slice(0, 10);
             document.getElementById('scr-intro').classList.add('hidden');
             document.getElementById('scr-game').classList.remove('hidden');
@@ -134,13 +139,10 @@
             lock = false; tries = 0; time = 45;
             document.getElementById('feedback').classList.add('hidden');
             document.getElementById('q-now').innerText = idx + 1;
-            
-            const item = quizSet[idx];
-            document.getElementById('q-txt').innerText = item.q;
-
+            document.getElementById('q-txt').innerText = quizSet[idx].q;
             const box = document.getElementById('options');
             box.innerHTML = '';
-            item.o.forEach((t, i) => {
+            quizSet[idx].o.forEach((t, i) => {
                 const b = document.createElement('button');
                 b.className = 'btn-opt'; b.innerText = t;
                 b.onclick = () => check(i, b);
@@ -161,9 +163,7 @@
 
         function check(i, btn) {
             if(lock) return;
-            const correct = quizSet[idx].c;
-
-            if(i === correct) {
+            if(i === quizSet[idx].c) {
                 lock = true; clearInterval(clock);
                 btn.classList.add('is-correct');
                 score += (tries === 0) ? 10 : 5;
@@ -175,7 +175,7 @@
                 btn.classList.add('is-wrong'); btn.disabled = true;
                 if(tries === 1) {
                     const fb = document.getElementById('feedback');
-                    fb.innerText = "Careful! Check the math or the definitions of mass/weight.";
+                    fb.innerText = "HINT: Re-examine the resultant math or core definitions.";
                     fb.classList.remove('hidden');
                 } else {
                     lock = true; clearInterval(clock); reveal();
@@ -187,9 +187,9 @@
             const btns = document.querySelectorAll('.btn-opt');
             btns[quizSet[idx].c].classList.add('is-correct');
             const fb = document.getElementById('feedback');
-            fb.innerHTML = "<b>Explanation:</b> " + quizSet[idx].e;
+            fb.innerHTML = "<b>Logic:</b> " + quizSet[idx].e;
             fb.classList.remove('hidden');
-            setTimeout(() => { idx++; render(); }, 4000);
+            setTimeout(() => { idx++; render(); }, 4500);
         }
 
         function fx(el) {
@@ -208,8 +208,7 @@
             document.getElementById('scr-game').classList.add('hidden');
             document.getElementById('scr-result').classList.remove('hidden');
             document.getElementById('res-score').innerText = score + "/100";
-            
-            let m = score >= 80 ? "Excellent Physics Intuition!" : score >= 50 ? "Solid understanding." : "Keep practicing the basics.";
+            let m = score >= 80 ? "Master of Dynamics!" : score >= 50 ? "Physics Practitioner" : "Keep Experimenting!";
             document.getElementById('res-comment').innerText = m;
         }
     </script>
