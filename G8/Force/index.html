@@ -3,212 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Force Mastery - Grade 8 Science</title>
+    <title>Force MCQ - Grade 8</title>
     <style>
-        :root { --primary: #4a90e2; --success: #2ecc71; --error: #e74c3c; --bg: #f0f4f8; --text: #2c3e50; }
+        :root { --primary: #4a90e2; --success: #2ecc71; --error: #e74c3c; --bg: #f0f4f8; }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { margin: 0; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        body { margin: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
 
-        /* Branding Overlay */
+        /* MANDATORY LOGO SCREEN */
         #branding-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; display: flex; flex-direction: column; 
+            background: #ffffff; display: flex; flex-direction: column;
             justify-content: center; align-items: center; z-index: 9999;
-            transition: opacity 0.8s ease; cursor: pointer;
+            transition: transform 0.6s ease-in-out;
         }
-        #branding-overlay img { width: 250px; max-width: 80%; height: auto; margin-bottom: 20px; }
-        .loader-dots { font-size: 14px; color: #888; }
+        #branding-overlay img { width: 220px; height: auto; margin-bottom: 20px; }
+        .skip-hint { font-size: 12px; color: #ccc; cursor: pointer; text-decoration: underline; }
 
-        /* Main Container */
+        /* GAME LAYOUT */
         .quiz-container {
-            width: 90%; max-width: 600px; background: white; padding: 2rem;
-            border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            text-align: center; position: relative; z-index: 10;
+            width: 92%; max-width: 550px; background: white; padding: 25px;
+            border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            text-align: center; position: relative;
         }
         .hidden { display: none !important; }
-
-        /* Game UI */
-        .timer-bar { height: 8px; background: #eee; border-radius: 4px; margin: 20px 0; overflow: hidden; }
-        #timer-progress { height: 100%; background: var(--primary); width: 100%; transition: width 1s linear; }
-        .stats { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; color: var(--primary); }
         
-        .question-text { font-size: 1.25rem; margin-bottom: 20px; line-height: 1.5; font-weight: 600; }
-        .q-image { width: 100%; max-height: 200px; object-fit: contain; margin-bottom: 15px; border-radius: 10px; }
+        .timer-bar { height: 6px; background: #eee; border-radius: 10px; margin: 15px 0; overflow: hidden; }
+        #timer-fill { height: 100%; background: var(--primary); width: 100%; transition: width 1s linear; }
+        
+        .stats { display: flex; justify-content: space-between; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
+        .q-text { font-size: 1.2rem; font-weight: 600; line-height: 1.4; margin-bottom: 20px; }
+        .q-img { width: 100%; max-height: 180px; object-fit: contain; margin-bottom: 15px; border-radius: 10px; }
 
-        .options-grid { display: grid; gap: 12px; }
-        .option-btn {
-            padding: 16px; border: 2px solid #e0e0e0; border-radius: 12px;
-            background: white; cursor: pointer; transition: 0.2s;
-            font-size: 1rem; text-align: left; outline: none;
+        .options-grid { display: grid; gap: 10px; }
+        .opt-btn {
+            padding: 14px; border: 2px solid #edf2f7; border-radius: 12px;
+            background: #fff; cursor: pointer; transition: 0.2s; font-size: 1rem; text-align: left;
         }
-        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #f0f7ff; }
+        .opt-btn:hover:not(:disabled) { background: #f7fafc; border-color: var(--primary); }
         .correct { background: var(--success) !important; color: white; border-color: var(--success); }
         .wrong { background: var(--error) !important; color: white; border-color: var(--error); }
 
-        #explanation { margin-top: 15px; padding: 15px; background: #fff8e1; border-radius: 10px; border-left: 5px solid #ffc107; text-align: left; font-size: 0.95rem; }
-        .btn-main { padding: 15px 40px; background: var(--primary); color: white; border: none; border-radius: 30px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(74,144,226,0.3); }
+        #explanation { margin-top: 15px; padding: 12px; background: #fffaf0; border-radius: 10px; border-left: 4px solid #ed8936; text-align: left; font-size: 0.9rem; }
+        .btn-main { padding: 14px 35px; background: var(--primary); color: white; border: none; border-radius: 50px; font-size: 1.1rem; cursor: pointer; font-weight: 600; }
 
-        /* Star Animation */
-        @keyframes starPop { 0% { transform: scale(0); opacity: 0; } 50% { opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
-        .star { position: absolute; color: #f1c40f; pointer-events: none; animation: starPop 0.8s ease-out forwards; z-index: 100; }
+        /* ANIMATIONS */
+        @keyframes pop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1.4); opacity: 0; } }
+        .star { position: absolute; color: #ecc94b; pointer-events: none; animation: pop 0.7s ease-out forwards; }
     </style>
 </head>
 <body>
 
-    <div id="branding-overlay" onclick="removeOverlay()">
-        <img src="assets/logo.png" alt="Innovine Logo" onerror="this.style.display='none';">
-        <div class="loader-dots">Loading... (Click to skip)</div>
+    <div id="branding-overlay">
+        <img src="assets/logo.png" alt="Innovine" onerror="this.src='https://via.placeholder.com/200x80?text=Innovine+Logo'">
+        <p style="color: #666; font-size: 14px;">Loading Chapter: Force...</p>
+        <span class="skip-hint" onclick="closeLogo()">Wait 5s or click to skip</span>
     </div>
 
     <div id="intro-screen" class="quiz-container">
-        <h1 style="color:var(--primary); margin-top:0;">Force & Motion</h1>
-        <p>Grade 8 Science | Chapter Challenge</p>
-        <p style="color:#666;">Apply your knowledge of resultant forces, friction, and gravity!</p>
-        <button class="btn-main" onclick="startQuiz()">Start Quiz</button>
+        <h1 style="margin-top:0; color:var(--primary)">Force Challenge</h1>
+        <p>Grade 8 | Science</p>
+        <p style="color:#718096; margin-bottom:25px;">Master the concepts of contact and non-contact forces.</p>
+        <button class="btn-main" onclick="initGame()">Start Quiz</button>
     </div>
 
     <div id="quiz-screen" class="quiz-container hidden">
         <div class="stats">
-            <span>Question <span id="q-num">1</span>/10</span>
-            <span>Score: <span id="score">0</span></span>
+            <span>Q: <span id="cur-idx">1</span>/10</span>
+            <span id="live-score">Score: 0</span>
         </div>
-        <div class="timer-bar"><div id="timer-progress"></div></div>
-        <div id="question-area">
-            <img id="q-img" class="q-image hidden" src="" alt="Force Diagram">
-            <p class="question-text" id="q-text"></p>
-            <div class="options-grid" id="options-box"></div>
+        <div class="timer-bar"><div id="timer-fill"></div></div>
+        <div id="q-content">
+            <img id="question-image" class="q-img hidden" src="">
+            <div class="q-text" id="question-display"></div>
+            <div class="options-grid" id="options-display"></div>
         </div>
         <div id="explanation" class="hidden"></div>
     </div>
 
     <div id="result-screen" class="quiz-container hidden">
-        <h2 style="color:var(--primary);">Quiz Complete!</h2>
-        <p id="final-stats" style="font-size:1.4rem; margin:20px 0;"></p>
-        <button class="btn-main" onclick="location.reload()">Play Again</button>
+        <h2 style="color:var(--primary)">Well Done!</h2>
+        <p id="final-stats" style="font-size:1.5rem; margin:20px 0;"></p>
+        <button class="btn-main" onclick="location.reload()">Restart</button>
     </div>
 
-    <audio id="snd-correct" src="assets/correct.mp3"></audio>
-    <audio id="snd-wrong" src="assets/wrong.mp3"></audio>
+    <audio id="audio-right" src="assets/correct.mp3" preload="auto"></audio>
+    <audio id="audio-wrong" src="assets/wrong.mp3" preload="auto"></audio>
 
     <script>
-        const questions = [
-            { q: "Brother A pushes left (50 N), Brother B pushes right (30 N). Resultant force?", options: ["80 N to the right", "20 N to the left", "20 N to the right", "0 N"], correct: 1, exp: "Opposite forces subtract: 50 - 30 = 20 N. It moves toward the stronger force (Left)." },
-            { q: "Which effect of force is shown when squeezing a piece of modeling clay?", options: ["Change in state of motion", "Change in direction", "Change in shape and size", "Increase in speed"], correct: 2, img: "assets/q2.png", exp: "Force can deform objects, changing their physical shape and size." },
-            { q: "Mass is 10 kg and gravity is 10 m/s². What is the object's weight?", options: ["10 N", "1 N", "100 N", "0 N"], correct: 2, exp: "Weight = Mass × Gravity. 10 kg × 10 m/s² = 100 Newtons." },
-            { q: "Iron nails jumping toward a magnet even before touch is an example of:", options: ["Contact Force", "Non-contact Force", "Muscular Force", "Frictional Force"], correct: 1, exp: "Magnetic force is a non-contact force that acts through a field." },
-            { q: "Correct the error: 'Mass and Weight are the same, both measured in kg.'", options: ["Mass is in Newtons.", "Mass is kg; Weight is a force in Newtons.", "Weight is in meters.", "No error."], correct: 1, exp: "Mass measures matter (kg); Weight measures gravitational pull (Newtons)." },
-            { q: "A cricketer pulls his hands back while catching a fast ball to:", options: ["Increase the force", "Reduce impact force by increasing time", "Stop the ball instantly", "Look stylish"], correct: 1, exp: "Increasing the time of the catch reduces the rate of momentum change, softening the impact." },
-            { q: "An astronaut's weight changes on the Moon, but mass stays the same because:", options: ["They eat less in space", "Mass is matter; weight depends on gravity", "The Moon has no air", "Mass depends on temperature"], correct: 1, exp: "Mass is the amount of matter you are made of; weight is how hard gravity pulls on you." },
-            { q: "What does a spring balance primarily measure?", options: ["Mass", "Weight (Force of gravity)", "Volume", "Speed"], correct: 1, img: "assets/q8.png", exp: "Spring balances measure the force of gravity pulling on an object." },
-            { q: "Identify the odd one out based on force type:", options: ["Magnetic force", "Electrostatic force", "Frictional force", "Gravitational force"], correct: 2, exp: "Friction is a contact force; the others act without touching (non-contact)." },
-            { q: "To stop a ball moving to the right, you must apply force toward the:", options: ["Right", "Left", "Upwards", "Downwards"], correct: 1, exp: "Force must be applied in the opposite direction of motion to stop an object." }
+        const quizData = [
+            { q: "Brother A pushes left (50 N), Brother B pushes right (30 N). What is the resultant force?", a: ["80 N to the right", "20 N to the left", "20 N to the right", "0 N"], c: 1, e: "Subtract opposite forces: 50N - 30N = 20N. The movement is toward the stronger force (Left)." },
+            { q: "Which effect of force is demonstrated by squeezing a sponge?", a: ["Change in state of motion", "Change in direction", "Change in shape and size", "Increase in speed"], c: 2, img: "assets/q2.png", e: "Force applied to soft materials primarily changes their physical dimensions." },
+            { q: "An object is 10 kg. If gravity is 10 m/s², what is its weight?", a: ["10 N", "1 N", "100 N", "0 N"], c: 2, e: "Weight = Mass × Gravity. 10 kg × 10 m/s² = 100 Newtons." },
+            { q: "Iron nails jumping to a magnet is an example of:", a: ["Contact Force", "Non-contact Force", "Muscular Force", "Frictional Force"], c: 1, e: "Magnetic force acts through space without physical contact." },
+            { q: "Spot the error: 'Mass and Weight are the same, both in kg.'", a: ["Mass is in Newtons.", "Mass is kg; Weight is Newtons.", "Weight is in meters.", "No error."], c: 1, e: "Mass is amount of matter (kg); Weight is a force (Newtons)." },
+            { q: "Why pull hands back when catching a fast cricket ball?", a: ["To increase force", "To reduce impact by increasing time", "To stop it instantly", "For style"], c: 1, e: "Increasing the time taken to stop the ball reduces the force felt by the hand." },
+            { q: "Astronaut weight changes on the Moon, but mass doesn't because:", a: ["Less food", "Mass is matter; weight is gravity", "No air", "Cold temperature"], c: 1, e: "Mass is your actual substance; weight is just the gravitational pull on that substance." },
+            { q: "What does a spring balance measure?", a: ["Mass", "Weight", "Volume", "Speed"], c: 1, img: "assets/q8.png", e: "Spring balances measure the force of gravity (weight)." },
+            { q: "Odd one out: Magnetic, Electrostatic, Frictional, Gravitational.", a: ["Magnetic", "Electrostatic", "Frictional", "Gravitational"], c: 2, e: "Friction is a contact force; the others are non-contact." },
+            { q: "To stop a ball rolling right, apply force to the:", a: ["Right", "Left", "Up", "Down"], c: 1, e: "Force must oppose the direction of motion to stop an object." }
         ];
 
-        let cur = 0, score = 0, timer, timeLeft = 45, attempts = 0, active = true;
+        let index = 0, score = 0, timer, timeLeft = 45, tries = 0, locked = false;
 
-        // Branding Logic
-        function removeOverlay() {
+        // 1. BRANDING LOGIC (Fail-safe)
+        function closeLogo() {
             const overlay = document.getElementById('branding-overlay');
-            if(overlay) {
-                overlay.style.opacity = '0';
-                setTimeout(() => overlay.classList.add('hidden'), 800);
-            }
+            if(overlay) overlay.style.transform = "translateY(-100%)";
         }
-        setTimeout(removeOverlay, 5000);
+        setTimeout(closeLogo, 5000);
 
-        function startQuiz() {
+        // 2. GAME LOGIC
+        function initGame() {
             document.getElementById('intro-screen').classList.add('hidden');
             document.getElementById('quiz-screen').classList.remove('hidden');
-            showQuestion();
+            renderQuestion();
         }
 
-        function showQuestion() {
-            if(cur >= questions.length) return showFinal();
+        function renderQuestion() {
+            if(index >= quizData.length) return finishQuiz();
             
-            active = true; attempts = 0; timeLeft = 45;
+            locked = false; tries = 0; timeLeft = 45;
             document.getElementById('explanation').classList.add('hidden');
-            document.getElementById('q-num').innerText = cur + 1;
+            document.getElementById('cur-idx').innerText = index + 1;
             
-            const data = questions[cur];
-            document.getElementById('q-text').innerText = data.q;
+            const data = quizData[index];
+            document.getElementById('question-display').innerText = data.q;
             
-            const img = document.getElementById('q-img');
+            const img = document.getElementById('question-image');
             if(data.img) { img.src = data.img; img.classList.remove('hidden'); }
             else { img.classList.add('hidden'); }
 
-            const box = document.getElementById('options-box');
+            const box = document.getElementById('options-display');
             box.innerHTML = '';
-            data.options.forEach((opt, i) => {
+            data.a.forEach((txt, i) => {
                 const b = document.createElement('button');
-                b.className = 'option-btn';
-                b.innerText = opt;
-                b.onclick = () => handleInput(i, b);
+                b.className = 'opt-btn';
+                b.innerText = txt;
+                b.onclick = () => check(i, b);
                 box.appendChild(b);
             });
-            runTimer();
+            startClock();
         }
 
-        function runTimer() {
+        function startClock() {
             clearInterval(timer);
-            const bar = document.getElementById('timer-progress');
+            const bar = document.getElementById('timer-fill');
             timer = setInterval(() => {
                 timeLeft--;
                 bar.style.width = (timeLeft / 45 * 100) + '%';
-                if(timeLeft <= 0) { clearInterval(timer); forceReveal(); }
+                if(timeLeft <= 0) { clearInterval(timer); showCorrect(); }
             }, 1000);
         }
 
-        function handleInput(idx, btn) {
-            if(!active) return;
-            const correct = questions[cur].correct;
+        function check(i, btn) {
+            if(locked) return;
+            const correct = quizData[index].c;
 
-            if(idx === correct) {
-                active = false; clearInterval(timer);
+            if(i === correct) {
+                locked = true; clearInterval(timer);
                 btn.classList.add('correct');
-                score += (attempts === 0) ? 10 : 5;
-                document.getElementById('score').innerText = score;
-                triggerStars(btn);
-                playSafe('snd-correct');
-                setTimeout(() => { cur++; showQuestion(); }, 1500);
+                score += (tries === 0) ? 10 : 5;
+                document.getElementById('live-score').innerText = "Score: " + score;
+                playSfx('audio-right');
+                spawnStars(btn);
+                setTimeout(() => { index++; renderQuestion(); }, 1200);
             } else {
-                attempts++;
+                tries++;
                 btn.classList.add('wrong');
                 btn.disabled = true;
-                playSafe('snd-wrong');
-                document.body.style.boxShadow = "inset 0 0 50px rgba(231,76,60,0.4)";
-                setTimeout(() => document.body.style.boxShadow = "none", 400);
-                
-                if(attempts >= 2) { active = false; clearInterval(timer); forceReveal(); }
+                playSfx('audio-wrong');
+                if(tries >= 2) { locked = true; clearInterval(timer); showCorrect(); }
             }
         }
 
-        function forceReveal() {
-            const btns = document.querySelectorAll('.option-btn');
-            btns[questions[cur].correct].classList.add('correct');
+        function showCorrect() {
+            const btns = document.querySelectorAll('.opt-btn');
+            btns[quizData[index].c].classList.add('correct');
             const exp = document.getElementById('explanation');
-            exp.innerText = questions[cur].exp;
+            exp.innerText = quizData[index].e;
             exp.classList.remove('hidden');
-            setTimeout(() => { cur++; showQuestion(); }, 4000);
+            setTimeout(() => { index++; renderQuestion(); }, 4000);
         }
 
-        function playSafe(id) {
+        function playSfx(id) {
             const s = document.getElementById(id);
-            if(s) { s.currentTime = 0; s.play().catch(() => {}); }
+            if(s) { s.currentTime = 0; s.play().catch(e => {}); }
         }
 
-        function triggerStars(el) {
-            const r = el.getBoundingClientRect();
-            for(let i=0; i<12; i++) {
+        function spawnStars(el) {
+            const rect = el.getBoundingClientRect();
+            for(let i=0; i<10; i++) {
                 const s = document.createElement('div');
-                s.className = 'star'; s.innerText = '★';
-                s.style.left = (r.left + Math.random()*r.width) + 'px';
-                s.style.top = (r.top + Math.random()*r.height) + 'px';
+                s.className = 'star'; s.innerHTML = '★';
+                s.style.left = (rect.left + Math.random() * rect.width) + 'px';
+                s.style.top = rect.top + 'px';
                 document.body.appendChild(s);
-                setTimeout(() => s.remove(), 800);
+                setTimeout(() => s.remove(), 700);
             }
         }
 
-        function showFinal() {
+        function finishQuiz() {
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
             document.getElementById('final-stats').innerText = `Final Score: ${score}/100`;
