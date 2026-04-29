@@ -3,226 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade 8 | Science | Force Mastery</title>
+    <title>Grade 8 Science - Force CBQ</title>
     <style>
-        :root { --p: #4a90e2; --s: #2ecc71; --e: #e74c3c; --bg: #f8fafc; --txt: #1e293b; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { margin: 0; background: var(--bg); color: var(--txt); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        :root { --primary: #4a90e2; --secondary: #6366f1; --success: #22c55e; --error: #ef4444; --bg: #f8fafc; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { margin: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
 
-        /* MANDATORY LOGO SCREEN (Fixed to never block) */
-        #logo-screen {
+        /* BRANDING - AUTO REMOVE */
+        #branding {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: white; display: flex; justify-content: center; align-items: center;
-            z-index: 9999; transition: opacity 0.5s ease;
+            z-index: 1000; transition: opacity 0.5s ease;
         }
-        #logo-screen img { width: 240px; max-width: 80%; }
+        #branding img { width: 250px; height: auto; }
 
         /* THEME LAYER */
-        #theme-layer { position: fixed; top:0; left:0; width:100%; height:100%; z-index: 1; background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%); pointer-events: none; }
+        .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); pointer-events: none; }
 
-        /* MAIN CARD */
         .card {
-            width: 92%; max-width: 500px; background: white; padding: 30px;
-            border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 92%; max-width: 520px; background: white; padding: 25px;
+            border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             text-align: center; position: relative; z-index: 10;
         }
         .hidden { display: none !important; }
 
-        /* UI ELEMENTS */
-        .stats { display: flex; justify-content: space-between; font-weight: 700; color: var(--p); margin-bottom: 10px; }
-        .timer-track { height: 8px; background: #eee; border-radius: 10px; margin: 15px 0; overflow: hidden; }
-        #timer-bar { height: 100%; background: var(--p); width: 100%; transition: width 1s linear; }
+        /* PROGRESS & TIMER */
+        .stats { display: flex; justify-content: space-between; font-weight: 700; color: var(--primary); margin-bottom: 10px; font-size: 0.9rem; }
+        .timer-bg { height: 6px; background: #e2e8f0; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        #timer-fill { height: 100%; background: var(--primary); width: 100%; transition: width 1s linear; }
 
-        .q-img { width: 100%; max-height: 180px; object-fit: contain; margin-bottom: 15px; border-radius: 12px; background: #f1f5f9; }
-        .q-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 25px; line-height: 1.4; color: #334155; }
+        .q-text { font-size: 1.15rem; font-weight: 600; color: #1e293b; line-height: 1.5; margin-bottom: 20px; text-align: left; }
+        .q-img { width: 100%; max-height: 180px; object-fit: contain; margin-bottom: 20px; border-radius: 12px; }
 
-        .grid { display: grid; gap: 12px; }
-        .btn-opt {
-            padding: 16px; border: 2px solid #e2e8f0; border-radius: 14px;
-            background: white; cursor: pointer; transition: 0.2s; font-size: 1rem; text-align: left;
+        .options-grid { display: grid; gap: 12px; }
+        .opt {
+            padding: 14px 18px; border: 2px solid #f1f5f9; border-radius: 15px;
+            background: white; cursor: pointer; transition: 0.2s; font-size: 1rem; text-align: left; font-weight: 500;
         }
-        .btn-opt:hover:not(:disabled) { border-color: var(--p); background: #f0f7ff; }
-        .is-correct { background: var(--s) !important; color: white; border-color: var(--s); }
-        .is-wrong { background: var(--e) !important; color: white; border-color: var(--e); }
+        .opt:hover:not(:disabled) { border-color: var(--primary); background: #f0f9ff; }
+        .correct { background: var(--success) !important; color: white; border-color: var(--success); }
+        .wrong { background: var(--error) !important; color: white; border-color: var(--error); }
 
-        .btn-go { padding: 18px 45px; background: var(--p); color: white; border: none; border-radius: 50px; font-size: 1.1rem; cursor: pointer; font-weight: 700; box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3); position: relative; z-index: 20; }
-        
-        #feedback { margin-top: 15px; padding: 15px; background: #fef3c7; border-radius: 12px; border-left: 5px solid #f59e0b; text-align: left; font-size: 0.9rem; }
+        .btn-start {
+            padding: 16px 40px; background: var(--primary); color: white; border: none;
+            border-radius: 50px; font-size: 1.1rem; cursor: pointer; font-weight: 700;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
 
-        .sparkle { position: absolute; pointer-events: none; animation: fly 0.8s forwards; font-size: 24px; color: #facc15; }
-        @keyframes fly { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(1.5) translateY(-100px); opacity: 0; } }
+        #feedback { margin-top: 15px; padding: 15px; background: #fffbeb; border-radius: 12px; border-left: 4px solid #f59e0b; text-align: left; font-size: 0.9rem; color: #92400e; line-height: 1.4; }
+
+        /* FEEDBACK ANIMATION */
+        .sparkle { position: absolute; pointer-events: none; animation: fly 0.8s ease-out forwards; }
+        @keyframes fly { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(1.5) translateY(-80px); opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <div id="theme-layer"></div>
+    <div class="stars"></div>
 
-    <div id="logo-screen">
-        <img src="assets/logo.png" alt="Innovine Logo" onerror="this.style.display='none'">
+    <div id="branding">
+        <img src="assets/logo.png" alt="Innovine" onerror="this.style.display='none'">
     </div>
 
     <div id="scr-intro" class="card">
-        <h1 style="color:var(--p); margin-top:0;">Force Mastery</h1>
-        <p>Grade 8 | Science</p>
-        <p style="color:#64748b; margin-bottom:30px;">Identify, reason, and solve real-world force problems.</p>
-        <button class="btn-go" id="real-start-btn" onclick="init()">Start Quiz</button>
+        <h1 style="color:var(--primary); margin-top:0;">Force & Pressure</h1>
+        <p>Advanced Competency Challenge</p>
+        <p style="color:#64748b; margin-bottom:30px;">Apply physics concepts to real-life situations. Reasoning is required for every answer.</p>
+        <button class="btn-start" onclick="begin()">Start Quiz</button>
     </div>
 
-    <div id="scr-game" class="card hidden">
+    <div id="scr-quiz" class="card hidden">
         <div class="stats">
-            <span>Q: <span id="q-now">1</span>/10</span>
-            <span id="score-now">Score: 0</span>
+            <span>Question <span id="q-idx">1</span>/10</span>
+            <span id="live-score">Score: 0</span>
         </div>
-        <div class="timer-track"><div id="timer-bar"></div></div>
-        <div id="game-body">
-            <img id="q-image" class="q-img hidden" src="">
+        <div class="timer-bg"><div id="timer-fill"></div></div>
+        <div id="q-area">
+            <img id="q-img" class="q-img hidden" src="">
             <div id="q-txt" class="q-text"></div>
-            <div id="options" class="grid"></div>
+            <div id="options" class="options-grid"></div>
         </div>
         <div id="feedback" class="hidden"></div>
     </div>
 
-    <div id="scr-result" class="card hidden">
-        <h2 id="res-msg">Loading Result...</h2>
-        <p id="res-score" style="font-size:2.2rem; margin:20px 0; font-weight:800; color:var(--p);"></p>
-        <p id="res-comment" style="margin-bottom:30px; color:#64748b;"></p>
-        <button class="btn-go" onclick="location.reload()">Retry Now</button>
+    <div id="scr-end" class="card hidden">
+        <h2 id="res-msg">Well Done!</h2>
+        <p id="res-score" style="font-size:2.2rem; font-weight:800; margin:15px 0; color:var(--primary);"></p>
+        <p id="res-comment" style="color:#64748b; margin-bottom:25px;"></p>
+        <button class="btn-start" onclick="location.reload()">Restart Quiz</button>
     </div>
 
-    <audio id="aud-right" src="assets/correct.mp3"></audio>
-    <audio id="aud-wrong" src="assets/wrong.mp3"></audio>
+    <audio id="snd-ok" src="assets/correct.mp3"></audio>
+    <audio id="snd-no" src="assets/wrong.mp3"></audio>
 
     <script>
-        const db = [
-            { q: "Brother A pushes left (50N), Brother B pushes right (30N). What is the resultant force?", o: ["80N to the right", "20N to the left", "20N to the right", "0N"], c: 1, e: "Subtract opposite forces: 50N - 30N = 20N. Force follows the stronger push (Left)." },
-            { q: "Which effect of force is demonstrated when squeezing a balloon or kneading dough?", o: ["Change in state of motion", "Change in direction", "Change in shape and size", "Increase in speed"], c: 2, i: "assets/q2.png", e: "Force applied to soft objects results in physical deformation (shape/size change)." },
-            { q: "A block has a mass of 10 kg. Taking gravity as 10 m/s², what is its weight?", o: ["10 N", "1 N", "100 N", "0 N"], c: 2, e: "Weight = Mass × Gravity. 10 kg × 10 m/s² = 100 Newtons." },
-            { q: "Iron nails jumping toward a magnet before touching is an example of:", o: ["Contact Force", "Non-contact Force", "Muscular Force", "Frictional Force"], c: 1, e: "Magnetic force is non-contact as it acts through a field without physical touch." },
-            { q: "A student says 'Mass and Weight are the same, both measured in kg.' Correct them:", o: ["Mass is in Newtons.", "Mass is in kg; Weight is in Newtons.", "Weight is in meters.", "No error."], c: 1, e: "Mass is amount of matter (kg); Weight is the pull of gravity (Newtons)." },
-            { q: "Why pull hands back when catching a fast cricket ball?", o: ["To increase force", "To reduce impact force by increasing time", "To stop ball instantly", "For style"], c: 1, e: "Increasing the time of the catch reduces the rate of momentum change, softening the impact." },
-            { q: "Astronaut weight changes on the Moon, but mass stays the same because:", o: ["Space has no air", "Mass is matter; weight depends on gravity", "Gravity is the same everywhere", "Mass depends on speed"], c: 1, e: "Mass is constant matter; weight varies based on the local gravitational pull." },
-            { q: "What does a spring balance primarily measure?", o: ["Mass", "Weight", "Volume", "Density"], c: 1, i: "assets/q8.png", e: "Spring balances measure the force of gravity pulling on an object (Weight)." },
-            { q: "Identify the odd one out based on the type of force:", o: ["Magnetic", "Electrostatic", "Frictional", "Gravitational"], c: 2, e: "Friction is a contact force; the others are non-contact forces." },
-            { q: "To stop a ball rolling right, force must be applied towards the:", o: ["Right", "Left", "Upward", "Downward"], c: 1, e: "Force must be applied in the opposite direction of motion to stop an object." }
-        ];
-
-        let idx = 0, score = 0, clock, time = 45, tries = 0, lock = false;
-
-        // FORCE REMOVAL OF LOGO
-        setTimeout(() => {
-            const ls = document.getElementById('logo-screen');
-            if(ls) {
-                ls.style.opacity = '0';
-                ls.style.zIndex = '-100'; // Move to back so buttons work
-                ls.style.pointerEvents = 'none'; // Disable all clicks on logo
-                setTimeout(() => ls.classList.add('hidden'), 500);
-            }
-        }, 5000);
-
-        function init() {
-            document.getElementById('scr-intro').classList.add('hidden');
-            document.getElementById('scr-game').classList.remove('hidden');
-            render();
-        }
-
-        function render() {
-            if(idx >= db.length) return result();
-            lock = false; tries = 0; time = 45;
-            document.getElementById('feedback').classList.add('hidden');
-            document.getElementById('q-now').innerText = idx + 1;
-            
-            const item = db[idx];
-            document.getElementById('q-txt').innerText = item.q;
-            const img = document.getElementById('q-image');
-            if(item.i) { img.src = item.i; img.classList.remove('hidden'); }
-            else { img.classList.add('hidden'); }
-
-            const box = document.getElementById('options');
-            box.innerHTML = '';
-            item.o.forEach((t, i) => {
-                const b = document.createElement('button');
-                b.className = 'btn-opt'; b.innerText = t;
-                b.onclick = () => check(i, b);
-                box.appendChild(b);
-            });
-            startClock();
-        }
-
-        function startClock() {
-            clearInterval(clock);
-            const bar = document.getElementById('timer-bar');
-            clock = setInterval(() => {
-                time--;
-                bar.style.width = (time/45*100) + '%';
-                if(time <= 0) { clearInterval(clock); reveal(); }
-            }, 1000);
-        }
-
-        function check(i, btn) {
-            if(lock) return;
-            const correct = db[idx].c;
-
-            if(i === correct) {
-                lock = true; clearInterval(clock);
-                btn.classList.add('is-correct');
-                score += (tries === 0) ? 10 : 5;
-                document.getElementById('score-now').innerText = "Score: " + score;
-                play('aud-right'); fx(btn);
-                setTimeout(() => { idx++; render(); }, 1500);
-            } else {
-                tries++;
-                btn.classList.add('is-wrong'); btn.disabled = true;
-                play('aud-wrong');
-                if(tries === 1) {
-                    const fb = document.getElementById('feedback');
-                    fb.innerText = "Hint: Re-read carefully. Think of non-contact vs contact or force directions.";
-                    fb.classList.remove('hidden');
-                } else {
-                    lock = true; clearInterval(clock); reveal();
-                }
-            }
-        }
-
-        function reveal() {
-            const btns = document.querySelectorAll('.btn-opt');
-            btns[db[idx].c].classList.add('is-correct');
-            const fb = document.getElementById('feedback');
-            fb.innerText = "Explanation: " + db[idx].e;
-            fb.classList.remove('hidden');
-            setTimeout(() => { idx++; render(); }, 4000);
-        }
-
-        function play(id) { 
-            const s = document.getElementById(id); 
-            if(s) { s.currentTime=0; s.play().catch(()=>{}); }
-        }
-
-        function fx(el) {
-            const r = el.getBoundingClientRect();
-            for(let i=0; i<10; i++) {
-                const s = document.createElement('div');
-                s.className = 'sparkle'; s.innerHTML = '★';
-                s.style.left = (r.left + Math.random()*r.width) + 'px';
-                s.style.top = r.top + 'px';
-                document.body.appendChild(s);
-                setTimeout(() => s.remove(), 800);
-            }
-        }
-
-        function result() {
-            document.getElementById('scr-game').classList.add('hidden');
-            document.getElementById('scr-result').classList.remove('hidden');
-            const p = (score / 100) * 100;
-            document.getElementById('res-score').innerText = score + "/100";
-            
-            let m, c;
-            if(p >= 75) { m = "Good job!"; c = "#2ecc71"; }
-            else if(p >= 40) { m = "Review this chapter and try again."; c = "#f59e0b"; }
-            else { m = "Let's practise more."; c = "#e74c3c"; }
-            
-            document.getElementById('res-msg').innerText = m;
-            document.getElementById('res-msg').style.color = c;
-        }
-    </script>
-</body>
-</html>
+        const quizData = [
+            { q: "Two teams play tug-of-war. Team A pulls with 1200 N. Team B pulls with 1250 N. A player from Team B slips, reducing their force by 80 N. Where will the rope move?", o: ["Towards Team B with 50 N", "Towards Team B with 30 N", "Towards Team A with 30 N", "It will remain stationary"], c: 2, e: "Initial Team B = 1250N. New Team B = 1170N (1250-80). Net Force = 1200 - 1170 = 30 N towards Team A." },
+            { q: "A ball rolls on a frictionless surface. A force is applied exactly perpendicular (90°) to its motion. What happens?", o: ["The ball will speed up", "The ball will slow down and stop", "Speed remains same, but direction changes", "The ball will immediately stop"], c: 2, e: "A force perpendicular to motion changes the direction (centripetal effect) without changing the speed magnitude." },
+            { q: "Two identical spring balances are connected in series. A
