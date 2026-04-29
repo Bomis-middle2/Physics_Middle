@@ -1,1 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Force Interactive Quiz - Grade 8</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #f39c12;
+            --success: #2ecc71;
+            --error: #e74c3c;
+            --bg: #f0f4f8;
+            --text: #2c3e50;
+        }
 
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Background Animation */
+        .stars-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+        }
+
+        /* Branding Overlay */
+        #branding-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        #branding-overlay img { width: 200px; height: auto; }
+
+        /* Container */
+        .quiz-container {
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        .hidden { display: none; }
+
+        /* UI Elements */
+        .timer-bar {
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .timer-progress {
+            height: 100%;
+            background: var(--primary);
+            width: 100%;
+            transition: width 1s linear;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text { font-size: 1.2rem; margin-bottom: 20px; line-height: 1.4; }
+        
+        .q-image { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; }
+
+        .options-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            text-align: left;
+        }
+
+        .option-btn:hover { border-color: var(--primary); background: #f7f9fc; }
+        .correct { background: var(--success) !important; color: white; border-color: var(--success); }
+        .wrong { background: var(--error) !important; color: white; border-color: var(--error); }
+
+        /* Confetti/Feedback */
+        .feedback-icon { font-size: 3rem; margin-top: 10px; }
+        
+        .btn-main {
+            padding: 12px 25px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* Animation */
+        @keyframes starPop {
+            0% { transform: scale(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        .star { position: absolute; color: gold; animation: starPop 0.8s ease-out forwards; }
+    </style>
+</head>
+<body>
+
+    <div id="branding-overlay">
+        <img src="assets/logo.png" alt="Innovine Logo">
+    </div>
+
+    <div class="stars-container" id="stars"></div>
+
+    <div id="intro-screen" class="quiz-container">
+        <h1>Force</h1>
+        <p>Grade 8 | Science</p>
+        <p>Test your knowledge on the fundamental concepts of Force!</p>
+        <button class="btn-main" onclick="startQuiz()">Start Challenge</button>
+    </div>
+
+    <div id="quiz-screen" class="quiz-container hidden">
+        <div class="stats">
+            <span>Question: <span id="q-num">1</span>/10</span>
+            <span>Score: <span id="score">0</span></span>
+        </div>
+        <div class="timer-bar"><div id="timer" class="timer-progress"></div></div>
+        <div id="question-content">
+            <img id="question-img" class="q-image hidden" src="" alt="Question Illustration">
+            <p class="question-text" id="question-text"></p>
+            <div class="options-grid" id="options-container"></div>
+        </div>
+        <div id="explanation" class="hidden" style="margin-top:15px; padding:10px; background:#fef9e7; border-radius:8px; font-size:0.9rem;"></div>
+    </div>
+
+    <div id="result-screen" class="quiz-container hidden">
+        <h2 id="result-title">Quiz Complete!</h2>
+        <p style="font-size: 1.5rem;">Your Score: <span id="final-score">0</span>/10</p>
+        <button class="btn-main" onclick="location.reload()">Try Again</button>
+    </div>
+
+    <audio id="audio-correct" src="assets/correct.mp3"></audio>
+
+    <script>
+        const questions = [
+            { q: "Two brothers push a crate. Brother A pushes left with 50 N, Brother B pushes right with 30 N. Resultant force?", options: ["80 N to the right", "20 N to the left", "20 N to the right", "0 N"], correct: 1, explanation: "Forces in opposite directions are subtracted: 50N - 30N = 20N in the direction of the larger force (left)." },
+            { q: "Which effect of force is primarily demonstrated in this image?", options: ["Change in state of motion", "Change in direction", "Change in shape and size", "Increase in speed"], correct: 2, img: "assets/q2.png", explanation: "Force applied to objects like clay or rubber bands changes their physical shape." },
+            { q: "An object has a mass of 10 kg. If g = 10 m/s², what is its weight?", options: ["10 N", "1 N", "100 N", "0 N"], correct: 2, explanation: "Weight = Mass × Gravity. So, 10kg × 10m/s² = 100 N." },
+            { q: "A magnet attracts iron nails before touching them. This is an example of:", options: ["Contact Force", "Non-contact Force (Magnetic)", "Muscular Force", "Frictional Force"], correct: 1, explanation: "Magnetic force acts over a distance without physical contact." },
+            { q: "A student says: 'Mass and Weight are the same.' What is the error?", options: ["Mass is measured in Newtons.", "Mass is measured in kg, but Weight is a force in Newtons.", "Weight is measured in meters.", "There is no error."], correct: 1, explanation: "Mass is the matter content (kg), while weight is the gravitational pull (N)." },
+            { q: "Why does a cricketer pull his hands back while catching a ball?", options: ["To increase the force.", "To reduce force by increasing time.", "To stop the ball instantly.", "To look stylish."], correct: 1, explanation: "Increasing the time taken to stop the ball reduces the rate of change of momentum, lowering the impact force." },
+            { q: "Why does an astronaut’s weight change on the Moon, but mass stays the same?", options: ["The astronaut eats less.", "Mass is matter; weight depends on gravity.", "The Moon has no air.", "Mass depends on temperature."], correct: 1, explanation: "Mass is constant everywhere, but weight varies with the gravitational strength of the planet/moon." },
+            { q: "What does a spring balance specifically measure?", options: ["Mass", "Weight (Force of gravity)", "Volume", "Speed"], correct: 1, img: "assets/q8.png", explanation: "A spring balance measures the pull of gravity on an object, which is its weight." },
+            { q: "Identify the odd one out: Magnetic, Electrostatic, Frictional, Gravitational.", options: ["Magnetic force", "Electrostatic force", "Frictional force", "Gravitational force"], correct: 2, explanation: "Friction is a contact force; the others are non-contact forces." },
+            { q: "To stop a moving ball, in which direction should force be applied?", options: ["In the same direction.", "In the opposite direction.", "Upwards.", "No force needed."], correct: 1, explanation: "Force must be applied opposite to the direction of motion to decelerate or stop an object." }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+        let timer;
+        let timeLeft = 45;
+        let attempts = 0;
+
+        // Intro Branding
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('branding-overlay').style.opacity = '0';
+                setTimeout(() => document.getElementById('branding-overlay').remove(), 500);
+            }, 5000);
+        };
+
+        function startQuiz() {
+            document.getElementById('intro-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQ >= questions.length) return showResults();
+            
+            attempts = 0;
+            timeLeft = 45;
+            document.getElementById('explanation').classList.add('hidden');
+            document.getElementById('q-num').innerText = currentQ + 1;
+            
+            const qData = questions[currentQ];
+            document.getElementById('question-text').innerText = qData.q;
+            
+            const imgEl = document.getElementById('question-img');
+            if(qData.img) {
+                imgEl.src = qData.img;
+                imgEl.classList.remove('hidden');
+            } else {
+                imgEl.classList.add('hidden');
+            }
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            qData.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(i, btn);
+                container.appendChild(btn);
+            });
+
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            const bar = document.getElementById('timer');
+            timer = setInterval(() => {
+                timeLeft--;
+                bar.style.width = (timeLeft / 45 * 100) + '%';
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    revealCorrect();
+                }
+            }, 1000);
+        }
+
+        function checkAnswer(idx, btn) {
+            const correctIdx = questions[currentQ].correct;
+            
+            if (idx === correctIdx) {
+                clearInterval(timer);
+                btn.classList.add('correct');
+                score += (attempts === 0) ? 10 : 5;
+                document.getElementById('score').innerText = score;
+                createStars(btn);
+                playCorrectSound();
+                setTimeout(nextQuestion, 1500);
+            } else {
+                attempts++;
+                btn.classList.add('wrong');
+                btn.disabled = true;
+                showCross();
+                if (attempts >= 2) {
+                    clearInterval(timer);
+                    revealCorrect();
+                }
+            }
+        }
+
+        function playCorrectSound() {
+            const snd = document.getElementById('audio-correct');
+            if(snd) snd.play().catch(e => {});
+        }
+
+        function revealCorrect() {
+            const btns = document.querySelectorAll('.option-btn');
+            btns[questions[currentQ].correct].classList.add('correct');
+            const exp = document.getElementById('explanation');
+            exp.innerText = questions[currentQ].explanation;
+            exp.classList.remove('hidden');
+            setTimeout(nextQuestion, 4000);
+        }
+
+        function nextQuestion() {
+            currentQ++;
+            loadQuestion();
+        }
+
+        function showResults() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+        }
+
+        function createStars(target) {
+            for(let i=0; i<8; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                s.innerHTML = '★';
+                s.style.left = (target.offsetLeft + Math.random()*target.offsetWidth) + 'px';
+                s.style.top = target.offsetTop + 'px';
+                document.body.appendChild(s);
+                setTimeout(() => s.remove(), 800);
+            }
+        }
+
+        function showCross() {
+            // Subtle indicator for wrong answer
+            const body = document.body;
+            body.style.boxShadow = "inset 0 0 20px rgba(231, 76, 60, 0.3)";
+            setTimeout(() => body.style.boxShadow = "none", 500);
+        }
+    </script>
+</body>
+</html>
