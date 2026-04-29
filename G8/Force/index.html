@@ -3,100 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade 8 Science - Force</title>
+    <title>Grade 8 | Science | Force</title>
     <style>
-        :root { --primary: #4a90e2; --success: #2ecc71; --error: #e74c3c; --bg: #f0f4f8; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        
-        body { margin: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        :root { --p: #4a90e2; --s: #2ecc71; --e: #e74c3c; --bg: #f8fafc; --txt: #1e293b; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { margin: 0; background: var(--bg); color: var(--txt); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
 
-        /* BRANDING OVERLAY - AUTOMATIC TRANSITION */
-        #branding-overlay {
+        /* Background Theme */
+        #canvas-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%); }
+
+        /* Branding Overlay */
+        #logo-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #ffffff; display: flex; justify-content: center; align-items: center;
-            z-index: 9999;
-            animation: hideOverlay 0.5s 5.5s forwards; /* CSS Backup to hide automatically */
+            background: white; display: flex; justify-content: center; align-items: center;
+            z-index: 1000; transition: opacity 0.8s ease;
         }
-        #branding-overlay img { width: 250px; height: auto; }
+        #logo-screen img { width: 240px; max-width: 80%; }
 
-        @keyframes hideOverlay {
-            from { opacity: 1; visibility: visible; }
-            to { opacity: 0; visibility: hidden; }
-        }
-
-        /* MAIN UI */
-        .quiz-container {
-            width: 90%; max-width: 550px; background: white; padding: 30px;
-            border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center; position: relative;
+        /* Container */
+        .card {
+            width: 92%; max-width: 500px; background: white; padding: 25px;
+            border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center; position: relative; z-index: 10;
         }
         .hidden { display: none !important; }
 
-        .stats { display: flex; justify-content: space-between; font-weight: bold; color: var(--primary); margin-bottom: 10px; }
-        .timer-bar { height: 8px; background: #eee; border-radius: 4px; margin: 15px 0; overflow: hidden; }
-        #timer-fill { height: 100%; background: var(--primary); width: 100%; transition: width 1s linear; }
+        /* UI Elements */
+        .stats { display: flex; justify-content: space-between; font-weight: 700; color: var(--p); margin-bottom: 10px; font-size: 0.9rem; }
+        .timer-track { height: 6px; background: #eee; border-radius: 10px; margin: 15px 0; overflow: hidden; }
+        #timer-bar { height: 100%; background: var(--p); width: 100%; transition: width 1s linear; }
 
-        .q-img { width: 100%; max-height: 180px; object-fit: contain; margin-bottom: 15px; border-radius: 10px; }
-        .q-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; color: #2d3748; }
+        .q-img { width: 100%; max-height: 160px; object-fit: contain; margin-bottom: 15px; border-radius: 10px; background: #f1f5f9; }
+        .q-text { font-size: 1.15rem; font-weight: 600; margin-bottom: 20px; line-height: 1.4; color: #334155; }
 
-        .options-grid { display: grid; gap: 12px; }
-        .opt-btn {
-            padding: 16px; border: 2px solid #e2e8f0; border-radius: 12px;
+        .grid { display: grid; gap: 10px; }
+        .btn-opt {
+            padding: 14px; border: 2px solid #e2e8f0; border-radius: 12px;
             background: white; cursor: pointer; transition: 0.2s; font-size: 1rem; text-align: left;
         }
-        .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: #f7fafc; }
-        .correct { background: var(--success) !important; color: white; border-color: var(--success); }
-        .wrong { background: var(--error) !important; color: white; border-color: var(--error); }
+        .btn-opt:hover:not(:disabled) { border-color: var(--p); background: #f8fafc; }
+        .is-correct { background: var(--s) !important; color: white; border-color: var(--s); }
+        .is-wrong { background: var(--e) !important; color: white; border-color: var(--e); }
 
-        #explanation { margin-top: 15px; padding: 15px; background: #fffaf0; border-radius: 10px; border-left: 4px solid #f6ad55; text-align: left; font-size: 0.9rem; }
-        .btn-main { padding: 15px 40px; background: var(--primary); color: white; border: none; border-radius: 50px; font-size: 1.1rem; cursor: pointer; font-weight: bold; }
+        .btn-go { padding: 16px 40px; background: var(--p); color: white; border: none; border-radius: 50px; font-size: 1.1rem; cursor: pointer; font-weight: 700; margin-top: 10px; transition: transform 0.2s; }
+        .btn-go:hover { transform: scale(1.05); }
 
-        /* STAR ANIMATION */
-        .star { position: absolute; color: #f6e05e; pointer-events: none; animation: starAnim 0.7s forwards; font-size: 24px; }
-        @keyframes starAnim { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(1.5) translateY(-50px); opacity: 0; } }
+        #feedback { margin-top: 15px; padding: 12px; background: #fef3c7; border-radius: 10px; border-left: 4px solid #f59e0b; text-align: left; font-size: 0.9rem; }
+
+        /* Animations */
+        .sparkle { position: absolute; pointer-events: none; animation: fly 0.7s ease-out forwards; font-size: 20px; color: #facc15; }
+        @keyframes fly { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(1.5) translateY(-80px); opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <div id="branding-overlay">
-        <img src="assets/logo.png" alt="Innovine" onerror="this.style.display='none'">
+    <div id="canvas-bg"></div>
+
+    <div id="logo-screen">
+        <img src="assets/logo.png" alt="Innovine" onerror="this.parentNode.style.display='none'">
     </div>
 
-    <div id="intro-screen" class="quiz-container">
-        <h1 style="color:var(--primary); margin:0;">Force Mastery</h1>
-        <p>Grade 8 | Science</p>
-        <p style="color:#4a5568; margin-bottom:30px;">Challenge your understanding of forces!</p>
-        <button class="btn-main" onclick="startQuiz()">Start Quiz</button>
+    <div id="scr-intro" class="card">
+        <h1 style="color:var(--p); margin-top:0;">Force</h1>
+        <p>Science | Grade 8</p>
+        <p style="color:#64748b; margin-bottom:25px;">Test your ability to apply force concepts to real-world scenarios.</p>
+        <button class="btn-go" onclick="init()">Start Challenge</button>
     </div>
 
-    <div id="quiz-screen" class="quiz-container hidden">
+    <div id="scr-game" class="card hidden">
         <div class="stats">
-            <span>Question <span id="q-num">1</span>/10</span>
-            <span id="score-val">Score: 0</span>
+            <span>Question <span id="q-now">1</span>/10</span>
+            <span id="score-now">Score: 0</span>
         </div>
-        <div class="timer-bar"><div id="timer-fill"></div></div>
-        <div id="question-box">
+        <div class="timer-track"><div id="timer-bar"></div></div>
+        <div id="content">
             <img id="q-image" class="q-img hidden" src="">
-            <div id="q-text" class="q-text"></div>
-            <div id="options-box" class="options-grid"></div>
+            <div id="q-txt" class="q-text"></div>
+            <div id="options" class="grid"></div>
         </div>
-        <div id="explanation" class="hidden"></div>
+        <div id="feedback" class="hidden"></div>
     </div>
 
-    <div id="result-screen" class="quiz-container hidden">
-        <h2 style="color:var(--primary)">Quiz Results</h2>
-        <p id="final-stats" style="font-size:1.6rem; margin:20px 0;"></p>
-        <button class="btn-main" onclick="location.reload()">Retry Quiz</button>
+    <div id="scr-result" class="card hidden">
+        <h2 id="res-msg">Quiz Finished</h2>
+        <p id="res-score" style="font-size:1.8rem; margin:20px 0; font-weight:800;"></p>
+        <p id="res-comment" style="margin-bottom:25px; color:#64748b;"></p>
+        <button class="btn-go" onclick="location.reload()">Retry Chapter</button>
     </div>
 
-    <audio id="snd-right" src="assets/correct.mp3"></audio>
-    <audio id="snd-wrong" src="assets/wrong.mp3"></audio>
+    <audio id="aud-right" src="assets/correct.mp3"></audio>
+    <audio id="aud-wrong" src="assets/wrong.mp3"></audio>
 
     <script>
-        const data = [
-            { q: "Brother A pushes left (50 N), Brother B pushes right (30 N). Resultant force?", o: ["80 N to the right", "20 N to the left", "20 N to the right", "0 N"], c: 1, e: "Subtract opposite forces: 50N - 30N = 20N. Motion is in the direction of the stronger force (Left)." },
-            { q: "Which effect of force is primarily demonstrated by squeezing clay?", o: ["Change in state of motion", "Change in direction", "Change in shape and size", "Increase in speed"], c: 2, i: "assets/q2.png", e: "Force applied to certain materials changes their physical shape or volume." },
-            { q: "Mass is 10 kg, gravity is 10 m/s². What is the weight?", o: ["10 N", "1 N", "100 N", "0 N"], c: 2, e: "Weight = Mass × Gravity. 10 kg × 10 m/s² = 100 Newtons." },
-            { q: "Iron nails jumping toward a magnet is an example of:", o: ["Contact Force", "Non-contact Force", "Muscular Force", "Frictional Force"], c: 1, e: "Magnetic force is non-contact as it acts over a distance." },
-            { q: "Find the error: 'Mass and Weight are the same, both in kg.'", o: ["Mass is in Newtons.", "Mass is kg; Weight is in Newtons.", "Weight is in meters.", "No error."], c: 1, e: "Mass is the amount of matter; Weight is the force of gravity on that matter." },
-            { q: "Why does a fielder pull his hands back while catching
+        const db = [
+            { q: "Two brothers push a crate. Brother A pushes left (50N), Brother B pushes right (30N). Resultant force?", o: ["80N to the right", "20N to the left", "20N to the right", "0N"], c: 1, e: "Subtract opposite forces: 50N - 30N = 20N. It moves in the direction of the stronger force (Left)." },
+            { q: "Which effect of force is primarily demonstrated in this image?", o: ["Change in state of motion", "Change in direction", "Change in shape and size", "Increase in speed"], c: 2, i: "assets/q2.png", e: "Force applied to dough or clay changes its physical shape." },
+            { q: "An object is 10 kg. If gravity is 10 m/s², what is the weight?", o: ["10 N", "1 N", "100 N", "0 N"], c: 2, e: "Weight = Mass × Gravity (10kg × 10m/s² = 100N)." },
+            { q: "Iron nails jumping toward a magnet before touching it is an example of:", o: ["Contact Force", "Non-contact Force", "Muscular Force", "Frictional Force"], c: 1, e: "Magnetic force acts at a distance without physical contact." },
+            { q: "Student says: 'Mass and Weight are both measured in kg.' What is the error?", o: ["Mass is in Newtons.", "Mass is kg; Weight is Newtons.", "Weight is in meters.", "No error."], c: 1, e: "Mass is the amount of matter (kg); Weight is a force (Newtons)." },
+            { q: "A cricketer pulls his hands back while catching a fast ball to:", o: ["Increase force", "Reduce force by increasing time", "Stop ball instantly", "Look stylish"], c: 1, e: "Increasing time reduces the impact force felt by the hands." },
+            { q: "Astronaut weight changes on the Moon, but mass stays the same because:", o: ["Less food", "Mass is matter; weight is gravity", "No air", "Cold temperature"], c: 1, e: "Mass is constant everywhere, but weight depends on local gravitational pull." },
+            { q: "What does a spring balance measure?", o: ["Mass", "Weight", "Volume", "Speed"], c: 1, i
