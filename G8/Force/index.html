@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>G8 Physics | Force Mastery</title>
+    <title>G8 Physics | Strict Pool Randomizer</title>
     <style>
         :root { 
             --p: #f8fafc; --text: #1e293b; --acc: #3b82f6; 
@@ -22,14 +22,6 @@
             background-size: 60px 60px;
             animation: moveGrid 30s linear infinite;
         }
-
-        .symbol {
-            position: fixed; color: rgba(59, 130, 246, 0.12); font-weight: 800; 
-            font-family: serif; pointer-events: none; z-index: 2; user-select: none;
-        }
-
-        @keyframes moveGrid { from { transform: translate(0, 0); } to { transform: translate(60px, 60px); } }
-        @keyframes floatSymbol { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(var(--mx), var(--my)) rotate(360deg); } }
 
         .card {
             width: 92%; max-width: 600px; background: var(--glass); 
@@ -66,33 +58,26 @@
         #timer-bar { height: 100%; background: var(--acc); width: 100%; transition: width 1s linear; }
 
         #feedback { margin-top: 15px; padding: 12px; background: #fffbeb; border-radius: 10px; border-left: 5px solid var(--warn); text-align: left; font-size: 0.85rem; color: #92400e; }
-
-        @media (max-width: 600px) { .card { padding: 1.2rem; } h3 { font-size: 1rem; } .btn-opt { font-size: 0.85rem; padding: 10px; } }
     </style>
 </head>
 <body>
 
     <div id="blueprint"></div>
-    <div id="symbol-container"></div>
 
     <div id="logo-overlay">
-        <img src="assets/logo.png" alt="Innovine" style="width: 200px;" onerror="this.style.display='none'">
+        <h2 style="color:#3b82f6; font-family: sans-serif;">LOADING POOL...</h2>
     </div>
 
     <div id="scr-intro" class="card">
-        <h1 style="color:var(--acc); margin-bottom: 5px;">CBSE PHYSICS</h1>
-        <p style="font-weight: 600; color: #64748b;">Force & Pressure: Grade 8 CBQ</p>
-        <div style="text-align: left; font-size: 0.85rem; background: #f1f5f9; padding: 15px; border-radius: 12px; margin: 15px 0;">
-            • 10 Questions from your provided pool<br>
-            • 1 Random Final Logic Challenge<br>
-            • Mastery Scorecard Evaluation
-        </div>
-        <button class="btn-main" onclick="startQuiz()">INITIALIZE</button>
+        <h1 style="color:var(--acc); margin-bottom: 5px;">STRICT POOL QUIZ</h1>
+        <p style="font-weight: 600; color: #64748b;">Physics Competency randomizer</p>
+        <p style="font-size: 0.85rem; color: #94a3b8;">Only your provided questions will appear.</p>
+        <button class="btn-main" onclick="startQuiz()">START RANDOMIZER</button>
     </div>
 
     <div id="scr-quiz" class="card">
         <div style="display:flex; justify-content: space-between; font-size: 0.75rem; color: var(--acc); font-weight: 800;">
-            <span id="q-num">STEP 1/11</span>
+            <span id="q-num">QUESTION 1/11</span>
             <span id="score-now">PTS: 0</span>
         </div>
         <div id="timer-track"><div id="timer-bar"></div></div>
@@ -102,120 +87,58 @@
     </div>
 
     <div id="scr-result" class="card">
-        <h2 style="margin: 0;">REPORT GENERATED</h2>
+        <h2 style="margin: 0;">SESSION COMPLETE</h2>
         <div id="res-score" style="font-size:3.5rem; font-weight:900; color:var(--acc); margin: 10px 0;"></div>
         <p id="res-rank" style="font-weight: 800; color: var(--warn); margin: 5px 0;"></p>
-        <p id="res-desc" style="margin-bottom: 20px; color: #64748b; font-size: 0.9rem;"></p>
-        <button class="btn-main" onclick="location.reload()">RE-SYNC SYSTEM</button>
+        <button class="btn-main" onclick="location.reload()">RE-RANDOMIZE</button>
     </div>
 
     <script>
-        // SYMBOLS
-        const syms = ['F=ma', 'v=d/t', 'G', 'ΣF', 'm', 'a', 'W=mg', 'N', 'kg', 'Δ'];
-        const container = document.getElementById('symbol-container');
-        for(let i=0; i<20; i++) {
-            const div = document.createElement('div');
-            div.className = 'symbol';
-            div.innerText = syms[Math.floor(Math.random()*syms.length)];
-            div.style.left = Math.random()*100 + 'vw';
-            div.style.top = Math.random()*100 + 'vh';
-            div.style.setProperty('--mx', (Math.random()*300 - 150) + 'px');
-            div.style.setProperty('--my', (Math.random()*300 - 150) + 'px');
-            div.style.animation = `floatSymbol ${Math.random()*15 + 10}s linear infinite alternate`;
-            container.appendChild(div);
-        }
-
         setTimeout(() => {
-            const overlay = document.getElementById('logo-overlay');
-            overlay.style.opacity = '0';
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                const intro = document.getElementById('scr-intro');
-                intro.style.display = 'block';
-                setTimeout(() => { intro.style.opacity = '1'; intro.style.transform = 'translateY(0)'; }, 50);
-            }, 800);
-        }, 5000);
+            document.getElementById('logo-overlay').style.display = 'none';
+            document.getElementById('scr-intro').style.display = 'block';
+            setTimeout(() => { document.getElementById('scr-intro').style.opacity = '1'; document.getElementById('scr-intro').style.transform = 'translateY(0)'; }, 50);
+        }, 2000);
 
-        // THE 30 QUESTION POOL (EXACT WORDING)
-        const bigPool = [
-            { q: "Two identical toy cars, A and B, are pushed on a smooth floor. Car A is pushed with a force of 5 N to the right. Car B is pushed with 10 N to the right and 5 N to the left. Which statement is correct?", o: ["Car A moves faster because it has only one force.", "Car B moves slower because forces are pulling it back.", "Both cars move with the same resultant force (5 N to the right).", "Car B stays stationary because the forces cancel out."], c: 2, e: "Net force on B = 10N - 5N = 5N to the right." },
-            { q: "A block is acted upon by three forces: F1 = 10 N (North), F2 = 10 N (South), and F3 = 5 N (West). In which direction will the block move?", o: ["North", "South", "West", "It will not move at all."], c: 2, e: "Vertical forces cancel each other; only Westward force remains." },
-            { q: "A rocket is moving upward through the atmosphere. If the upward thrust (force) is exactly equal to the downward force of gravity and air resistance combined, the rocket will:", o: ["Fall back to Earth.", "Stop mid-air.", "Continue moving upward at a constant speed.", "Accelerate faster and faster."], c: 2, e: "Balanced forces result in a constant state of motion (Uniform Motion)." },
-            { q: "A heavy crate requires 50 N of force to start sliding. If two people pull it in the same direction with 20 N and 25 N respectively, will the crate move?", o: ["Yes, because 45 N is a large force.", "No, because the resultant force (45 N) is less than the required force (50 N).", "Yes, because any force causes motion.", "No, because the forces must be equal."], c: 1, e: "The total applied force must overcome the threshold of static friction." },
-            { q: "A student says, 'Force can only move an object that is at rest.' Why is this wrong?", o: ["Force can only stop objects.", "Force can only change the shape.", "Force can also change the speed or direction of an object already in motion.", "Force has no effect on stationary objects."], c: 2, e: "Force is defined as a push or pull that can change speed, direction, or shape." },
-            { q: "A person is skydiving. Before the parachute opens, the person experiences a downward pull and an upward 'drag.' Classify these forces.", o: ["Both are contact forces.", "Both are non-contact forces.", "Downward (Gravity) is non-contact; Upward (Air resistance) is contact.", "Downward (Gravity) is contact; Upward (Air resistance) is non-contact."], c: 2, e: "Gravity acts at a distance; Air resistance requires contact with air particles." },
-            { q: "Why is 'Magnetic Force' considered a non-contact force?", o: ["Because magnets are made of metal.", "Because it can attract or repel objects without physical touch.", "Because it only works in a vacuum.", "Because it is stronger than friction."], c: 1, e: "Non-contact forces act through fields without physical interaction." },
-            { q: "Which of the following is NOT an example of a contact force?", o: ["Muscular force used to lift a bag.", "Frictional force stopping a rolling ball.", "Electrostatic force attracting hair to a comb.", "Tension in a rope during tug-of-war."], c: 2, e: "Electrostatic force acts over a distance without touching." },
-            { q: "When we walk on the ground, which contact force prevents us from slipping?", o: ["Gravitational force", "Muscular force", "Frictional force", "Electrostatic force"], c: 2, e: "Friction provides the necessary traction for movement." },
-            { q: "A dry plastic scale is rubbed with silk and brought near a neutral copper wire. No attraction is observed. Why?", o: ["Copper is not magnetic.", "Metals allow the charge to flow away; electrostatic attraction is best seen with insulators like paper.", "Silk removes the force.", "The scale was not rubbed hard enough."], c: 1, e: "Conductors like copper dissipate static charges immediately." },
-            { q: "An object has a mass of 12 kg on Earth. What is its weight on Earth? (Take g = 10 N/kg)", o: ["1.2 N", "12 N", "120 N", "120 kg"], c: 2, e: "Weight = m * g = 12 kg * 10 N/kg = 120 N." },
-            { q: "An object is taken from Earth to the Moon. Which instrument will show a different reading on the Moon compared to Earth?", o: ["A beam balance (measures mass).", "A spring balance (measures weight).", "A ruler (measures length).", "A digital stopwatch (measures time)."], c: 1, e: "Weight depends on the local gravitational pull." },
-            { q: "If you go to a planet where gravity is double that of Earth's, your:", o: ["Mass will double, Weight stays same.", "Mass stays same, Weight stays same.", "Mass stays same, Weight will double.", "Mass will double, Weight will double."], c: 2, e: "Mass is an intrinsic property; Weight is m*g." },
-            { q: "A spring balance is used to measure the weight of a stone. If the same stone is submerged in water while still hanging from the balance, the reading will:", o: ["Decrease (due to upward buoyant force).", "Increase.", "Stay the same.", "Become zero."], c: 0, e: "The buoyant force of the water pushes the stone upward." },
-            { q: "Why is Weight measured in 'Newtons' and not 'Kilograms'?", o: ["Because Weight is a type of speed.", "Because Weight is a force exerted by gravity.", "Because Kilograms are only for liquids.", "Because Newton discovered the Moon."], c: 1, e: "Newton is the standard unit for any force, including gravity." },
-            { q: "A baker is pressing down on a ball of dough. What is the primary effect of the force applied?", o: ["Change in speed.", "Change in direction of motion.", "Change in shape and size.", "Change in mass."], c: 2, e: "Force applied to non-rigid bodies causes deformation." },
-            { q: "A goalkeeper catches a fast-moving football and brings it to rest. Which effect of force is demonstrated?", o: ["Changing the state of motion (from motion to rest).", "Changing the direction of motion.", "Changing the mass of the ball.", "Applying non-contact force."], c: 0, e: "Force is used to stop the ball's motion." },
-            { q: "A magnet is held near a compass. The needle of the compass deflects. This shows that force can:", o: ["Change the shape of the needle.", "Change the direction of motion.", "Increase the weight of the needle.", "Stop the needle from vibrating."], c: 1, e: "The magnetic force changes the orientation of the needle." },
-            { q: "You apply a force to a heavy wall, but the wall does not move. Which statement is true?", o: ["No force was applied.", "The wall has no mass.", "The force was not enough to overcome the inertia/friction of the wall.", "Force only works on small objects."], c: 2, e: "If the resultant force is not enough to overcome resistance, no motion occurs." },
-            { q: "If you apply the same amount of force to a tennis ball and a bowling ball, which one will have a greater change in speed?", o: ["The tennis ball (because it has less mass).", "The bowling ball (because it is larger).", "Both will have the same change.", "Neither will move."], c: 0, e: "F=ma; less mass results in greater acceleration for the same force." },
-            { q: "Two teams are pulling a rope. Team A pulls with 1500 N of force. Team B pulls with 1550 N. A player on Team B trips and stops pulling, which reduces their team's force by 100 N. What happens to the rope?", o: ["It moves towards Team B with a force of 50 N.", "It remains stationary.", "It moves towards Team A with a net force of 50 N.", "It moves towards Team A with a net force of 100 N."], c: 2, e: "Team B's new force = 1450N. Resultant = 1500 - 1450 = 50N towards A." },
-            { q: "A football is rolling at a constant speed across a field. A player kicks it in a direction exactly perpendicular (at a 90° angle) to its current path. How does the ball's motion change?", o: ["It continues in the same direction but faster.", "It stops moving immediately.", "Its direction changes, but its speed magnitude remains the same initially.", "It moves backward toward the player."], c: 2, e: "A force perpendicular to motion changes only the direction." },
-            { q: "An astronaut has a mass of 60 kg on Earth. If the gravity on the Moon is 1/6th of the gravity on Earth, what will be the astronaut's mass on the Moon?", o: ["10 kg", "360 kg", "60 kg", "0 kg"], c: 2, e: "Mass remains constant regardless of the gravitational environment." },
-            { q: "Two identical spring balances are connected in a vertical line (series). A 10 N weight is hung from the bottom balance. What will the top balance read?", o: ["5 N", "10 N", "20 N", "0 N"], c: 1, e: "In a series connection, the tension is the same throughout the line." },
-            { q: "A plastic scale is rubbed against a woolen sweater and held near small bits of paper. The paper bits 'jump' to the scale. This demonstrates:", o: ["Magnetic force can be created by plastic.", "Electrostatic force acts from a distance without contact.", "Muscular force is transferred to the paper.", "Friction is pulling the paper bits."], c: 1, e: "The scale is charged, attracting the paper through electrostatic force." },
-            { q: "A student says, 'If the resultant force on an object is Zero, it means the object cannot be moving.' Why is this statement incorrect?", o: ["Objects always move regardless of force.", "If net force is zero, an object can still be moving at a constant speed in a straight line.", "A zero net force causes objects to speed up.", "Net force can never be zero because of gravity."], c: 1, e: "Zero resultant force means zero acceleration, not necessarily zero velocity." },
-            { q: "You are trying to stop a heavy trolley moving toward you. In which direction must you apply the force relative to the trolley’s motion?", o: ["At a 90° angle to the trolley.", "In the same direction the trolley is moving.", "In the opposite direction of the trolley’s motion.", "Downward toward the ground."], c: 2, e: "Force must oppose motion to cause a decrease in speed." },
-            { q: "Which of the following scenarios describes 'Balanced Forces'?", o: ["A car speeding up to overtake a bus.", "A heavy book lying still on a table.", "A ball falling from a height.", "A plane taking off from a runway."], c: 1, e: "When forces are balanced, the object remains at rest or moves at a constant speed." },
-            { q: "Why does a baker apply force to a piece of dough?", o: ["To change its state of motion.", "To increase its mass.", "To change its shape and size.", "To increase the force of gravity on it."], c: 2, e: "Deformation is a primary effect of force on non-rigid objects." },
-            { q: "An object weighs 120 N on Earth (g = 10 m/s^2). On Planet X, the gravity is 5 m/s^2. What is the weight of the object on Planet X?", o: ["60 N", "120 N", "24 N", "240 N"], c: 0, e: "Mass = 12kg. Weight on Planet X = 12 kg * 5 m/s^2 = 60 N." }
+        // THE ONLY 20 QUESTIONS ALLOWED
+        const strictPool = [
+            { q: "A crane lifting a beam: Cable pulls up (12,000 N), Gravity pulls down (11,500 N), Air resistance pulls down (100 N). Resultant Force?", o: ["12,000 N Upward", "500 N Upward", "400 N Upward", "600 N Downward"], c: 2, e: "12,000 - (11,500 + 100) = 400 N Upward" },
+            { q: "Rope deadlock: Team A pulls 2000 N. Rope moves to Team B with 50 N resultant force after a new player joins. Team B's total force?", o: ["1950 N", "2050 N", "2100 N", "2000 N"], c: 1, e: "2000 + 50 = 2050 N" },
+            { q: "Person X pushes North (10 N), Person Y pushes East (10 N). Why move North-East?", o: ["North is stronger", "Forces cancel out", "Resultant acts along the diagonal of non-linear forces", "Force works in straight lines"], c: 2, e: "Diagonal resultant of perpendicular forces." },
+            { q: "Car on slope: Gravity down (3000 N), Brakes up (3000 N). Child pushes downhill (10 N). What happens?", o: ["Stays still", "Begins to move downhill", "Moves uphill", "Brakes increase to 3010 N"], c: 1, e: "Unbalanced force (10 N) causes motion." },
+            { q: "In which case is the Resultant Force zero?", o: ["Ball falling", "Car turning corner", "Book resting on table", "Rocket taking off"], c: 2, e: "Equilibrium state." },
+            { q: "Skydiver opens parachute; air hits the fabric causing an upward jerk. Classify this force:", o: ["Contact Force (Air Resistance)", "Non-contact (Gravity)", "Magnetic", "Electrostatic"], c: 0, e: "Mechanical contact with air." },
+            { q: "Student rubs a plastic comb; paper pieces jump to it without touch. This is:", o: ["Muscular", "Magnetic", "Non-contact (Electrostatic)", "Friction"], c: 2, e: "Field force (electrostatic)." },
+            { q: "Magnetic crane lifts car before touching it. This proves:", o: ["Magnetic is contact", "Magnetic is Non-contact", "Car is alive", "Gravity stopped"], c: 1, e: "Action at a distance." },
+            { q: "Which depends entirely on Muscular Force?", o: ["Magnet pulling needle", "Apple falling", "Weightlifter holding barbell", "Scale attracting hair"], c: 2, e: "Muscle contraction." },
+            { q: "Rolling ball stops. Which two forces acted on it?", o: ["Magnetic/Electrostatic", "Gravity (Non-contact) and Friction (Contact)", "Muscular/Magnetic", "Only Gravity"], c: 1, e: "Weight and surface resistance." },
+            { q: "Rover mass 120 kg on Earth. Mass on Moon (1/6th gravity)?", o: ["20 kg", "120 kg", "720 kg", "0 kg"], c: 1, e: "Mass never changes with location." },
+            { q: "Bag of flour mass 5 kg. Approximate weight on Earth (g=10)?", o: ["5 N", "0.5 N", "50 N", "500 N"], c: 2, e: "5 * 10 = 50 N" },
+            { q: "Planet X has double Earth's gravity. Weight 500 N on Earth becomes:", o: ["250 N", "500 N", "1000 N", "100 N"], c: 2, e: "Double gravity = Double weight." },
+            { q: "Which instrument gives the same reading on Jupiter as on Earth?", o: ["Spring Balance", "Beam Balance", "Weighing Scale", "All of above"], c: 1, e: "Beam balance compares mass, which is constant." },
+            { q: "Falling elevator feels weightless because:", o: ["Gravity vanished", "Mass is zero", "No contact force from floor to oppose gravity", "Too fast"], c: 2, e: "Loss of normal reaction force." },
+            { q: "Spring balance measures 10 N. Spring snaps. Pointer shows:", o: ["0 N", "10 N", "Maximum reading", "5 N"], c: 0, e: "No spring tension." },
+            { q: "Sponge changes shape under force, brick does not. Why?", o: ["Force only on sponge", "Depends on rigidity", "Brick has no mass", "Solid shape can't change"], c: 1, e: "Rigidity factor." },
+            { q: "Batsman hits cricket ball. Ball flies to boundary. Prominent effect?", o: ["Change in mass", "Change in direction of motion", "Change in shape", "Rest to motion"], c: 1, e: "Redirection of velocity." },
+            { q: "Toy car (2 m/s) pushed in opposite direction. Result?", o: ["Speed decreases", "Speed increases", "Mass increases", "Non-contact force"], c: 0, e: "Deceleration." },
+            { q: "Iron ball vs plastic ball. Why more force to move iron?", o: ["Iron is magnetic", "Inertia/Force depends on mass", "Plastic has no gravity", "Friction only on iron"], c: 1, e: "More mass = more resistance to change." }
         ];
 
-        // THE 4 FINAL CHALLENGES
-        const finalChallenges = [
-            { 
-                q: "FINAL CHALLENGE 1: Team A and Team B are in a perfectly balanced tug-of-war. The rope is not moving. Suddenly, both teams decide to pull twice as hard at the exact same moment. What happens to the Resultant Force and Tension?", 
-                o: ["Resultant doubles, Tension stays same", "Resultant stays Zero, Tension increases", "Resultant decreases, Tension increases", "Both stay exactly the same"], 
-                c: 1, 
-                e: "The Resultant Force remains Zero because the increases cancel out, but internal Tension increases significantly." 
-            },
-            { 
-                q: "FINAL CHALLENGE 2: An astronaut inside the ISS appears to float and a spring balance shows 0 N, even though gravity is 90% of Earth's value. Why?", 
-                o: ["No gravity in orbit", "Moving at the speed of light", "The astronaut and ISS are in a state of Free Fall", "The scale is broken in space"], 
-                c: 2, 
-                e: "Free Fall means both the scale and astronaut fall together, so there's no support force to compress the spring." 
-            },
-            { 
-                q: "FINAL CHALLENGE 3: A rectangular brick is pulled on its broad side, then flipped to its narrow side and pulled again at the same speed. Does friction change?", 
-                o: ["Yes, narrow side has higher friction", "Yes, broad side has higher friction", "No, the reading will be the same", "Depends on the air pressure"], 
-                c: 2, 
-                e: "Friction is independent of contact area; it only depends on the nature of the surfaces and the weight." 
-            },
-            { 
-                q: "FINAL CHALLENGE 4: A car is traveling down a highway at a perfectly constant speed of 100 km/h in a straight line. The Resultant Force is:", 
-                o: ["100 N", "Equal to the engine's force", "Zero", "Equal to the air resistance only"], 
-                c: 2, 
-                e: "If velocity is constant, the resultant force must be zero (Engine force = Friction + Air resistance)." 
-            }
+        const finalPool = [
+            { q: "FINAL: Balanced tug-of-war. Both pull twice as hard. Result?", o: ["Moves to B", "Resultant Zero, Tension increases", "Resultant doubles", "Rope breaks"], c: 1, e: "Zero net force, higher stress." },
+            { q: "FINAL: Floating astronaut (0 N) in 90% gravity. Why?", o: ["No gravity", "Free Fall state", "Vacuum", "Light speed"], c: 1, e: "Scale falls with person." },
+            { q: "FINAL: Brick on broad vs narrow side. Friction?", o: ["Narrow higher", "Broad higher", "Same reading", "Area dependent"], c: 2, e: "Area doesn't affect friction." },
+            { q: "FINAL: Car at constant 100 km/h in straight line. Resultant?", o: ["100 N", "Equal to engine", "Zero", "Engine-Friction"], c: 2, e: "Zero acceleration." }
         ];
 
         let session = [], current = 0, score = 0, timer, time = 45, lock = false, tries = 0;
-        let finalCorrect = false;
 
         function startQuiz() {
-            // Pick 10 random questions from the core pool
-            let shuffledCore = [...bigPool].sort(() => 0.5 - Math.random());
-            session = shuffledCore.slice(0, 10);
-            
-            // Pick 1 random final challenge
-            let shuffledFinal = [...finalChallenges].sort(() => 0.5 - Math.random());
-            session.push(shuffledFinal[0]);
-
+            let shuffled = [...strictPool].sort(() => 0.5 - Math.random()).slice(0, 10);
+            let final = finalPool[Math.floor(Math.random() * finalPool.length)];
+            session = [...shuffled, final];
             document.getElementById('scr-intro').style.display = 'none';
             document.getElementById('scr-quiz').style.display = 'block';
-            setTimeout(() => { 
-                document.getElementById('scr-quiz').style.opacity = '1'; 
-                document.getElementById('scr-quiz').style.transform = 'translateY(0)'; 
-            }, 50);
             render();
         }
 
@@ -223,7 +146,7 @@
             if(current >= session.length) return end();
             lock = false; tries = 0; time = 45;
             document.getElementById('feedback').style.display = 'none';
-            document.getElementById('q-num').innerText = (current === 10) ? "FINAL CHALLENGE" : `STEP ${current+1}/11`;
+            document.getElementById('q-num').innerText = `STEP ${current + 1}/11`;
             document.getElementById('q-txt').innerText = session[current].q;
             const box = document.getElementById('options');
             box.innerHTML = '';
@@ -252,57 +175,29 @@
                 lock = true; clearInterval(timer);
                 btn.classList.add('is-correct');
                 score += (tries === 0) ? 10 : 5;
-                if(current === 10) finalCorrect = true;
                 document.getElementById('score-now').innerText = "PTS: " + score;
-                setTimeout(() => { current++; render(); }, 1500);
+                setTimeout(() => { current++; render(); }, 1200);
             } else {
                 tries++;
                 btn.classList.add('is-wrong'); btn.disabled = true;
-                if(tries === 1) {
-                    const fb = document.getElementById('feedback');
-                    fb.innerText = "HINT: Sensors indicate a conceptual mismatch. Re-evaluate the forces acting in this scenario.";
-                    fb.style.display = 'block';
-                } else {
-                    lock = true; clearInterval(timer); reveal();
-                }
+                document.getElementById('feedback').innerText = "Wrong. Try again.";
+                document.getElementById('feedback').style.display = 'block';
+                if(tries >= 2) { lock = true; clearInterval(timer); reveal(); }
             }
         }
 
         function reveal() {
             const btns = document.querySelectorAll('.btn-opt');
             btns[session[current].c].classList.add('is-correct');
-            const fb = document.getElementById('feedback');
-            fb.innerHTML = `<b>EXPLANATION:</b> ${session[current].e}`;
-            fb.style.display = 'block';
-            setTimeout(() => { current++; render(); }, 5000);
+            document.getElementById('feedback').innerHTML = `<b>Solution:</b> ${session[current].e}`;
+            setTimeout(() => { current++; render(); }, 3000);
         }
 
         function end() {
             document.getElementById('scr-quiz').style.display = 'none';
             document.getElementById('scr-result').style.display = 'block';
-            setTimeout(() => { 
-                document.getElementById('scr-result').style.opacity = '1'; 
-                document.getElementById('scr-result').style.transform = 'translateY(0)'; 
-            }, 50);
-            
             document.getElementById('res-score').innerText = score + "/110";
-            const rank = document.getElementById('res-rank');
-            const desc = document.getElementById('res-desc');
-            
-            // Mastery Scorecard Logic based on YOUR requirements
-            if(score === 110) {
-                rank.innerText = "PHYSICS MASTER";
-                desc.innerText = "You have a deep, conceptual understanding of Grade 8 Physics!";
-            } else if(finalCorrect) {
-                rank.innerText = "FORCE EXPERT";
-                desc.innerText = "You can handle complex scenarios well!";
-            } else if(score >= 60) {
-                rank.innerText = "PHYSICS PRACTITIONER";
-                desc.innerText = "You have a good handle on the basics.";
-            } else {
-                rank.innerText = "FORCE APPRENTICE";
-                desc.innerText = "Go back and review the 'Resultant Force' section.";
-            }
+            document.getElementById('res-rank').innerText = score >= 100 ? "MASTER" : score >= 60 ? "PRACTITIONER" : "APPRENTICE";
         }
     </script>
 </body>
