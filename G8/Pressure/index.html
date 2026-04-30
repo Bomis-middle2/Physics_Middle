@@ -1,1 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 8 Physics - Pressure Interactive</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #f39c12;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --bg: #f0f4f8;
+            --text: #2c3e50;
+        }
 
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Background Animation */
+        .bg-elements {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: rgba(74, 144, 226, 0.1);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: float 10s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-10vh) rotate(360deg); }
+        }
+
+        /* Branding Overlay */
+        #brand-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        #brand-layer img { max-width: 200px; height: auto; }
+
+        /* Main Container */
+        .game-container {
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+            text-align: center;
+        }
+
+        .hidden { display: none !important; }
+
+        /* UI Elements */
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        #timer-fill {
+            height: 100%;
+            background: var(--secondary);
+            width: 100%;
+            transition: width 1s linear;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover { transform: scale(1.05); }
+
+        .option-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover { border-color: var(--primary); background: #ebf3ff; }
+
+        .correct { background: var(--success) !important; color: white; border-color: #27ae60; }
+        .wrong { background: var(--danger) !important; color: white; border-color: #c0392b; }
+
+        /* Visual Logic for Picture Questions */
+        .visual-box {
+            background: #eef2f7;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 2px dashed #ccc;
+            font-style: italic;
+        }
+
+        /* Feedback Layer */
+        #feedback { margin-top: 15px; font-weight: bold; min-height: 1.5em; }
+
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 10px; height: 10px;
+            background: gold;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="brand-layer">
+        <img src="assets/logo.png" alt="Innovine Logo">
+    </div>
+
+    <div class="bg-elements" id="stars"></div>
+
+    <div class="game-container">
+        <div id="intro">
+            <h1>Chapter 2: Pressure</h1>
+            <p>Grade 8 | Physics</p>
+            <p>Test your understanding of force, area, and real-world applications of pressure!</p>
+            <button class="btn" onclick="startGame()">Start Interactive</button>
+        </div>
+
+        <div id="quiz" class="hidden">
+            <div class="header-info">
+                <span>Score: <span id="score">0</span></span>
+                <span>Question: <span id="q-num">1</span>/10</span>
+            </div>
+            <div class="timer-bar"><div id="timer-fill"></div></div>
+            
+            <div id="visual-container" class="hidden"></div>
+            <h3 id="question-text">Question text goes here?</h3>
+            
+            <div id="options"></div>
+            <div id="feedback"></div>
+            <button id="next-btn" class="btn hidden" onclick="nextQuestion()">Next Question</button>
+        </div>
+
+        <div id="result" class="hidden">
+            <h2>Interactive Complete!</h2>
+            <h1 id="final-score">0/10</h1>
+            <p id="result-msg"></p>
+            <button class="btn" onclick="location.reload()">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "Why do school bags have wide straps instead of thin strings?",
+                options: ["Wide straps look better.", "Wide straps distribute weight over a larger area, reducing pressure.", "Thin strings are more expensive.", "Wide straps increase the force."],
+                ans: 1,
+                hint: "Think about the relationship between Area and Pressure.",
+                explain: "Correct! Pressure = Force/Area. A larger area (wide strap) results in less pressure on your shoulders."
+            },
+            {
+                q: "From which hole will the water squirt out the furthest?",
+                visual: "[Diagram: A tall cylinder with three holes at the top, middle, and bottom]",
+                options: ["The top hole.", "The middle hole.", "The bottom hole.", "All will be the same."],
+                ans: 2,
+                hint: "Does water push harder at the surface or at the bottom?",
+                explain: "Correct! Liquid pressure increases with depth, pushing the water out with more force at the bottom."
+            },
+            {
+                q: "A force of 100 N is applied on an area of 2 m². What is the pressure?",
+                options: ["200 Pa", "50 Pa", "102 Pa", "0.02 Pa"],
+                ans: 1,
+                hint: "Use the formula: Pressure = Force ÷ Area.",
+                explain: "Correct! 100 N / 2 m² = 50 Pa."
+            },
+            {
+                q: "Deep-sea divers wear special thick suits. Why is this necessary?",
+                options: ["To keep them warm.", "To protect from high water pressure at great depths.", "To help them swim faster.", "To carry more oxygen."],
+                ans: 1,
+                hint: "Water is very heavy. What happens as you go deeper?",
+                explain: "Correct! At great depths, the weight of the water above creates intense pressure that could crush a human."
+            },
+            {
+                q: "A student claims, 'Atmospheric pressure is highest on top of Mt. Everest.' Correct this.",
+                options: ["Pressure decreases with altitude; it is lowest at the top.", "Pressure is the same everywhere.", "Air has no weight, so there is no pressure.", "Pressure only exists in water."],
+                ans: 0,
+                hint: "Is there more air above you at sea level or on a mountain peak?",
+                explain: "Correct! Atmospheric pressure is caused by the column of air above us. Higher up, there is less air, so pressure is lower."
+            },
+            {
+                q: "Why do camels walk easily on desert sand while humans sink?",
+                options: ["Camels are lighter.", "Camels have broad feet that decrease pressure on sand.", "Camels have special fur.", "Humans apply more force."],
+                ans: 1,
+                hint: "Compare the size of a human foot to a camel's foot.",
+                explain: "Correct! The large surface area of their feet spreads their weight, reducing the pressure applied to the sand."
+            },
+            {
+                q: "A sharp knife cuts a fruit easily because:",
+                options: ["The force is higher.", "The small area of the sharp edge creates high pressure.", "The knife is cold.", "The fruit is soft."],
+                ans: 1,
+                hint: "A sharp knife has a very thin edge (tiny area).",
+                explain: "Correct! A smaller area increases the pressure, allowing the knife to slice through easily with less force."
+            },
+            {
+                q: "What keeps a suction cup stuck to a smooth wall?",
+                visual: "[Diagram: A suction cup pressed against glass]",
+                options: ["Glue", "Atmospheric pressure pushing from the outside.", "Magnetic force.", "Gravity."],
+                ans: 1,
+                hint: "When air is pushed out, what pushes the cup from the outside?",
+                explain: "Correct! By pushing air out, the pressure inside is low, and the high atmospheric pressure outside holds it tight."
+            },
+            {
+                q: "Identify the unit NOT used for pressure:",
+                options: ["Pascal", "N/m²", "Newton", "Bar"],
+                ans: 2,
+                hint: "One of these is the unit for Force, not Pressure.",
+                explain: "Correct! Newton (N) is the unit of Force. Pressure is Force per unit Area."
+            },
+            {
+                q: "If you stand on one foot instead of two, the pressure on the ground:",
+                options: ["Increases", "Decreases", "Stays the same", "Becomes zero"],
+                ans: 0,
+                hint: "Your weight (Force) is the same, but the Area has decreased.",
+                explain: "Correct! Standing on one foot halves the area, which doubles the pressure on the ground."
+            }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+        let timer;
+        let timeLeft = 45;
+        let attempts = 0;
+
+        // Branding logic
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('brand-layer').style.opacity = '0';
+                setTimeout(() => document.getElementById('brand-layer').classList.add('hidden'), 500);
+            }, 5000);
+            createStars();
+        };
+
+        function createStars() {
+            const container = document.getElementById('stars');
+            for(let i=0; i<15; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.width = star.style.height = (Math.random() * 20 + 10) + 'px';
+                star.style.animationDelay = (Math.random() * 10) + 's';
+                container.appendChild(star);
+            }
+        }
+
+        function startGame() {
+            document.getElementById('intro').classList.add('hidden');
+            document.getElementById('quiz').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const qData = questions[currentQ];
+            document.getElementById('q-num').innerText = currentQ + 1;
+            document.getElementById('question-text').innerText = qData.q;
+            document.getElementById('feedback').innerText = "";
+            document.getElementById('next-btn').classList.add('hidden');
+            
+            const visual = document.getElementById('visual-container');
+            if(qData.visual) {
+                visual.innerText = qData.visual;
+                visual.classList.remove('hidden');
+                visual.className = "visual-box";
+            } else {
+                visual.classList.add('hidden');
+            }
+
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = "";
+            qData.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn";
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(idx, btn);
+                optionsDiv.appendChild(btn);
+            });
+
+            attempts = 0;
+            startTimer();
+        }
+
+        function startTimer() {
+            timeLeft = 45;
+            clearInterval(timer);
+            const fill = document.getElementById('timer-fill');
+            timer = setInterval(() => {
+                timeLeft--;
+                fill.style.width = (timeLeft / 45 * 100) + '%';
+                if(timeLeft <= 0) {
+                    clearInterval(timer);
+                    revealCorrect();
+                }
+            }, 1000);
+        }
+
+        function checkAnswer(idx, btn) {
+            const qData = questions[currentQ];
+            const feedback = document.getElementById('feedback');
+            
+            if(idx === qData.ans) {
+                clearInterval(timer);
+                btn.classList.add('correct');
+                feedback.innerHTML = `<span style="color:var(--success)">${qData.explain}</span>`;
+                score++;
+                document.getElementById('score').innerText = score;
+                disableOptions();
+                showConfetti();
+                document.getElementById('next-btn').classList.remove('hidden');
+            } else {
+                attempts++;
+                btn.classList.add('wrong');
+                if(attempts === 1) {
+                    feedback.innerHTML = `<span style="color:var(--danger)">Not quite. Hint: ${qData.hint}</span>`;
+                } else {
+                    clearInterval(timer);
+                    revealCorrect();
+                }
+            }
+        }
+
+        function revealCorrect() {
+            const btns = document.getElementsByClassName('option-btn');
+            btns[questions[currentQ].ans].classList.add('correct');
+            document.getElementById('feedback').innerHTML = `<span>Out of attempts! ${questions[currentQ].explain}</span>`;
+            disableOptions();
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function disableOptions() {
+            const btns = document.getElementsByClassName('option-btn');
+            for(let b of btns) b.disabled = true;
+        }
+
+        function nextQuestion() {
+            currentQ++;
+            if(currentQ < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz').classList.add('hidden');
+            document.getElementById('result').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `${score}/${questions.length}`;
+            
+            let msg = "";
+            if(score === 10) msg = "Perfect! You are a Pressure Expert!";
+            else if(score > 7) msg = "Great job! You have a strong understanding.";
+            else msg = "Good effort! Review the relationship between Force and Area.";
+            document.getElementById('result-msg').innerText = msg;
+        }
+
+        function showConfetti() {
+            for(let i=0; i<15; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + '%';
+                c.style.top = Math.random() * 100 + '%';
+                c.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 50%)`;
+                document.querySelector('.game-container').appendChild(c);
+                setTimeout(() => c.remove(), 1000);
+            }
+        }
+    </script>
+</body>
+</html>
