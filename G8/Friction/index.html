@@ -1,1 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 8 Science - Friction Interactive</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e67e22;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --bg: #ecf0f1;
+        }
 
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Logo Branding Layer */
+        #brand-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.8s ease;
+        }
+        #brand-layer img { max-width: 250px; }
+
+        /* Background Visuals */
+        .bg-elements {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #d5d8dc 0%, #aab7b8 100%);
+        }
+
+        .floating-star {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 20px;
+            animation: float 8s infinite linear;
+        }
+
+        @keyframes float {
+            from { transform: translateY(110vh) rotate(0deg); }
+            to { transform: translateY(-10vh) rotate(360deg); }
+        }
+
+        /* Container */
+        .game-card {
+            width: 90%;
+            max-width: 750px;
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            position: relative;
+            z-index: 10;
+        }
+
+        .hidden { display: none !important; }
+
+        /* HUD */
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .timer-track {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+
+        #timer-bar {
+            width: 100%;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+            transition: width 1s linear;
+        }
+
+        /* Question Content */
+        h2 { font-size: 1.3rem; margin-bottom: 20px; line-height: 1.4; }
+
+        .img-container {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+            background: #fdfdfd;
+            border-radius: 12px;
+        }
+
+        .img-container img {
+            max-height: 200px;
+            max-width: 100%;
+            border-radius: 8px;
+            border: 2px solid #eee;
+        }
+
+        .options-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option-item {
+            background: #fff;
+            border: 2px solid #dcdde1;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        .option-item:hover:not(:disabled) {
+            border-color: var(--accent);
+            background: #fff8f0;
+        }
+
+        .correct { background: var(--success) !important; color: white; border-color: #219150; }
+        .wrong { background: var(--danger) !important; color: white; border-color: #c0392b; }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .btn-next {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            float: right;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 12px; height: 12px;
+            background: gold;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="brand-layer">
+        <img src="assets/logo.png" alt="Innovine Logo">
+    </div>
+
+    <div class="bg-elements" id="stars"></div>
+
+    <div class="game-card">
+        <div id="screen-start" class="text-center">
+            <h1 style="color:var(--primary)">Chapter 3: Friction</h1>
+            <p>Grade 8 Science | Competency-Based Interactive</p>
+            <p>Explore why friction is a 'necessary evil' through real-life scenarios.</p>
+            <button class="btn-next" style="float:none" onclick="startQuiz()">Begin Match</button>
+        </div>
+
+        <div id="screen-quiz" class="hidden">
+            <div class="hud">
+                <span>Question: <span id="q-count">1</span>/10</span>
+                <span>Score: <span id="score">0</span></span>
+            </div>
+            <div class="timer-track"><div id="timer-bar"></div></div>
+
+            <div id="media-box" class="img-container hidden">
+                <img id="q-img" src="" alt="Friction Illustration">
+            </div>
+
+            <h2 id="q-text"></h2>
+            
+            <div class="options-list" id="options-box"></div>
+            <div id="feedback-box" class="feedback hidden"></div>
+            
+            <button id="btn-continue" class="btn-next hidden" onclick="nextQuestion()">Continue</button>
+        </div>
+
+        <div id="screen-result" class="hidden text-center">
+            <h2 style="font-size: 2rem;">Activity Complete!</h2>
+            <h1 id="final-score" style="font-size: 4rem; color: var(--accent);">0/10</h1>
+            <p id="result-msg"></p>
+            <button class="btn-next" style="float:none" onclick="location.reload()">Restart</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "Why do kabaddi players rub their hands with soil before a match?",
+                options: ["To clean their hands.", "To increase friction for a better grip.", "To reduce friction so they can slide.", "For good luck."],
+                ans: 1,
+                hint: "Does soil make a surface smoother or rougher?",
+                explain: "Correct! Soil increases the irregularities on the skin, providing more friction for a firm grip on the opponent."
+            },
+            {
+                q: "Why are ball-bearings used in fans and bicycle wheels?",
+                img: "assets/q2.jpg",
+                options: ["To make them look shiny.", "To convert sliding friction into rolling friction.", "To increase the weight.", "To stop the wheels."],
+                ans: 1,
+                hint: "Rolling friction is always much smaller than sliding friction.",
+                explain: "Exactly! Ball-bearings roll, which significantly reduces the energy lost to friction."
+            },
+            {
+                q: "An experiment shows: Static Friction (5N), Sliding Friction (4N), and Rolling Friction (2N). Which is strongest?",
+                options: ["Static Friction", "Sliding Friction", "Rolling Friction", "They are all equal."],
+                ans: 0,
+                hint: "Static friction must overcome the 'interlocking' of surfaces at rest.",
+                explain: "Correct! Static friction is the highest because it takes more force to break the initial interlocking between two surfaces."
+            },
+            {
+                q: "Aeroplanes and birds have 'streamlined bodies'. Why is this body shape necessary?",
+                options: ["To help them hide.", "To reduce fluid friction (Air drag).", "To increase their weight.", "To make them look like fish."],
+                ans: 1,
+                hint: "Friction isn't just for solids; air and water push back too!",
+                explain: "Correct! A streamlined shape allows air to flow smoothly around the object, reducing 'drag'."
+            },
+            {
+                q: "A student says: 'Friction is always a nuisance and should be removed completely.' Why is this wrong?",
+                options: ["Friction cannot be measured.", "Friction is a 'necessary evil'; we need it to walk and write.", "Friction only exists in solids.", "Friction produces electricity."],
+                ans: 1,
+                hint: "Imagine trying to walk on perfectly smooth ice with zero friction.",
+                explain: "Correct! Without friction, we couldn't walk, write, or even stop a moving car."
+            },
+            {
+                q: "Why do car tyres have deep 'treads' or grooves?",
+                options: ["To save rubber.", "To increase friction and provide better grip on wet roads.", "To make the car move faster.", "To reduce the weight of the tyre."],
+                ans: 1,
+                hint: "Water on the road can act as a lubricant, making it slippery.",
+                explain: "Correct! Treads help push water away and maintain friction between the tyre and the road."
+            },
+            {
+                q: "Why is it extremely difficult to walk on a wet marble floor?",
+                options: ["The floor becomes hard.", "Water fills surface irregularities, reducing friction.", "Water increases gravity.", "The floor becomes sticky."],
+                ans: 1,
+                hint: "Water acts as a lubricant between your foot and the floor.",
+                explain: "Correct! Water smoothens out the microscopic hills and valleys of the floor, causing you to slip."
+            },
+            {
+                q: "Look at the image. Why does the person find using a trolley easier than dragging a box?",
+                img: "assets/q8.jpg",
+                options: ["Trolleys have engines.", "Rolling friction is less than sliding friction.", "Trolleys eliminate gravity.", "The box becomes lighter."],
+                ans: 1,
+                hint: "Think about the wheels on the trolley.",
+                explain: "Correct! Wheels roll rather than slide, which greatly reduces the resistive force of friction."
+            },
+            {
+                q: "Identify the method that does NOT reduce friction:",
+                options: ["Lubrication", "Polishing", "Using rollers", "Treading of tyres"],
+                ans: 3,
+                hint: "One of these is designed specifically to make a surface rougher.",
+                explain: "Correct! Treading is used to *increase* friction for safety, while the others are for reducing it."
+            },
+            {
+                q: "Which substance would you use to reduce friction in a squeaking door hinge?",
+                options: ["Sand", "Water", "Oil or Grease", "Wood powder"],
+                ans: 2,
+                hint: "You need a lubricant to make the metal surfaces glide.",
+                explain: "Correct! Oil and grease are lubricants that form a thin layer between surfaces to reduce friction."
+            }
+        ];
+
+        let curIdx = 0, score = 0, timer, timeLeft = 45, attempts = 0;
+
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('brand-layer').style.opacity = '0';
+                setTimeout(() => document.getElementById('brand-layer').classList.add('hidden'), 800);
+            }, 5000);
+            genStars();
+        };
+
+        function genStars() {
+            const container = document.getElementById('stars');
+            for(let i=0; i<15; i++) {
+                const s = document.createElement('div');
+                s.className = 'floating-star';
+                s.innerText = '★';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.animationDelay = Math.random() * 8 + 's';
+                container.appendChild(s);
+            }
+        }
+
+        function startQuiz() {
+            document.getElementById('screen-start').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const data = questions[curIdx];
+            attempts = 0;
+            document.getElementById('q-count').innerText = curIdx + 1;
+            document.getElementById('q-text').innerText = data.q;
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('btn-continue').classList.add('hidden');
+            
+            const media = document.getElementById('media-box');
+            if(data.img) {
+                document.getElementById('q-img').src = data.img;
+                media.classList.remove('hidden');
+            } else { media.classList.add('hidden'); }
+
+            const box = document.getElementById('options-box');
+            box.innerHTML = '';
+            data.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-item';
+                btn.innerText = opt;
+                btn.onclick = () => checkAns(i, btn);
+                box.appendChild(btn);
+            });
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = 45;
+            const bar = document.getElementById('timer-bar');
+            bar.style.width = '100%';
+            timer = setInterval(() => {
+                timeLeft--;
+                bar.style.width = (timeLeft/45 * 100) + '%';
+                if(timeLeft <= 0) { clearInterval(timer); revealCorrect(); }
+            }, 1000);
+        }
+
+        function checkAns(idx, btn) {
+            const data = questions[curIdx];
+            const feedback = document.getElementById('feedback-box');
+            
+            if(idx === data.ans) {
+                clearInterval(timer);
+                btn.classList.add('correct');
+                score++;
+                document.getElementById('score').innerText = score;
+                feedback.innerHTML = `<b style="color:var(--success)">Excellent!</b><br>${data.explain}`;
+                feedback.classList.remove('hidden');
+                triggerConfetti();
+                disableOptions();
+                document.getElementById('btn-continue').classList.remove('hidden');
+            } else {
+                attempts++;
+                btn.classList.add('wrong');
+                btn.disabled = true;
+                if(attempts === 1) {
+                    feedback.innerHTML = `<b style="color:var(--danger)">Not quite.</b><br>Hint: ${data.hint}`;
+                    feedback.classList.remove('hidden');
+                } else {
+                    clearInterval(timer);
+                    revealCorrect();
+                }
+            }
+        }
+
+        function revealCorrect() {
+            const data = questions[curIdx];
+            const btns = document.querySelectorAll('.option-item');
+            btns[data.ans].classList.add('correct');
+            document.getElementById('feedback-box').innerHTML = `<b style="color:var(--primary)">Correct Answer Revealed:</b><br>${data.explain}`;
+            document.getElementById('feedback-box').classList.remove('hidden');
+            disableOptions();
+            document.getElementById('btn-continue').classList.remove('hidden');
+        }
+
+        function disableOptions() {
+            document.querySelectorAll('.option-item').forEach(b => b.disabled = true);
+        }
+
+        function triggerConfetti() {
+            for(let i=0; i<12; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = (Math.random() * 80 + 10) + '%';
+                c.style.top = (Math.random() * 50 + 20) + '%';
+                c.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 50%)`;
+                document.querySelector('.game-card').appendChild(c);
+                setTimeout(() => c.remove(), 1000);
+            }
+        }
+
+        function nextQuestion() {
+            curIdx++;
+            if(curIdx < questions.length) loadQuestion();
+            else showResult();
+        }
+
+        function showResult() {
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-result').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `${score}/10`;
+            let msg = "";
+            if(score === 10) msg = "Fantastic! You are a Friction Expert.";
+            else if(score > 7) msg = "Great job! You have a solid grasp of the concept.";
+            else msg = "Good effort! Try reviewing 'rolling' vs 'sliding' friction.";
+            document.getElementById('result-msg').innerText = msg;
+        }
+    </script>
+</body>
+</html>
