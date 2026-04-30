@@ -168,4 +168,217 @@
             <h1>Chapter 4: Sound</h1>
             <p>Grade 8 Science | Competency-Based Challenge</p>
             <p>Test your knowledge on frequency, vibrations, and how sound travels!</p>
-            <button class="btn-next" style="float:none" onclick
+            <button class="btn-next" style="float:none" onclick="startQuiz()">Start Activity</button>
+        </div>
+
+        <div id="screen-quiz" class="hidden">
+            <div class="hud">
+                <span>Q: <span id="q-idx">1</span>/10</span>
+                <span>Score: <span id="score">0</span></span>
+            </div>
+            <div class="timer-track"><div id="timer-bar"></div></div>
+
+            <div id="media-box" class="img-container hidden">
+                <img id="q-img" src="" alt="Sound Concept">
+            </div>
+
+            <h2 id="q-text">Question text goes here?</h2>
+            
+            <div class="options-grid" id="options-box"></div>
+            <div id="feedback-box" class="feedback-box hidden"></div>
+            
+            <button id="btn-next" class="btn-next hidden" onclick="handleNext()">Next Question</button>
+        </div>
+
+        <div id="screen-result" class="hidden" style="text-align:center">
+            <h2>Challenge Complete!</h2>
+            <div class="result-title" id="final-score">0/10</div>
+            <p id="result-msg"></p>
+            <button class="btn-next" style="float:none" onclick="location.reload()">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "If a bell is rung inside a vacuum chamber where all air is removed, what will you hear?",
+                options: ["A very loud sound.", "No sound at all.", "A muffled sound.", "Faster sound waves."],
+                ans: 1,
+                hint: "Does sound need a medium (solid, liquid, or gas) to travel?",
+                explain: "Correct! Sound is a mechanical wave and cannot travel through a vacuum; it requires molecules to vibrate."
+            },
+            {
+                q: "Sound is produced in humans by the vibration of which part?",
+                img: "assets/q2.jpg",
+                options: ["Tongue", "Teeth", "Vocal Cords", "Eardrum"],
+                ans: 2,
+                hint: "This part is located in your larynx (voice box).",
+                explain: "Correct! When air passes through the narrow slit of the vocal cords, they vibrate and produce sound."
+            },
+            {
+                q: "A pendulum completes 20 oscillations in 2 seconds. What is its frequency?",
+                options: ["20 Hz", "10 Hz", "40 Hz", "2 Hz"],
+                ans: 1,
+                hint: "Frequency = Number of Oscillations ÷ Time (in seconds).",
+                explain: "Correct! 20 oscillations / 2 seconds = 10 Hz (oscillations per second)."
+            },
+            {
+                q: "Why can't we hear the sound of massive explosions happening on the Sun?",
+                options: ["The explosions are silent.", "The Sun is too far.", "Space is a vacuum, so sound cannot travel.", "Sunlight blocks the sound."],
+                ans: 2,
+                hint: "Think about what is between the Earth's atmosphere and the Sun.",
+                explain: "Correct! Space is mostly a vacuum. Without a medium like air, sound waves from the Sun cannot reach Earth."
+            },
+            {
+                q: "Correct this statement: 'The pitch of a sound is determined by its amplitude.'",
+                options: ["Pitch is determined by frequency.", "Pitch is determined by speed.", "Pitch and loudness are the same.", "Amplitude only applies to water."],
+                ans: 0,
+                hint: "Loudness depends on amplitude. What does pitch depend on?",
+                explain: "Correct! Frequency determines pitch (shrillness), while amplitude determines loudness."
+            },
+            {
+                q: "Why are cinema hall ceilings often covered with rough, porous materials?",
+                options: ["For decoration.", "To absorb sound and prevent echoes.", "To keep the hall warm.", "To make sound louder."],
+                ans: 1,
+                hint: "Soft, rough surfaces prevent sound from bouncing back.",
+                explain: "Correct! These materials absorb sound waves to prevent 'reverberation' (repeated echoes)."
+            },
+            {
+                q: "How do bats find their prey in total darkness?",
+                options: ["Night vision.", "Using 'Echolocation' with ultrasound.", "Sense of smell.", "Star light."],
+                ans: 1,
+                hint: "They emit high-frequency sounds that humans cannot hear.",
+                explain: "Correct! Bats use Echolocation, emitting ultrasound that bounces off prey to tell them where it is."
+            },
+            {
+                q: "Which part of the ear vibrates first when a sound wave enters?",
+                img: "assets/q8.jpg",
+                options: ["Eardrum", "Cochlea", "Pinna", "Auditory nerve"],
+                ans: 0,
+                hint: "It is a thin membrane that acts like the skin of a drum.",
+                explain: "Correct! The eardrum (tympanic membrane) is the first internal part to vibrate when sound waves hit it."
+            },
+            {
+                q: "Identify the 'Noise' among these options:",
+                options: ["A flute playing", "A construction drill", "A bird chirping", "A violin playing"],
+                ans: 1,
+                hint: "Noise consists of unpleasant and irregular vibrations.",
+                explain: "Correct! A construction drill produces irregular, jarring vibrations that are unpleasant to the ear."
+            },
+            {
+                q: "If a vibration frequency is 50 Hz, how many oscillations does it make in 1 minute?",
+                options: ["50", "60", "3000", "110"],
+                ans: 2,
+                hint: "50 Hz means 50 oscillations in 1 second. How many in 60 seconds?",
+                explain: "Correct! 50 oscillations/sec × 60 seconds = 3000 oscillations."
+            }
+        ];
+
+        let curIdx = 0, score = 0, timer, timeLeft = 45, attempts = 0;
+
+        window.onload = () => {
+            setTimeout(() => { document.getElementById('brand-layer').style.display = 'none'; }, 5000);
+            for(let i=0; i<5; i++) {
+                const w = document.createElement('div');
+                w.className = 'sound-wave';
+                w.style.left = Math.random() * 100 + '%';
+                w.style.top = Math.random() * 100 + '%';
+                w.style.animationDelay = i + 's';
+                document.getElementById('waves').appendChild(w);
+            }
+        };
+
+        function startQuiz() {
+            document.getElementById('screen-start').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            loadQ();
+        }
+
+        function loadQ() {
+            const data = questions[curIdx];
+            attempts = 0;
+            document.getElementById('q-idx').innerText = curIdx + 1;
+            document.getElementById('q-text').innerText = data.q;
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('btn-next').classList.add('hidden');
+            
+            const media = document.getElementById('media-box');
+            if(data.img) {
+                document.getElementById('q-img').src = data.img;
+                media.classList.remove('hidden');
+            } else { media.classList.add('hidden'); }
+
+            const box = document.getElementById('options-box');
+            box.innerHTML = '';
+            data.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'opt-btn';
+                btn.innerText = opt;
+                btn.onclick = () => check(i, btn);
+                box.appendChild(btn);
+            });
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = 45;
+            const bar = document.getElementById('timer-bar');
+            bar.style.width = '100%';
+            timer = setInterval(() => {
+                timeLeft--;
+                bar.style.width = (timeLeft/45 * 100) + '%';
+                if(timeLeft <= 0) { clearInterval(timer); reveal(); }
+            }, 1000);
+        }
+
+        function check(idx, btn) {
+            const data = questions[curIdx];
+            const feedback = document.getElementById('feedback-box');
+            if(idx === data.ans) {
+                clearInterval(timer);
+                btn.classList.add('correct');
+                score++;
+                document.getElementById('score').innerText = score;
+                feedback.innerHTML = `<b>Correct!</b><br>${data.explain}`;
+                feedback.classList.remove('hidden');
+                finishQ();
+            } else {
+                attempts++;
+                btn.classList.add('wrong');
+                btn.disabled = true;
+                if(attempts === 1) {
+                    feedback.innerHTML = `<b>Try again!</b><br>Hint: ${data.hint}`;
+                    feedback.classList.remove('hidden');
+                } else { clearInterval(timer); reveal(); }
+            }
+        }
+
+        function reveal() {
+            const data = questions[curIdx];
+            document.querySelectorAll('.opt-btn')[data.ans].classList.add('correct');
+            document.getElementById('feedback-box').innerHTML = `<b>Correct Answer:</b><br>${data.explain}`;
+            document.getElementById('feedback-box').classList.remove('hidden');
+            finishQ();
+        }
+
+        function finishQ() {
+            document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+            document.getElementById('btn-next').classList.remove('hidden');
+        }
+
+        function handleNext() {
+            curIdx++;
+            if(curIdx < questions.length) loadQ();
+            else showResult();
+        }
+
+        function showResult() {
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-result').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `${score}/10`;
+            document.getElementById('result-msg').innerText = score > 7 ? "Excellent! You have a great ear for physics." : "Good attempt! Keep vibrating and learning.";
+        }
+    </script>
+</body>
+</html>
