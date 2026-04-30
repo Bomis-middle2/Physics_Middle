@@ -13,7 +13,7 @@
             --bg: #f4f7f9;
         }
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
 
         body {
             margin: 0;
@@ -37,7 +37,6 @@
         }
         #brand-layer img { max-width: 220px; }
 
-        /* Background Animation */
         .bg-layer {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -45,20 +44,6 @@
             background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
         }
 
-        .streamer {
-            position: absolute;
-            background: rgba(52, 152, 219, 0.1);
-            width: 2px;
-            height: 100px;
-            animation: rain 5s infinite linear;
-        }
-
-        @keyframes rain {
-            0% { transform: translateY(-110vh); }
-            100% { transform: translateY(110vh); }
-        }
-
-        /* Main Game Card */
         .game-card {
             width: 95%;
             max-width: 700px;
@@ -72,14 +57,12 @@
 
         .hidden { display: none !important; }
 
-        /* HUD */
         .hud {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             font-weight: 600;
             color: var(--primary);
-            font-size: 0.9rem;
         }
 
         .timer-container {
@@ -87,96 +70,79 @@
             height: 6px;
             background: #eee;
             border-radius: 3px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         #timer-bar {
             height: 100%;
             width: 100%;
             background: var(--accent);
-            border-radius: 3px;
             transition: width 1s linear;
         }
 
-        /* Question Styles */
-        h2 { font-size: 1.3rem; color: var(--primary); margin-bottom: 20px; line-height: 1.4; }
+        h2 { font-size: 1.2rem; color: var(--primary); margin-bottom: 15px; }
 
-        .visual-cue {
-            background: #f8f9fa;
-            border: 1px dashed #3498db;
-            padding: 15px;
+        /* Image Styling */
+        .q-image-container {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 15px;
+            background: #fdfdfd;
+            border: 1px solid #eee;
             border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            color: #555;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 10px;
         }
 
-        .options-grid {
-            display: grid;
-            gap: 12px;
+        .q-image-container img {
+            max-height: 180px;
+            max-width: 100%;
+            border-radius: 4px;
         }
+
+        .options-grid { display: grid; gap: 10px; }
 
         .opt-btn {
             background: #fff;
             border: 2px solid #e0e6ed;
-            padding: 15px 20px;
-            border-radius: 10px;
+            padding: 12px 15px;
+            border-radius: 8px;
             text-align: left;
             cursor: pointer;
-            font-size: 1rem;
             transition: all 0.2s;
-            color: var(--primary);
-        }
-
-        .opt-btn:hover:not(:disabled) {
-            border-color: var(--accent);
-            background: #f0f7ff;
         }
 
         .opt-btn.correct { background: var(--success); color: #fff; border-color: var(--success); }
         .opt-btn.wrong { background: var(--danger); color: #fff; border-color: var(--danger); }
 
-        /* Indicators */
-        .cross { color: var(--danger); font-weight: bold; margin-right: 8px; }
         .feedback-text {
-            margin-top: 20px;
-            padding: 15px;
+            margin-top: 15px;
+            padding: 12px;
             border-radius: 8px;
-            font-size: 0.95rem;
-            line-height: 1.5;
+            font-size: 0.9rem;
+            background: #f0f7ff;
         }
 
-        /* Buttons */
         .action-btn {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 30px;
+            padding: 12px 25px;
             border-radius: 8px;
             cursor: pointer;
-            font-weight: 600;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
-        /* Result Screen */
-        .result-screen { text-align: center; }
-        .result-score { font-size: 4rem; color: var(--accent); margin: 10px 0; }
-
-        /* Stars/Confetti */
+        /* Star Animation */
         .star-fx {
             position: absolute;
             color: #f1c40f;
-            font-size: 20px;
             pointer-events: none;
             animation: burst 0.8s ease-out forwards;
         }
 
         @keyframes burst {
             0% { transform: scale(0); opacity: 1; }
-            100% { transform: scale(1.5) translateY(-50px); opacity: 0; }
+            100% { transform: scale(1.5) translateY(-40px); opacity: 0; }
         }
     </style>
 </head>
@@ -186,252 +152,210 @@
         <img src="assets/logo.png" alt="Innovine Logo">
     </div>
 
-    <div class="bg-layer" id="bg-anims"></div>
+    <div class="bg-layer"></div>
 
     <div class="game-card">
         <div id="screen-intro">
-            <h1 style="color:var(--primary)">Pressure: Advanced Challenge</h1>
-            <p>Grade 8 | Physics Chapter 2</p>
-            <p>Test your ability to apply laws of pressure to real-world engineering and scientific scenarios.</p>
-            <button class="action-btn" onclick="initGame()">Begin Challenge</button>
+            <h1>Chapter 2: Pressure</h1>
+            <p>Grade 8 | Advanced Competency Interactive</p>
+            <button class="action-btn" onclick="initGame()">Start Challenge</button>
         </div>
 
         <div id="screen-quiz" class="hidden">
             <div class="hud">
-                <div>Question: <span id="q-idx">1</span>/10</div>
+                <div>Q: <span id="q-idx">1</span>/10</div>
                 <div>Score: <span id="score-val">0</span></div>
             </div>
             <div class="timer-container"><div id="timer-bar"></div></div>
 
-            <div id="q-visual" class="visual-cue hidden"></div>
-            <h2 id="q-text">Loading question...</h2>
+            <div id="image-box" class="q-image-container hidden">
+                <img id="q-img" src="" alt="Question Diagram">
+            </div>
+
+            <h2 id="q-text"></h2>
             
             <div class="options-grid" id="options-box"></div>
             <div id="feedback-box" class="feedback-text hidden"></div>
             
-            <div style="text-align:right">
-                <button id="btn-next" class="action-btn hidden" onclick="handleNext()">Continue</button>
-            </div>
+            <button id="btn-next" class="action-btn hidden" onclick="handleNext()">Next</button>
         </div>
 
-        <div id="screen-result" class="hidden" class="result-screen">
+        <div id="screen-result" class="hidden">
             <h2>Challenge Complete!</h2>
-            <div class="result-score" id="final-score">0/10</div>
+            <h1 id="final-score">0/10</h1>
             <p id="result-text"></p>
-            <button class="action-btn" onclick="location.reload()">Restart</button>
+            <button class="action-btn" onclick="location.reload()">Try Again</button>
         </div>
     </div>
 
     <script>
         const questions = [
             {
-                q: "A mountaineer notices their fountain pen leaks at a high mountain peak. What is the scientific cause?",
-                options: ["Ink expands due to cold temperatures.", "Atmospheric pressure outside decreased, so internal air pressure pushed the ink out.", "Gravity is weaker at high altitudes.", "The hiker's body heat increased the pressure."],
+                q: "A fountain pen leaks at a high mountain peak. Why?",
+                options: ["Cold air expansion", "Lower outside pressure pushes ink out", "Weaker gravity", "Body heat increase"],
                 ans: 1,
-                hint: "Think about the density of air at high altitudes compared to inside the pen.",
-                explain: "At high altitudes, atmospheric pressure drops. The trapped air inside the pen is at a higher pressure, forcing the ink out."
+                hint: "Inside the pen, air is trapped at sea-level pressure.",
+                explain: "At high altitudes, atmospheric pressure is low. The higher pressure inside the pen pushes the ink out."
             },
             {
-                q: "Observe two identical blocks: Block A is vertical, Block B is horizontal. Both are on a soft sponge. Which is true?",
-                visual: "Visual: Block A has a small base area; Block B has a large base area.",
-                options: ["Block B sinks deeper due to more surface contact.", "Both sink equally since weights are identical.", "Block A sinks deeper because force is concentrated on a smaller area.", "The sponge resists Block B more."],
+                q: "Look at the diagram. Which block exerts more pressure on the sponge?",
+                img: "assets/q2.png",
+                options: ["Block B (Horizontal)", "Both are equal", "Block A (Vertical)", "The sponge resists both"],
                 ans: 2,
-                hint: "Pressure = Force / Area. If Area is small, what happens to Pressure?",
-                explain: "Correct. Block A exerts more pressure because the same weight is acting on a smaller surface area."
+                hint: "Pressure = Force / Area. Look at the base size.",
+                explain: "Block A has a smaller contact area, concentrating the weight and increasing pressure."
             },
             {
-                q: "Object X (50N, 10cm²) and Object Z (100N, 25cm²) are on a table. Which exerts the highest pressure?",
-                options: ["Object X", "Object Z", "Both are equal", "Cannot be determined"],
+                q: "Based on data, which exerts highest pressure: X(50N, 10cm²) or Z(100N, 25cm²)?",
+                options: ["Object X", "Object Z", "Both are equal", "Data insufficient"],
                 ans: 0,
-                hint: "Calculate N per cm². X = 50/10, Z = 100/25.",
-                explain: "Object X exerts 5 N/cm², while Object Z exerts only 4 N/cm². Smaller area often leads to higher pressure!"
+                hint: "Divide Force by Area for both.",
+                explain: "X = 5 N/cm², Z = 4 N/cm². Object X exerts higher pressure."
             },
             {
-                q: "Why would body fluids boil at normal temperature if an astronaut stepped into space without a suit?",
-                options: ["Space is extremely hot near the sun.", "The vacuum of space has no pressure, which lowers the boiling point.", "Radiation increases internal body heat.", "Body pressure increases to fill the vacuum."],
+                q: "Why would body fluids boil in space without a suit?",
+                options: ["High solar heat", "Vacuum lowers boiling point", "Radiation", "Internal body pressure"],
                 ans: 1,
-                hint: "Pressure and boiling point are directly related. Lower pressure = Lower boiling point.",
-                explain: "In a vacuum (zero pressure), the boiling point of liquids drops below your body temperature!"
+                hint: "Liquids boil easier when nothing is pushing down on them.",
+                explain: "In a vacuum (zero pressure), the boiling point drops drastically below body temperature."
             },
             {
-                q: "A student designs a dam with walls of equal thickness. Why is this an engineering failure?",
-                options: ["Top needs to be thicker for wind.", "Water pressure is highest at the surface.", "Liquid pressure increases with depth; the base must be thicker.", "Thick walls at the bottom slow the water flow."],
+                q: "Why must a dam wall be designed like this diagram?",
+                img: "assets/q5.png",
+                options: ["Wind protection", "High surface pressure", "Pressure increases with depth", "To slow water flow"],
                 ans: 2,
-                hint: "Where is the weight of the water the greatest?",
-                explain: "Liquid pressure depends on depth. The bottom of the dam must withstand much higher pressure than the top."
+                hint: "Where is the weight of the water column greatest?",
+                explain: "Water pressure is much higher at the base, so the wall must be thickest at the bottom."
             },
             {
-                q: "How does a heavy army tank move easily over soft mud while a truck gets stuck?",
-                options: ["Tracks are made of lighter material.", "Continuous tracks provide a large surface area to reduce pressure.", "Tracks increase friction for better grip.", "Tracks increase the downward force."],
+                q: "Why do tanks use continuous tracks instead of wheels?",
+                options: ["Lighter material", "Large area reduces pressure", "Increased friction", "Higher downward force"],
                 ans: 1,
-                hint: "The tank is heavier, but the 'feet' (tracks) are much wider.",
-                explain: "By spreading the massive weight over the large area of the tracks, the pressure on the mud stays low."
+                hint: "Tanks are heavy; they need to spread their weight.",
+                explain: "The wide tracks distribute the tank's weight over a huge area, allowing it to move on soft mud."
             },
             {
-                q: "Container A is narrow and Container B is wide. Both are filled with water to 10cm. Pressure at the bottom is:",
-                options: ["Higher in B", "Higher in A", "Same in both", "Zero in both"],
+                q: "Narrow Container A and Wide Container B both have 10cm of water. Pressure at bottom is:",
+                options: ["Higher in B", "Higher in A", "Same in both", "Dependent on volume"],
                 ans: 2,
-                hint: "Does liquid pressure depend on the width of the container or the height of the liquid column?",
-                explain: "Liquid pressure = Height × Density × Gravity. Since height and liquid are the same, pressure is identical."
+                hint: "Liquid pressure only cares about height and density.",
+                explain: "Pressure at a point in a liquid depends only on depth, not the shape of the container."
             },
             {
-                q: "You hear ice cracking on a lake. What is the safest way to reach the shore?",
-                options: ["Run fast to spend less time on ice.", "Stand on one foot.", "Lie down flat and crawl to the shore.", "Jump to test the ice strength."],
+                q: "What is the safest way to cross cracking ice as shown?",
+                img: "assets/q8.png",
+                options: ["Run fast", "Stand on one foot", "Lie down and crawl", "Jump to test strength"],
                 ans: 2,
-                hint: "How can you make your pressure on the ice as low as possible?",
-                explain: "Lying flat increases your surface area to the maximum, reducing pressure and preventing the ice from breaking."
+                hint: "Maximize your area to minimize your pressure.",
+                explain: "By lying flat, you spread your weight over the largest possible area, reducing pressure on the ice."
             },
             {
-                q: "Which of the following does NOT rely on atmospheric pressure to function?",
-                options: ["A drinking straw", "A medical syringe", "A bouncing rubber ball", "A rubber suction cup"],
+                q: "Which does NOT use atmospheric pressure?",
+                options: ["Drinking straw", "Syringe", "Bouncing ball", "Suction cup"],
                 ans: 2,
-                hint: "Three of these need a pressure difference between 'inside' and 'outside' air.",
-                explain: "A ball bounces due to elasticity and Newton's Third Law, not atmospheric pressure differences."
+                hint: "Three rely on air pushing from the outside.",
+                explain: "A ball bounces due to elastic force, not a change in air pressure."
             },
             {
-                q: "Food cooks faster in a pressure cooker at high altitudes because it:",
-                options: ["Increases the flame temperature.", "Increases internal pressure, raising the boiling point.", "Acts as a chemical catalyst.", "Matches the low mountain air pressure."],
+                q: "Why does a pressure cooker cook faster at high altitudes?",
+                options: ["Higher flame heat", "Trapped pressure raises boiling point", "Chemical catalyst", "Lower internal pressure"],
                 ans: 1,
-                hint: "High altitude air is thin (low pressure). The cooker does the opposite.",
-                explain: "By trapping steam, the cooker increases pressure, which allows water to get hotter than 100°C before boiling."
+                hint: "Water usually boils at lower temps on mountains. The cooker fixes this.",
+                explain: "It traps steam to increase pressure, allowing water to reach much higher temperatures without boiling."
             }
         ];
 
-        let currentIdx = 0;
-        let score = 0;
-        let timeLeft = 45;
-        let timerInterval;
-        let attempts = 0;
+        let cur = 0, score = 0, timeLeft = 45, timer, attempts = 0;
 
-        // Init
-        window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('brand-layer').style.display = 'none';
-            }, 5000);
-            
-            const bg = document.getElementById('bg-anims');
-            for(let i=0; i<20; i++) {
-                let s = document.createElement('div');
-                s.className = 'streamer';
-                s.style.left = Math.random() * 100 + 'vw';
-                s.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                s.style.animationDelay = Math.random() * 5 + 's';
-                bg.appendChild(s);
-            }
-        };
+        window.onload = () => setTimeout(() => document.getElementById('brand-layer').classList.add('hidden'), 5000);
 
         function initGame() {
             document.getElementById('screen-intro').classList.add('hidden');
             document.getElementById('screen-quiz').classList.remove('hidden');
-            loadQuestion();
+            loadQ();
         }
 
-        function loadQuestion() {
-            const data = questions[currentIdx];
+        function loadQ() {
+            const d = questions[cur];
             attempts = 0;
-            document.getElementById('q-idx').innerText = currentIdx + 1;
-            document.getElementById('q-text').innerText = data.q;
+            document.getElementById('q-idx').innerText = cur + 1;
+            document.getElementById('q-text').innerText = d.q;
             document.getElementById('feedback-box').classList.add('hidden');
             document.getElementById('btn-next').classList.add('hidden');
             
-            const v = document.getElementById('q-visual');
-            if(data.visual) {
-                v.innerText = data.visual;
-                v.classList.remove('hidden');
-            } else { v.classList.add('hidden'); }
+            const imgBox = document.getElementById('image-box');
+            if(d.img) {
+                document.getElementById('q-img').src = d.img;
+                imgBox.classList.remove('hidden');
+            } else { imgBox.classList.add('hidden'); }
 
             const box = document.getElementById('options-box');
             box.innerHTML = '';
-            data.options.forEach((opt, i) => {
+            d.options.forEach((o, i) => {
                 const b = document.createElement('button');
                 b.className = 'opt-btn';
-                b.innerText = opt;
-                b.onclick = () => checkAns(i, b);
+                b.innerText = o;
+                b.onclick = () => check(i, b);
                 box.appendChild(b);
             });
-
-            resetTimer();
+            startT();
         }
 
-        function resetTimer() {
-            clearInterval(timerInterval);
+        function startT() {
+            clearInterval(timer);
             timeLeft = 45;
             const bar = document.getElementById('timer-bar');
             bar.style.width = '100%';
-            timerInterval = setInterval(() => {
+            timer = setInterval(() => {
                 timeLeft--;
-                bar.style.width = (timeLeft / 45 * 100) + '%';
-                if(timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    forceReveal();
-                }
+                bar.style.width = (timeLeft/45*100)+'%';
+                if(timeLeft <= 0) { clearInterval(timer); reveal(); }
             }, 1000);
         }
 
-        function checkAns(idx, btn) {
-            const data = questions[currentIdx];
-            const feedback = document.getElementById('feedback-box');
-
-            if(idx === data.ans) {
-                clearInterval(timerInterval);
-                btn.classList.add('correct');
+        function check(i, b) {
+            const d = questions[cur];
+            const f = document.getElementById('feedback-box');
+            if(i === d.ans) {
+                clearInterval(timer);
+                b.classList.add('correct');
                 score++;
                 document.getElementById('score-val').innerText = score;
-                feedback.innerHTML = `<span style="color:var(--success)">★ Correct!</span><br>${data.explain}`;
-                feedback.classList.remove('hidden');
-                triggerStars(btn);
-                endQuestion();
+                f.innerHTML = `<strong>Correct!</strong> ${d.explain}`;
+                f.classList.remove('hidden');
+                finish();
             } else {
                 attempts++;
-                btn.classList.add('wrong');
-                btn.disabled = true;
+                b.classList.add('wrong');
+                b.disabled = true;
                 if(attempts === 1) {
-                    feedback.innerHTML = `<span class="cross">✘</span> Try again! <strong>Hint:</strong> ${data.hint}`;
-                    feedback.classList.remove('hidden');
-                } else {
-                    clearInterval(timerInterval);
-                    forceReveal();
-                }
+                    f.innerHTML = `Keep thinking! <strong>Hint:</strong> ${d.hint}`;
+                    f.classList.remove('hidden');
+                } else { clearInterval(timer); reveal(); }
             }
         }
 
-        function forceReveal() {
-            const data = questions[currentIdx];
-            const btns = document.querySelectorAll('.opt-btn');
-            btns[data.ans].classList.add('correct');
-            document.getElementById('feedback-box').innerHTML = `<span class="cross">✘</span> Correct answer revealed.<br>${data.explain}`;
+        function reveal() {
+            const d = questions[cur];
+            document.querySelectorAll('.opt-btn')[d.ans].classList.add('correct');
+            document.getElementById('feedback-box').innerHTML = `Out of tries. ${d.explain}`;
             document.getElementById('feedback-box').classList.remove('hidden');
-            endQuestion();
+            finish();
         }
 
-        function endQuestion() {
+        function finish() {
             document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
             document.getElementById('btn-next').classList.remove('hidden');
         }
 
         function handleNext() {
-            currentIdx++;
-            if(currentIdx < questions.length) loadQuestion();
-            else showResults();
-        }
-
-        function showResults() {
-            document.getElementById('screen-quiz').classList.add('hidden');
-            document.getElementById('screen-result').classList.remove('hidden');
-            document.getElementById('final-score').innerText = `${score}/${questions.length}`;
-            let msg = score > 7 ? "Excellent! You have mastered fluid and atmospheric pressure." : "Good attempt! Pressure concepts take practice to master.";
-            document.getElementById('result-text').innerText = msg;
-        }
-
-        function triggerStars(target) {
-            for(let i=0; i<5; i++) {
-                const s = document.createElement('div');
-                s.className = 'star-fx';
-                s.innerText = '★';
-                s.style.left = (target.offsetLeft + Math.random() * 100) + 'px';
-                s.style.top = target.offsetTop + 'px';
-                document.querySelector('.game-card').appendChild(s);
-                setTimeout(() => s.remove(), 800);
+            cur++;
+            if(cur < questions.length) loadQ();
+            else {
+                document.getElementById('screen-quiz').classList.add('hidden');
+                document.getElementById('screen-result').classList.remove('hidden');
+                document.getElementById('final-score').innerText = `${score}/10`;
+                document.getElementById('result-text').innerText = score > 7 ? "Mastermind!" : "Keep practicing!";
             }
         }
     </script>
