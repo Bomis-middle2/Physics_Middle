@@ -60,10 +60,10 @@
 
         /* Container */
         .game-card {
-            width: 90%;
+            width: 95%;
             max-width: 750px;
             background: white;
-            padding: 35px;
+            padding: 30px;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
             position: relative;
@@ -98,37 +98,29 @@
         }
 
         /* Question Content */
-        h2 { font-size: 1.3rem; margin-bottom: 20px; line-height: 1.4; }
-
-        .img-container {
-            width: 100%;
-            text-align: center;
-            margin-bottom: 20px;
-            background: #fdfdfd;
-            border-radius: 12px;
-        }
-
-        .img-container img {
-            max-height: 200px;
-            max-width: 100%;
-            border-radius: 8px;
-            border: 2px solid #eee;
+        h2 { 
+            font-size: 1.15rem; 
+            margin-bottom: 20px; 
+            line-height: 1.5; 
+            color: #2c3e50;
+            text-align: left;
         }
 
         .options-list {
             display: grid;
-            gap: 12px;
+            gap: 10px;
         }
 
         .option-item {
             background: #fff;
             border: 2px solid #dcdde1;
-            padding: 15px 20px;
+            padding: 12px 18px;
             border-radius: 10px;
             cursor: pointer;
             text-align: left;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: 0.2s;
+            font-weight: 500;
         }
 
         .option-item:hover:not(:disabled) {
@@ -140,11 +132,13 @@
         .wrong { background: var(--danger) !important; color: white; border-color: #c0392b; }
 
         .feedback {
-            margin-top: 20px;
+            margin-top: 15px;
             padding: 15px;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             line-height: 1.5;
+            background: #f8f9fa;
+            border-left: 5px solid var(--primary);
         }
 
         .btn-next {
@@ -158,6 +152,8 @@
             margin-top: 20px;
             font-weight: bold;
         }
+
+        .text-center { text-align: center; }
 
         /* Confetti */
         .confetti {
@@ -180,111 +176,105 @@
     <div class="game-card">
         <div id="screen-start" class="text-center">
             <h1 style="color:var(--primary)">Chapter 3: Friction</h1>
-            <p>Grade 8 Science | Competency-Based Interactive</p>
-            <p>Explore why friction is a 'necessary evil' through real-life scenarios.</p>
-            <button class="btn-next" style="float:none" onclick="startQuiz()">Begin Match</button>
+            <p style="color: #7f8c8d;">Grade 8 Science | Case-Based Interactive</p>
+            <p>Explore why friction is considered a 'necessary evil' through real-life scientific scenarios.</p>
+            <button class="btn-next" style="float:none" onclick="startQuiz()">Begin Mission</button>
         </div>
 
         <div id="screen-quiz" class="hidden">
             <div class="hud">
-                <span>Question: <span id="q-count">1</span>/10</span>
-                <span>Score: <span id="score">0</span></span>
+                <span>TASK: <span id="q-count">1</span>/10</span>
+                <span>PTS: <span id="score">0</span></span>
             </div>
             <div class="timer-track"><div id="timer-bar"></div></div>
-
-            <div id="media-box" class="img-container hidden">
-                <img id="q-img" src="" alt="Friction Illustration">
-            </div>
 
             <h2 id="q-text"></h2>
             
             <div class="options-list" id="options-box"></div>
             <div id="feedback-box" class="feedback hidden"></div>
             
-            <button id="btn-continue" class="btn-next hidden" onclick="nextQuestion()">Continue</button>
+            <button id="btn-continue" class="btn-next hidden" onclick="nextQuestion()">Next Task</button>
         </div>
 
         <div id="screen-result" class="hidden text-center">
-            <h2 style="font-size: 2rem;">Activity Complete!</h2>
+            <h2 style="font-size: 2rem;">Mission Complete!</h2>
             <h1 id="final-score" style="font-size: 4rem; color: var(--accent);">0/10</h1>
             <p id="result-msg"></p>
-            <button class="btn-next" style="float:none" onclick="location.reload()">Restart</button>
+            <button class="btn-next" style="float:none" onclick="location.reload()">Restart Quiz</button>
         </div>
     </div>
 
     <script>
         const questions = [
             {
-                q: "Why do kabaddi players rub their hands with soil before a match?",
-                options: ["To clean their hands.", "To increase friction for a better grip.", "To reduce friction so they can slide.", "For good luck."],
+                q: "CASE STUDY: A professional mountaineer wears boots fitted with sharp metal spikes called crampons while climbing a steep ice glacier. What is the primary scientific reason for this equipment?",
+                options: ["To make the boots lightweight.", "To increase friction by creating more grip on the ice.", "To help the ice melt and become sticky.", "To reduce the surface area contact."],
                 ans: 1,
-                hint: "Does soil make a surface smoother or rougher?",
-                explain: "Correct! Soil increases the irregularities on the skin, providing more friction for a firm grip on the opponent."
+                hint: "Spikes penetrate the smooth ice. Does this increase or decrease surface irregularities?",
+                explain: "Correct! Crampons increase the irregularities that interlock with the ice, providing the friction needed to prevent a dangerous slip."
             },
             {
-                q: "Why are ball-bearings used in fans and bicycle wheels?",
-                img: "assets/q2.jpg",
-                options: ["To make them look shiny.", "To convert sliding friction into rolling friction.", "To increase the weight.", "To stop the wheels."],
+                q: "CASE STUDY: A carpenter notices a wooden door hinge is squeaking loudly and is difficult to move. He pours a few drops of machine oil into the joint. How does the oil solve the problem?",
+                options: ["The oil hardens the hinge.", "It creates a thin layer that reduces friction between metal parts.", "It increases the weight of the door to keep it steady.", "Oil increases friction to stop the noise."],
                 ans: 1,
-                hint: "Rolling friction is always much smaller than sliding friction.",
-                explain: "Exactly! Ball-bearings roll, which significantly reduces the energy lost to friction."
+                hint: "Oil is a lubricant. Lubricants fill in the microscopic hills and valleys of a surface.",
+                explain: "Exactly! Lubricants form a thin film that prevents surfaces from rubbing directly against each other, allowing them to glide smoothly."
             },
             {
-                q: "An experiment shows: Static Friction (5N), Sliding Friction (4N), and Rolling Friction (2N). Which is strongest?",
-                options: ["Static Friction", "Sliding Friction", "Rolling Friction", "They are all equal."],
-                ans: 0,
-                hint: "Static friction must overcome the 'interlocking' of surfaces at rest.",
-                explain: "Correct! Static friction is the highest because it takes more force to break the initial interlocking between two surfaces."
-            },
-            {
-                q: "Aeroplanes and birds have 'streamlined bodies'. Why is this body shape necessary?",
-                options: ["To help them hide.", "To reduce fluid friction (Air drag).", "To increase their weight.", "To make them look like fish."],
+                q: "CASE STUDY: A student finds it much easier to pull a heavy travel bag when it has wheels than when it doesn't. Which physics principle explains this difference?",
+                options: ["Wheels reduce the total mass of the bag.", "Rolling friction is significantly less than sliding friction.", "The wheels increase the gravitational pull.", "Air resistance is lower with wheels."],
                 ans: 1,
-                hint: "Friction isn't just for solids; air and water push back too!",
-                explain: "Correct! A streamlined shape allows air to flow smoothly around the object, reducing 'drag'."
+                hint: "Think about the effort needed to slide a heavy box versus rolling a log.",
+                explain: "Correct! Rolling friction is always much smaller than sliding friction, which is why wheels are a fundamental invention for transportation."
             },
             {
-                q: "A student says: 'Friction is always a nuisance and should be removed completely.' Why is this wrong?",
-                options: ["Friction cannot be measured.", "Friction is a 'necessary evil'; we need it to walk and write.", "Friction only exists in solids.", "Friction produces electricity."],
+                q: "CASE STUDY: High-speed trains and luxury sports cars are designed with a narrow, pointed 'streamlined' shape. Why is this specific design necessary for high-speed travel?",
+                options: ["To make the vehicle look attractive.", "To reduce fluid friction (air drag) at high speeds.", "To increase the downward weight of the vehicle.", "To help the vehicle stop faster."],
                 ans: 1,
-                hint: "Imagine trying to walk on perfectly smooth ice with zero friction.",
-                explain: "Correct! Without friction, we couldn't walk, write, or even stop a moving car."
+                hint: "Air exerts a resistive force on anything moving through it, known as drag.",
+                explain: "Correct! A streamlined shape allows air to flow smoothly around the object, minimizing the resistive force of fluid friction."
             },
             {
-                q: "Why do car tyres have deep 'treads' or grooves?",
-                options: ["To save rubber.", "To increase friction and provide better grip on wet roads.", "To make the car move faster.", "To reduce the weight of the tyre."],
+                q: "CASE STUDY: When a matchstick is struck against the rough side of a matchbox, it immediately ignites. Which conversion of energy is happening here due to friction?",
+                options: ["Chemical energy into light only.", "Mechanical energy into heat energy through friction.", "Heat energy into magnetic energy.", "Friction removes oxygen to start the fire."],
                 ans: 1,
-                hint: "Water on the road can act as a lubricant, making it slippery.",
-                explain: "Correct! Treads help push water away and maintain friction between the tyre and the road."
+                hint: "Rubbing surfaces together generates something you can feel with your palms.",
+                explain: "Correct! Friction between the rough surfaces converts the motion (mechanical energy) into heat, which is enough to ignite the phosphorus."
             },
             {
-                q: "Why is it extremely difficult to walk on a wet marble floor?",
-                options: ["The floor becomes hard.", "Water fills surface irregularities, reducing friction.", "Water increases gravity.", "The floor becomes sticky."],
-                ans: 1,
-                hint: "Water acts as a lubricant between your foot and the floor.",
-                explain: "Correct! Water smoothens out the microscopic hills and valleys of the floor, causing you to slip."
-            },
-            {
-                q: "Look at the image. Why does the person find using a trolley easier than dragging a box?",
-                img: "assets/q8.jpg",
-                options: ["Trolleys have engines.", "Rolling friction is less than sliding friction.", "Trolleys eliminate gravity.", "The box becomes lighter."],
-                ans: 1,
-                hint: "Think about the wheels on the trolley.",
-                explain: "Correct! Wheels roll rather than slide, which greatly reduces the resistive force of friction."
-            },
-            {
-                q: "Identify the method that does NOT reduce friction:",
-                options: ["Lubrication", "Polishing", "Using rollers", "Treading of tyres"],
-                ans: 3,
-                hint: "One of these is designed specifically to make a surface rougher.",
-                explain: "Correct! Treading is used to *increase* friction for safety, while the others are for reducing it."
-            },
-            {
-                q: "Which substance would you use to reduce friction in a squeaking door hinge?",
-                options: ["Sand", "Water", "Oil or Grease", "Wood powder"],
+                q: "CASE STUDY: In a school experiment, a toy car is tested on different surfaces. Which of these surfaces will allow the car to travel the FARTHEST distance after a single push?",
+                options: ["A dry concrete pavement.", "A sheet of rough sandpaper.", "A marble floor covered in soapy water.", "A thick, plush woolen carpet."],
                 ans: 2,
-                hint: "You need a lubricant to make the metal surfaces glide.",
-                explain: "Correct! Oil and grease are lubricants that form a thin layer between surfaces to reduce friction."
+                hint: "The car will travel farthest where the opposing force of friction is the lowest.",
+                explain: "Exactly! Soapy water acts as a lubricant, filling surface irregularities and creating a very smooth interface with minimal friction."
+            },
+            {
+                q: "CASE STUDY: Mechanics observe that the brake pads of a motorcycle become thin and smooth after months of use. What does this demonstrate about the nature of friction?",
+                options: ["Friction helps build up the material.", "Friction causes wear and tear of surfaces in contact.", "Friction only happens when surfaces are new.", "Brake pads become more effective as they get thinner."],
+                ans: 1,
+                hint: "Think about how your pencil gets shorter the more you write with it.",
+                explain: "Correct! One major disadvantage of friction is that it causes the surfaces of moving parts to wear out over time."
+            },
+            {
+                q: "CASE STUDY: Before a performance on the parallel bars, a gymnast applies a white, chalky powder (Magnesium Carbonate) to her palms. What is the goal of this action?",
+                options: ["To make her hands slide easily across the bar.", "To increase friction for a secure and stable grip.", "To reduce the heat produced by her hands.", "To make her hands look uniform."],
+                ans: 1,
+                hint: "Sweat acts as a lubricant, making hands slippery. How does powder help?",
+                explain: "Correct! The powder absorbs moisture and increases surface roughness, ensuring the gymnast doesn't lose her grip due to low friction."
+            },
+            {
+                q: "CASE STUDY: A student argues that friction is only a nuisance because it causes heat and wear. Which of these examples proves that friction is actually a 'Necessary Evil'?",
+                options: ["Overheating of car engines.", "The ability to write with a pen on paper.", "The rusting of iron parts.", "The noise made by a machine."],
+                ans: 1,
+                hint: "Imagine trying to write on a glass sheet coated with oil.",
+                explain: "Correct! Without friction, the tip of the pen would slide uncontrollably, and no ink would be deposited on the paper."
+            },
+            {
+                q: "CASE STUDY: To keep a heavy box moving across a floor at a constant speed, you must provide a continuous push. If you stop pushing, the box stops. Why?",
+                options: ["Gravity pulls the box downward.", "Friction acts in the opposite direction of motion.", "The box runs out of internal energy.", "The air pressure stops the box."],
+                ans: 1,
+                hint: "Friction is an opposing force that is always present between two sliding surfaces.",
+                explain: "Correct! Friction continuously opposes the motion; therefore, an external force is required to balance it and maintain speed."
             }
         ];
 
@@ -294,7 +284,7 @@
             setTimeout(() => {
                 document.getElementById('brand-layer').style.opacity = '0';
                 setTimeout(() => document.getElementById('brand-layer').classList.add('hidden'), 800);
-            }, 5000);
+            }, 3000); // Reduced delay for better UX
             genStars();
         };
 
@@ -324,12 +314,6 @@
             document.getElementById('feedback-box').classList.add('hidden');
             document.getElementById('btn-continue').classList.add('hidden');
             
-            const media = document.getElementById('media-box');
-            if(data.img) {
-                document.getElementById('q-img').src = data.img;
-                media.classList.remove('hidden');
-            } else { media.classList.add('hidden'); }
-
             const box = document.getElementById('options-box');
             box.innerHTML = '';
             data.options.forEach((opt, i) => {
@@ -363,7 +347,7 @@
                 btn.classList.add('correct');
                 score++;
                 document.getElementById('score').innerText = score;
-                feedback.innerHTML = `<b style="color:var(--success)">Excellent!</b><br>${data.explain}`;
+                feedback.innerHTML = `<b style="color:var(--success)">Excellent Observation!</b><br>${data.explain}`;
                 feedback.classList.remove('hidden');
                 triggerConfetti();
                 disableOptions();
@@ -373,7 +357,7 @@
                 btn.classList.add('wrong');
                 btn.disabled = true;
                 if(attempts === 1) {
-                    feedback.innerHTML = `<b style="color:var(--danger)">Not quite.</b><br>Hint: ${data.hint}`;
+                    feedback.innerHTML = `<b style="color:var(--danger)">Analysis Incomplete.</b><br>Hint: ${data.hint}`;
                     feedback.classList.remove('hidden');
                 } else {
                     clearInterval(timer);
@@ -386,7 +370,7 @@
             const data = questions[curIdx];
             const btns = document.querySelectorAll('.option-item');
             btns[data.ans].classList.add('correct');
-            document.getElementById('feedback-box').innerHTML = `<b style="color:var(--primary)">Correct Answer Revealed:</b><br>${data.explain}`;
+            document.getElementById('feedback-box').innerHTML = `<b style="color:var(--primary)">Scientific Conclusion:</b><br>${data.explain}`;
             document.getElementById('feedback-box').classList.remove('hidden');
             disableOptions();
             document.getElementById('btn-continue').classList.remove('hidden');
@@ -419,9 +403,9 @@
             document.getElementById('screen-result').classList.remove('hidden');
             document.getElementById('final-score').innerText = `${score}/10`;
             let msg = "";
-            if(score === 10) msg = "Fantastic! You are a Friction Expert.";
-            else if(score > 7) msg = "Great job! You have a solid grasp of the concept.";
-            else msg = "Good effort! Try reviewing 'rolling' vs 'sliding' friction.";
+            if(score === 10) msg = "Scientific Master! You perfectly understand the dynamics of friction.";
+            else if(score > 7) msg = "Great job! You have a solid grasp of how forces interact in real life.";
+            else msg = "Good effort! Try reviewing the differences between rolling, sliding, and fluid friction.";
             document.getElementById('result-msg').innerText = msg;
         }
     </script>
