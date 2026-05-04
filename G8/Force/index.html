@@ -7,222 +7,259 @@
 
 <style>
 :root {
-    --primary:#0f172a;
-    --accent:#2563eb;
-    --success:#059669;
-    --error:#dc2626;
+    --primary:#0f172a; --accent:#2563eb; 
+    --success:#059669; --error:#dc2626; --bg:#f8fafc;
 }
+
+* { box-sizing:border-box; font-family:system-ui; }
 
 body{
     margin:0;
-    background:#f1f5f9;
+    background:var(--bg);
+    min-height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    height:100vh;
-    font-family:system-ui;
-}
-
-.card{
-    width:95%;
-    max-width:420px;
-    height:92vh;
-    background:white;
-    border-radius:24px;
     padding:20px;
-    box-shadow:0 20px 40px rgba(0,0,0,0.1);
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
 }
 
-.hidden{display:none;}
+/* ✅ RESPONSIVE CARD */
+.card{
+    width:100%;
+    max-width:500px;
+    background:white;
+    padding:20px;
+    border-radius:16px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* ✅ MOBILE SAFE */
+.hidden{ display:none; }
 
 .q-text{
     font-weight:700;
-    margin-bottom:10px;
+    margin-bottom:15px;
 }
 
-.btn{
-    padding:15px;
-    border:none;
-    border-radius:12px;
-    margin:5px 0;
-    font-weight:700;
-    cursor:pointer;
+.options-grid{
+    display:grid;
+    gap:10px;
 }
 
 .btn-opt{
+    padding:12px;
+    border-radius:10px;
+    border:2px solid #e5e7eb;
+    background:white;
+    cursor:pointer;
+    text-align:left;
+}
+
+.btn-opt:hover{
     background:#f1f5f9;
 }
 
-.btn-opt:active{transform:scale(0.95);}
+.is-correct{ background:var(--success); color:white; }
+.is-wrong{ background:var(--error); color:white; }
 
-.is-correct{background:green;color:white;}
-.is-wrong{background:red;color:white;}
+.btn-prime{
+    padding:14px 30px;
+    background:var(--accent);
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+    width:100%;
+}
 
-canvas{
-    border-radius:16px;
-    background:#eef2ff;
+/* ✅ TIMER */
+.timer{
+    height:5px;
+    background:#e5e7eb;
+    margin-bottom:15px;
+}
+#bar{
+    height:100%;
+    background:var(--accent);
+    width:100%;
+}
+
+#feedback{
+    margin-top:10px;
+    background:#fff7ed;
+    padding:10px;
+}
+
+/* ✅ LOGO */
+#logo{
+    position:fixed;
+    inset:0;
+    background:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
 }
 </style>
 </head>
 
 <body>
 
-<div id="intro" class="card">
-    <h2>⚡ Force Master</h2>
-    <p>Physics Case Study Quiz</p>
-    <button class="btn" style="background:#2563eb;color:white;" onclick="initQuiz()">START</button>
+<div id="logo">
+    <h1>Innovine</h1>
 </div>
 
+<!-- INTRO -->
+<div id="intro" class="card hidden">
+<h2>FORCE MASTER</h2>
+<p>Physics Quiz</p>
+<button class="btn-prime" onclick="startQuiz()">START</button>
+</div>
+
+<!-- QUIZ -->
 <div id="quiz" class="card hidden">
-    <div>
-        <div id="score">0 PTS</div>
-        <canvas id="diagram" width="320" height="180"></canvas>
-        <div id="q" class="q-text"></div>
-        <div id="options"></div>
-    </div>
+<div style="display:flex;justify-content:space-between">
+<span id="qnum"></span>
+<span id="score"></span>
 </div>
 
+<div class="timer"><div id="bar"></div></div>
+
+<div id="qtxt" class="q-text"></div>
+<div id="opts" class="options-grid"></div>
+<div id="feedback" class="hidden"></div>
+</div>
+
+<!-- RESULT -->
 <div id="result" class="card hidden">
-    <h2>Done ✅</h2>
-    <h1 id="finalScore"></h1>
-    <button onclick="location.reload()">Restart</button>
+<h2>Finished</h2>
+<h1 id="finalScore"></h1>
+<button class="btn-prime" onclick="location.reload()">Restart</button>
 </div>
 
 <script>
-const questions = [
-{
-q:"A potter shapes clay using force. What changes?",
-o:["Speed","Stop","Shape change","Direction"],
-c:2, type:"none"
-},
-{
-q:"Football kicked in same direction. Result?",
-o:["Stop","Reverse","Speed increase","Mass change"],
-c:2, type:"motion"
-},
-{
-q:"50N left vs 30N right. Result?",
-o:["80 right","20 left","20 right","0"],
-c:1, type:"forces"
-},
-{
-q:"Which is non-contact?",
-o:["Push","Catch","Magnet","Kick"],
-c:2, type:"magnet"
-},
-{
-q:"Astronaut on Moon. Same?",
-o:["Weight","Mass","Gravity","Scale"],
-c:1, type:"gravity"
-},
-{
-q:"10kg bag (g=10). Weight?",
-o:["10","1","100","0"],
-c:2, type:"gravity"
-},
-{
-q:"Cricketer pulls hands. Why?",
-o:["Increase","Reduce","Stop","Style"],
-c:1, type:"collision"
-}
-];
 
-let i=0,score=0,locked=false;
-let canvas,ctx;
+/* ✅ QUESTIONS (DESCRIPTIVE) */
+const qs=[
+{q:"A potter presses clay on a spinning wheel. What effect of force is shown?",
+o:["Speed change","Stop","Shape change","Direction change"],c:2,e:"Force changes shape."},
 
-function initQuiz(){
-    document.getElementById('intro').classList.add('hidden');
-    document.getElementById('quiz').classList.remove('hidden');
-    render();
-}
+{q:"A moving football is kicked in same direction. Result?",
+o:["Stops","Reverse","Speed increases","Mass increases"],c:2,e:"Force increases speed."},
 
-function setupCanvas(){
-    canvas=document.getElementById("diagram");
-    ctx=canvas.getContext("2d");
+{q:"50N left vs 30N right. Result?",
+o:["80N right","20N left","20N right","0"],c:1,e:"50-30=20 left"},
+
+{q:"Which is non-contact force?",
+o:["Push","Catch","Magnet","Kick"],c:2,e:"Magnetic is non-contact"},
+
+{q:"Astronaut goes to Moon. Same?",
+o:["Weight","Mass","Gravity","Scale"],c:1,e:"Mass constant"},
+
+{q:"10kg, g=10. Weight?",
+o:["10","1","100","0"],c:2,e:"mg=100N"},
+
+{q:"Why pull hands while catching?",
+o:["Increase force","Reduce force","Stop fast","Style"],c:1,e:"More time less force"},
+
+{q:"Odd one?",
+o:["Magnetic","Electrostatic","Friction","Gravitational"],c:2,e:"Friction contact"},
+
+{q:"Spring balance measures?",
+o:["Mass","Weight","Volume","Speed"],c:1,e:"Force"},
+
+{q:"10N + 15N same dir?",
+o:["5","5 opposite","25","0"],c:2,e:"Add"}];
+
+let i=0,score=0,time=30,t,tries=0,lock=false;
+
+/* ✅ FIX: LOGO → INTRO */
+setTimeout(()=>{
+document.getElementById("logo").style.display="none";
+document.getElementById("intro").classList.remove("hidden");
+},1500);
+
+/* ✅ START WORKS */
+function startQuiz(){
+document.getElementById("intro").classList.add("hidden");
+document.getElementById("quiz").classList.remove("hidden");
+loadQ();
 }
 
-function render(){
-    if(i>=questions.length)return end();
+function loadQ(){
+if(i>=qs.length)return end();
 
-    setupCanvas();
-    locked=false;
+tries=0;lock=false;time=30;
+document.getElementById("feedback").classList.add("hidden");
 
-    let q=questions[i];
-    document.getElementById('q').innerText=q.q;
+document.getElementById("qnum").innerText="Q "+(i+1);
+document.getElementById("score").innerText="Score "+score;
 
-    draw(q.type);
+document.getElementById("qtxt").innerText=qs[i].q;
 
-    let optBox=document.getElementById('options');
-    optBox.innerHTML="";
+let box=document.getElementById("opts"); box.innerHTML="";
 
-    q.o.forEach((text,index)=>{
-        let b=document.createElement("button");
-        b.className="btn btn-opt";
-        b.innerText=text;
-        b.onclick=()=>check(index,b);
-        optBox.appendChild(b);
-    });
+qs[i].o.forEach((t,idx)=>{
+let b=document.createElement("button");
+b.className="btn-opt";
+b.innerText=t;
+b.onclick=()=>check(idx,b);
+box.appendChild(b);
+});
+
+timer();
+}
+
+function timer(){
+clearInterval(t);
+t=setInterval(()=>{
+time--;
+document.getElementById("bar").style.width=(time/30*100)+"%";
+if(time<=0){clearInterval(t);reveal();}
+},1000);
 }
 
 function check(idx,btn){
-    if(locked)return;
-    locked=true;
+if(lock)return;
 
-    if(idx===questions[i].c){
-        btn.classList.add("is-correct");
-        score+=10;
-    } else {
-        btn.classList.add("is-wrong");
-    }
+if(idx===qs[i].c){
+lock=true;
+btn.classList.add("is-correct");
+score+= (tries==0?10:5);
+setTimeout(()=>{i++;loadQ();},1000);
+}else{
+tries++;
+btn.classList.add("is-wrong");
 
-    document.getElementById('score').innerText=score+" PTS";
-
-    setTimeout(()=>{
-        i++;
-        render();
-    },1000);
+if(tries==2){lock=true;reveal();}
+else showHint();
+}
 }
 
-function draw(type){
-    ctx.clearRect(0,0,320,180);
+function reveal(){
+document.querySelectorAll(".btn-opt")[qs[i].c].classList.add("is-correct");
 
-    if(type==="gravity"){
-        gravityAnim();
-    }
-    else if(type==="collision"){
-        collisionAnim();
-    }
-    else if(type==="magnet"){
-        magnetAnim();
-    }
+let fb=document.getElementById("feedback");
+fb.innerText=qs[i].e;
+fb.classList.remove("hidden");
+
+setTimeout(()=>{i++;loadQ();},2000);
 }
 
-function gravityAnim(){
-    let y=10,v=0;
-
-    let anim=setInterval(()=>{
-        ctx.clearRect(0,0,320,180);
-
-        v+=0.5;
-        y+=v;
-
-        ctx.fillRect(0,160,320,20);
-
-        ctx.beginPath();
-        ctx.arc(150,y,12,0,6.28);
-        ctx.fill();
-
-        if(y>150){
-            y=150;
-            v*=-0.6;
-        }
-
-        if(Math.abs(v)<0.5){
-            clearInterval(anim);
-        }
-    },16);
+function showHint(){
+let fb=document.getElementById("feedback");
+fb.innerText="Try again!";
+fb.classList.remove("hidden");
 }
 
+function end(){
+document.getElementById("quiz").classList.add("hidden");
+document.getElementById("result").classList.remove("hidden");
+document.getElementById("finalScore").innerText=score;
+}
+
+</script>
+
+</body>
+</html>
