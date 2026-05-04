@@ -34,7 +34,7 @@
         }
 
         .card {
-            width: 90%; max-width: 480px; background: white;
+            width: 95%; max-width: 500px; background: white;
             padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0;
             box-shadow: 0 10px 25px rgba(0,0,0,0.08);
             text-align: center; position: relative; z-index: 100;
@@ -42,12 +42,24 @@
 
         .hidden { display: none !important; }
 
-        .q-text { font-size: 1.1rem; font-weight: 700; text-align: left; line-height: 1.4; margin-bottom: 20px; color: #1e293b; }
-        .options-grid { display: grid; gap: 10px; }
+        /* Adjusted for detailed questions */
+        .q-text { 
+            font-size: 0.95rem; 
+            font-weight: 700; 
+            text-align: left; 
+            line-height: 1.5; 
+            margin-bottom: 20px; 
+            color: #1e293b;
+            max-height: 180px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .options-grid { display: grid; gap: 8px; }
         
         .btn-opt {
-            padding: 15px; border: 2px solid #f1f5f9; border-radius: 12px;
-            background: white; cursor: pointer; font-size: 0.95rem; 
+            padding: 12px; border: 2px solid #f1f5f9; border-radius: 12px;
+            background: white; cursor: pointer; font-size: 0.85rem; 
             text-align: left; font-weight: 600; color: #475569;
             transition: 0.2s; -webkit-tap-highlight-color: transparent;
         }
@@ -76,10 +88,10 @@
         <h2 style="color:var(--accent); margin:0 0 10px 0;">FORCE MASTER</h2>
         <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Grade 8 Physics CBQ</p>
         <div style="text-align: left; background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 25px; font-size: 0.85rem; color: #475569; line-height: 1.5;">
+            • Detailed Case-Based Scenarios<br>
             • 2 Tries per question!<br>
             • 10 Core + 1 Final Challenge<br>
-            • Full points for 1st try (10 pts)<br>
-            • Half points for 2nd try (5 pts)
+            • Full points for 1st try (10 pts)
         </div>
         <button class="btn-prime" onclick="initQuiz()">START MISSION</button>
     </div>
@@ -104,20 +116,75 @@
 
     <script>
         const corePool = [
-            { q: "A potter applies a constant inward squeeze while clay spins. Which effect of force is this?", o: ["Speed Change", "Stop Motion", "Shape & Size Change", "Direction Change"], c: 2, e: "Force can change object dimensions." },
-            { q: "A football is rolling. A player kicks it in the SAME direction. What happens?", o: ["It stops", "It turns 180°", "Speed increases", "Mass changes"], c: 2, e: "Force in motion direction causes acceleration." },
-            { q: "Brother A pushes Left (50N), Brother B pushes Right (30N). Resultant?", o: ["80N Right", "20N Left", "20N Right", "0N"], c: 1, e: "50 - 30 = 20N toward the stronger push." },
-            { q: "Identify the Non-Contact force:", o: ["Pushing trolley", "Catching ball", "Magnet attracting nails", "Kicking stone"], c: 2, e: "Magnetic fields act without touch." },
-            { q: "An astronaut goes to the Moon. What stays exactly the same?", o: ["Weight", "Mass", "Gravity", "Scale Reading"], c: 1, e: "Mass is constant matter." },
-            { q: "A 10kg bag on Earth (g=10). Weight is:", o: ["10N", "1N", "100N", "0N"], c: 2, e: "W = m * g." },
-            { q: "A cricketer pulls hands back while catching to:", o: ["Increase force", "Reduce force of impact", "Stop ball instantly", "Look stylish"], c: 1, e: "Time increase reduces force." },
-            { q: "Odd one out: Magnetic, Electrostatic, Frictional, Gravitational.", o: ["Magnetic", "Electrostatic", "Frictional", "Gravitational"], c: 2, e: "Friction is the only contact force here." },
-            { q: "Spring balance measures:", o: ["Mass", "Weight", "Volume", "Speed"], c: 1, e: "Measures gravitational pull." },
-            { q: "Two strings pull North: 10N and 15N. Resultant?", o: ["5N North", "5N South", "25N North", "0N"], c: 2, e: "Add forces in same direction." }
+            { 
+                q: "CASE STUDY: An industrial hydraulic press is used to flatten scrap metal into thin, wide sheets for recycling. A technician observes that while the metal's area increases, its total mass remains identical. Which specific effect of force is the press utilizing?", 
+                o: ["Increasing the object's speed", "Changing the shape and size", "Bringing a moving object to rest", "Changing the direction of motion"], 
+                c: 1, 
+                e: "The hydraulic press applies force to deform the material, altering its physical dimensions without adding or removing matter." 
+            },
+            { 
+                q: "CASE STUDY: A 500g toy car is traveling East at 2 m/s. A child pushes the car from behind, applying a constant force in the same Easterly direction for several seconds. Based on the relationship between force and motion, what happens?", 
+                o: ["The car's speed increases", "The car comes to a sudden stop", "The car's mass begins to increase", "The car turns 180 degrees West"], 
+                c: 0, 
+                e: "When an external force is applied in the direction of an object's current motion, it causes positive acceleration (increase in speed)." 
+            },
+            { 
+                q: "CASE STUDY: A heavy wooden crate is placed on a rough floor. Person X pushes it with 50N of force toward the Left. Simultaneously, Person Y pushes it with 30N of force toward the Right. Calculate the Net Force and direction.", 
+                o: ["80N to the Right", "20N to the Left", "20N to the Right", "0N (Balanced)"], 
+                c: 1, 
+                e: "Subtract opposing forces: 50N (Left) - 30N (Right) = 20N. The crate moves toward the stronger force." 
+            },
+            { 
+                q: "CASE STUDY: During a lab experiment, a student rubs a glass rod with silk and brings it near small bits of paper. The paper bits are suddenly lifted toward the rod without any physical touching. Classify this interaction.", 
+                o: ["Muscular (Contact) Force", "Frictional (Contact) Force", "Electrostatic (Non-contact) Force", "Mechanical (Contact) Force"], 
+                c: 2, 
+                e: "Electrostatic forces are field forces that act over a distance without the need for physical contact between objects." 
+            },
+            { 
+                q: "CASE STUDY: An astronaut travels to a distant moon where the gravitational pull is exactly 1/6th of Earth's gravity. If she takes a 12kg toolkit with her, which property of the toolkit remains totally unchanged?", 
+                o: ["The toolkit's Weight", "The toolkit's Mass", "The scale reading in Newtons", "The gravitational pull on it"], 
+                c: 1, 
+                e: "Mass is an intrinsic property representing the amount of matter in an object; it does not change regardless of gravity." 
+            },
+            { 
+                q: "CASE STUDY: A logistics drone is carrying a package with a mass of 10kg. To calculate the lift force required to hover, engineers use the formula W = m × g (where g = 10 m/s²). What is the package's Weight in Newtons?", 
+                o: ["10 N", "100 N", "1 N", "1000 N"], 
+                c: 1, 
+                e: "Weight is the force of gravity on a mass. Here, 10kg multiplied by 10 m/s² equals 100 Newtons." 
+            },
+            { 
+                q: "CASE STUDY: In a professional cricket match, a fielder catches a high-speed ball by pulling his hands backward during the catch. Why is this technique used in terms of physics?", 
+                o: ["To increase the ball's momentum", "To reduce the force of impact by increasing time", "To stop the ball in the shortest time possible", "To make the ball bounce for a better grip"], 
+                c: 1, 
+                e: "Increasing the time taken to stop the ball reduces the rate of change of momentum, thereby reducing the impact force on the hands." 
+            },
+            { 
+                q: "CASE STUDY: A student lists four forces: (1) Magnetic pull on a pin, (2) Electrostatic attraction of hair, (3) Friction between tires and road, and (4) Gravity. Which one is the 'Odd One Out' regarding contact?", 
+                o: ["Magnetic Force", "Electrostatic Force", "Frictional Force", "Gravitational Force"], 
+                c: 2, 
+                e: "Friction is the only contact force listed; the others are non-contact (field) forces that act through space." 
+            },
+            { 
+                q: "CASE STUDY: A spring balance is used to hang a metallic sphere. The internal spring stretches and the pointer moves down the scale. What specific physical quantity is being measured by the stretch of the spring?", 
+                o: ["The volume of the sphere", "The mass of the sphere", "The gravitational force (Weight)", "The density of the metal"], 
+                c: 2, 
+                e: "A spring balance measures the force of gravity (Weight) acting on an object, usually calibrated in Newtons." 
+            },
+            { 
+                q: "CASE STUDY: A rescue boat is being towed Northward by two separate cables. Cable A exerts a force of 150N and Cable B exerts a force of 250N. What is the total resultant force pulling the boat North?", 
+                o: ["100N South", "100N North", "400N North", "0N"], 
+                c: 2, 
+                e: "When multiple forces act in the same direction, they are additive. 150N + 250N = 400N Northward." 
+            }
         ];
 
         const finalPool = [
-            { q: "Two spring balances in series with a 5kg weight. Top balance reads:", o: ["2.5 kg", "5 kg", "0 kg", "10 kg"], c: 1, e: "Tension is constant in the line." }
+            { 
+                q: "FINAL CHALLENGE: Two identical spring balances are linked in a vertical line (series). A 5kg weight (50N) is hung from the bottom balance. Analysis shows that tension is constant throughout the line. What does the top balance read?", 
+                o: ["2.5 kg (it splits)", "5 kg (constant tension)", "0 kg (no direct weight)", "10 kg (cumulative)"], 
+                c: 1, 
+                e: "In a series connection, the full tension of the load is transmitted through both balances. Each balance 'feels' the full 5kg weight." 
+            }
         ];
 
         let quizSet = [], currentIdx = 0, score = 0, timer, timeLeft = 45, locked = false, tries = 0;
@@ -129,7 +196,7 @@
                 document.getElementById('scr-intro').classList.remove('hidden');
             }, 850);
         }
-        setTimeout(clearOverlay, 3000);
+        setTimeout(clearOverlay, 2000);
 
         function initQuiz() {
             quizSet = [...corePool.sort(() => 0.5 - Math.random()).slice(0, 10), ...finalPool];
@@ -144,6 +211,7 @@
             document.getElementById('feedback-box').classList.add('hidden');
             document.getElementById('q-num').innerText = `TASK ${currentIdx + 1}/${quizSet.length}`;
             document.getElementById('q-txt').innerText = quizSet[currentIdx].q;
+            document.getElementById('q-txt').scrollTop = 0;
 
             const box = document.getElementById('options-box');
             box.innerHTML = '';
@@ -159,6 +227,7 @@
         function startTimer() {
             clearInterval(timer);
             const bar = document.getElementById('timer-bar');
+            bar.style.width = '100%';
             timer = setInterval(() => {
                 timeLeft--;
                 bar.style.width = (timeLeft/45*100) + '%';
@@ -175,13 +244,13 @@
                 btn.classList.add('is-correct');
                 score += (tries === 0) ? 10 : 5;
                 document.getElementById('score').innerText = "PTS: " + score;
-                setTimeout(() => { currentIdx++; render(); }, 1200);
+                setTimeout(() => { currentIdx++; render(); }, 1500);
             } else {
                 tries++;
                 btn.classList.add('is-wrong');
                 if(tries === 1) {
                     const fb = document.getElementById('feedback-box');
-                    fb.innerText = "Incorrect. Try again! (Hint: Look at the direction or definition closely.)";
+                    fb.innerText = "Incorrect. Re-read the scenario! (Look for key words like 'contact', 'direction', or 'constant'.)";
                     fb.classList.remove('hidden');
                 } else {
                     locked = true; clearInterval(timer); showCorrect(true);
@@ -193,16 +262,16 @@
             const btns = document.querySelectorAll('.btn-opt');
             btns[quizSet[currentIdx].c].classList.add('is-correct');
             const fb = document.getElementById('feedback-box');
-            fb.innerHTML = `<strong>Concept:</strong> ${quizSet[currentIdx].e}`;
+            fb.innerHTML = `<strong>Concept Analysis:</strong> ${quizSet[currentIdx].e}`;
             fb.classList.remove('hidden');
-            setTimeout(() => { currentIdx++; render(); }, 3500);
+            setTimeout(() => { currentIdx++; render(); }, 4000);
         }
 
         function end() {
             document.getElementById('scr-quiz').classList.add('hidden');
             document.getElementById('scr-result').classList.remove('hidden');
             document.getElementById('res-score').innerText = score + "/110";
-            document.getElementById('res-desc').innerText = score >= 90 ? "Physics Legend!" : "Great effort! Review the tricky ones.";
+            document.getElementById('res-desc').innerText = score >= 90 ? "Physics Mastermind! You have a perfect grasp of force dynamics." : "Well done! Review the case studies to sharpen your scientific reasoning.";
         }
     </script>
 </body>
