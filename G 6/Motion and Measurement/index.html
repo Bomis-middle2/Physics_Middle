@@ -28,7 +28,6 @@
             overflow-x: hidden;
         }
 
-        /* Branding Overlay */
         #brand-layer {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -44,7 +43,6 @@
         .loader { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Game Card */
         .game-card {
             width: 90%;
             max-width: 650px;
@@ -106,7 +104,7 @@
     <div class="game-card">
         <div id="screen-start" class="text-center">
             <h1 style="color:var(--primary)">Science Lab: Motion</h1>
-            <p>Help Riya solve measurement puzzles! <br><strong>Turn up your volume 🔊</strong></p>
+            <p>You have <b>2 chances</b> per question! <br><strong>Turn up your volume 🔊</strong></p>
             <button class="btn-fancy" onclick="startQuiz()">Start 🚀</button>
         </div>
 
@@ -125,15 +123,14 @@
         </div>
 
         <div id="screen-result" class="hidden text-center">
-            <h2>Activity Complete!</h2>
-            <h1 id="final-score" style="font-size: 3rem; color: var(--warning);">0/12</h1>
+            <h2>Lab Complete!</h2>
+            <h1 id="final-score" style="font-size: 3.5rem; color: var(--warning);">0/12</h1>
             <p id="result-msg"></p>
             <button class="btn-fancy" onclick="location.reload()">Play Again 🔄</button>
         </div>
     </div>
 
     <script>
-        // Audio Setup
         const audio = {
             correct: new Audio('assets/correct.mp3'),
             wrong: new Audio('assets/wrong.mp3'),
@@ -194,14 +191,11 @@
             const data = questions[curIdx];
             const feedback = document.getElementById('feedback-box');
             
-            // Temporarily lock UI while sound plays
             document.querySelectorAll('.option-item').forEach(b => b.disabled = true);
 
             if(idx === data.ans) {
                 btn.classList.add('correct');
                 audio.correct.play();
-                
-                // Wait for Correct Chime to end, then play Claps
                 audio.correct.onended = () => {
                     audio.claps.play();
                     if(attempts === 0) score++;
@@ -214,14 +208,23 @@
                 btn.classList.add('wrong');
                 audio.wrong.play();
                 
-                // Wait for Wrong sound to end before allowing retry
                 audio.wrong.onended = () => {
                     attempts++;
-                    document.querySelectorAll('.option-item').forEach(b => {
-                        if(!b.classList.contains('wrong')) b.disabled = false;
-                    });
-                    feedback.innerHTML = `<b>Oops!</b> Try another choice!`;
-                    feedback.classList.remove('hidden');
+                    if (attempts < 2) {
+                        // Give second chance
+                        document.querySelectorAll('.option-item').forEach(b => {
+                            if(!b.classList.contains('wrong')) b.disabled = false;
+                        });
+                        feedback.innerHTML = `<b>Not quite!</b> You have 1 chance left.`;
+                        feedback.classList.remove('hidden');
+                    } else {
+                        // No more chances - reveal correct answer
+                        const btns = document.querySelectorAll('.option-item');
+                        btns[data.ans].classList.add('correct');
+                        feedback.innerHTML = `<b>Out of chances!</b> The correct answer is highlighted.<br>${data.explain}`;
+                        feedback.classList.remove('hidden');
+                        document.getElementById('btn-continue').classList.remove('hidden');
+                    }
                 };
             }
         }
@@ -236,12 +239,8 @@
             document.getElementById('screen-quiz').classList.add('hidden');
             document.getElementById('screen-result').classList.remove('hidden');
             document.getElementById('final-score').innerText = `${score}/12`;
-            
-            // Play final victory claps
             audio.claps.play();
-            
-            let msg = score > 8 ? "Excellent science skills!" : "Good effort! Keep practicing measurement.";
-            document.getElementById('result-msg').innerText = msg;
+            document.getElementById('result-msg').innerText = score > 8 ? "Excellent science skills!" : "Good effort! Try again for 12/12 stars.";
         }
     </script>
 </body>
