@@ -3,86 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade 6 Science - Heat & Temperature Lab</title>
+    <title>Heat and Temperature - Interactive Quiz</title>
     <style>
         :root {
-            --primary: #e67e22; /* Warm Orange for Heat */
-            --accent: #d35400;
-            --success: #27ae60;
-            --danger: #c0392b;
-            --bg: #fdf2e9;
+            --primary-bg: #f0f8ff;
+            --card-bg: #ffffff;
+            --accent-color: #4a90e2;
+            --correct-color: #4caf50;
+            --wrong-color: #f44336;
+            --text-color: #333;
         }
 
         body {
-            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
-            background: var(--bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            color: var(--text-color);
+            overflow-x: hidden;
         }
 
-        .game-card {
+        #app-container {
             width: 90%;
-            max-width: 650px;
-            background: white;
-            padding: 30px;
-            border-radius: 25px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-            border: 5px solid var(--primary);
+            max-width: 600px;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
         }
+
+        /* Branding Overlay */
+        #logo-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        #logo-overlay img {
+            max-width: 250px;
+            animation: pulse 2s infinite;
+        }
+
+        /* Header / Stats */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        #timer-fill {
+            height: 100%;
+            background: var(--accent-color);
+            width: 100%;
+            transition: width 1s linear;
+        }
+
+        /* Question Styles */
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+
+        .options-container {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover {
+            border-color: var(--accent-color);
+            background: #f9f9f9;
+        }
+
+        .option-btn.correct { background-color: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .option-btn.wrong { background-color: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        /* Feedback Area */
+        #feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .hint { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; }
+        .explanation { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: yellow;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .red-cross {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 100px;
+            color: rgba(244, 67, 54, 0.4);
+            pointer-events: none;
+            display: none;
+        }
+
+        /* Results Screen */
+        .result-screen { text-align: center; }
+        .result-screen h2 { font-size: 2rem; color: var(--accent-color); }
 
         .hidden { display: none !important; }
 
-        .hud { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; }
-        
-        .progress-bar {
-            height: 12px;
-            background: #eee;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-        #progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
-
-        .question-box h2 { font-size: 1.2rem; color: #333; line-height: 1.5; }
-
-        .options-grid { display: grid; gap: 12px; margin-top: 20px; }
-
-        .option-btn {
-            padding: 15px;
-            border: 3px solid #eee;
-            border-radius: 12px;
-            background: #fafafa;
-            cursor: pointer;
-            font-size: 1rem;
-            text-align: left;
-            transition: 0.2s;
-        }
-
-        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #fff5eb; }
-        .correct { background: var(--success) !important; color: white !important; border-color: #1e8449 !important; }
-        .wrong { background: var(--danger) !important; color: white !important; border-color: #922b21 !important; animation: shake 0.3s; }
-
-        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
-
-        .feedback-area {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            background: #fdf2e9;
-            border-left: 5px solid var(--primary);
-        }
-
-        .btn-next {
-            margin-top: 20px;
-            background: var(--primary);
+        button#next-btn {
+            margin-top: 1rem;
+            padding: 10px 25px;
+            background: var(--accent-color);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 20px;
-            font-weight: bold;
+            border-radius: 5px;
             cursor: pointer;
             float: right;
         }
@@ -90,157 +169,298 @@
 </head>
 <body>
 
-<div class="game-card">
-    <div id="start-screen" class="text-center" style="text-align: center;">
-        <h1 style="color: var(--primary);">🔥 Heat & Temperature Quiz</h1>
-        <p>Based on your CBQ Document. <br><strong>Rule:</strong> Only 2 chances per question!</p>
-        <button class="btn-next" style="float: none;" onclick="startQuiz()">Start Experiment 🚀</button>
+    <div id="logo-overlay">
+        <img src="assets/logo.png" alt="Innovine Logo">
     </div>
 
-    <div id="quiz-screen" class="hidden">
-        <div class="hud">
-            <span>Question: <span id="q-count">1</span>/5</span>
-            <span>Stars: ⭐ <span id="score">0</span></span>
-        </div>
-        <div class="progress-bar"><div id="progress-fill"></div></div>
-        
-        <div class="question-box">
-            <h2 id="q-text"></h2>
-            <div id="options-box" class="options-grid"></div>
+    <div id="app-container" class="hidden">
+        <div id="intro-screen">
+            <h1>Heat and Temperature</h1>
+            <p>Grade 6 Science Challenge</p>
+            <p>Test your knowledge on thermal equilibrium, conduction, and more!</p>
+            <button id="start-btn" style="padding: 15px 30px; font-size: 1.1rem; background: var(--accent-color); color: white; border: none; border-radius: 10px; cursor: pointer;">Start Quiz</button>
         </div>
 
-        <div id="feedback-box" class="feedback-area hidden"></div>
-        <div style="height: 60px;">
-            <button id="next-btn" class="btn-next hidden" onclick="nextQuestion()">Next Question ➡️</button>
+        <div id="quiz-screen" class="hidden">
+            <div class="header">
+                <span>Question <span id="q-num">1</span>/13</span>
+                <span>Score: <span id="score">0</span></span>
+            </div>
+            <div class="timer-bar"><div id="timer-fill"></div></div>
+            <div id="question-container">
+                <div class="question-text" id="q-text"></div>
+                <div class="options-container" id="options"></div>
+            </div>
+            <div id="feedback"></div>
+            <button id="next-btn" class="hidden">Next</button>
+        </div>
+
+        <div id="result-screen" class="hidden" class="result-screen">
+            <h2>Quiz Complete!</h2>
+            <p style="font-size: 1.5rem;">Your Score: <span id="final-score">0</span> / 13</p>
+            <p id="result-msg"></p>
+            <button onclick="location.reload()" style="padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 5px; cursor: pointer;">Try Again</button>
         </div>
     </div>
 
-    <div id="result-screen" class="hidden" style="text-align: center;">
-        <h2 style="color: var(--success);">Lab Complete!</h2>
-        <h1 id="final-score" style="font-size: 3rem;">0/5</h1>
-        <p id="result-msg"></p>
-        <button class="btn-next" style="float: none;" onclick="location.reload()">Restart 🔄</button>
-    </div>
-</div>
+    <div class="red-cross" id="wrong-indicator">✖</div>
 
-<script>
-    const audio = {
-        correct: new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'),
-        wrong: new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3'),
-        claps: new Audio('https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3')
-    };
+    <script>
+        const questions = [
+            {
+                q: "Priya pours hot tea into a cup and places it on the table. After 20 minutes, the tea feels the same temperature as the room. Why?",
+                options: ["The cup absorbed all the heat permanently", "Heat flowed from tea to surroundings until both reached the same temperature", "The tea lost water due to evaporation only", "Cold air entered and replaced the heat"],
+                correct: 1,
+                hint: "Heat moves from hot objects to cold objects.",
+                explanation: "Heat flows until thermal equilibrium is reached."
+            },
+            {
+                q: "A student wants to express the amount of heat absorbed by water in S.I. units. Which unit should she use?",
+                options: ["Calorie", "Joule", "Degree Celsius", "Watt"],
+                correct: 1,
+                hint: "Think of the Standard International system used in physics for energy.",
+                explanation: "The S.I. unit of heat is the Joule (J). Celsius is for temperature, and Watt is for power."
+            },
+            {
+                q: "Why was it wrong to use a clinical thermometer to measure boiling water?",
+                options: ["It can only measure body temperature and might break at high heat", "It only works with mercury and mercury hates water", "It needed to be cleaned first", "It only reads temperatures below 0°C"],
+                correct: 0,
+                hint: "A clinical thermometer has a very narrow range (around 35°C to 42°C).",
+                explanation: "Clinical thermometers have a limited range. Boiling water (100°C) is far beyond its capacity."
+            },
+            {
+                q: "Meena stirs hot soup with a metal spoon. After a few seconds, the handle becomes warm. This is due to:",
+                options: ["Convection", "Radiation", "Conduction", "Evaporation"],
+                correct: 2,
+                hint: "How does heat move through a solid metal object?",
+                explanation: "Conduction is the transfer of heat through a solid by particle-to-particle energy transfer."
+            },
+            {
+                q: "Which material does NOT belong with the others in terms of heat conductivity?",
+                options: ["Copper", "Brass", "Plastic", "Aluminium"],
+                correct: 2,
+                hint: "Three of these are metals, one is not.",
+                explanation: "Plastic is an insulator (bad conductor), while the others are good conductors (metals)."
+            },
+            {
+                q: "Is it better to keep an AC vent near the ceiling? Why?",
+                options: ["No, cold air is heavy and stays at the ceiling", "Yes, warm air rises and cool air from the top replaces it, circulating the room", "No, because warm air stays near the floor", "Yes, because the ceiling is hotter"],
+                correct: 1,
+                hint: "Think about convection currents—does warm air rise or sink?",
+                explanation: "Warm air is lighter and rises. Cooling from the top sets up convection currents that cool the whole room."
+            },
+            {
+                q: "Rahul stands away from a bonfire and feels warmth on his face without any wind. How is the heat reaching him?",
+                options: ["Conduction through the ground", "Convection currents", "Radiation traveling as electromagnetic waves", "Conduction through the air"],
+                correct: 2,
+                hint: "Which mode of heat transfer does not require a medium (like air or metal)?",
+                explanation: "Radiation travels as waves and can move through a vacuum or air to warm objects directly."
+            },
+            {
+                q: "In a sunlit experiment, a Black box reached 52°C while a Silver box reached 31°C. What can we conclude?",
+                options: ["Silver boxes are hotter because they are shiny", "All colors absorb the same heat", "Darker colors absorb more heat than reflective colors", "White boxes absorb more heat than red boxes"],
+                correct: 2,
+                hint: "Look at the temperature difference between the darkest and the most reflective box.",
+                explanation: "Dark surfaces (black) absorb more radiant heat; light/shiny surfaces (silver) reflect it."
+            },
+            {
+                q: "Why does a sea breeze blow from sea to land during the day?",
+                options: ["The sea is hotter than the land", "Land heats up faster, causing warm air to rise and sea air to move in", "The sun only heats the sea", "Evaporation pushes the air"],
+                correct: 1,
+                hint: "Which heats up faster: water or solid ground?",
+                explanation: "Land heats faster. Hot air above land rises, and cooler air from the sea flows in to replace it."
+            },
+            {
+                q: "Which of these is INCORRECTLY classified as a chemical change?",
+                options: ["Ice melting into water", "Grilling vegetables", "Melted chocolate solidifying", "Burning paper"],
+                correct: 2,
+                hint: "A physical change is usually reversible. Can you melt and solidify chocolate again?",
+                explanation: "Chocolate solidifying is a physical change because it's reversible and no new substance is formed."
+            },
+            {
+                q: "How does the vacuum in a thermos flask help keep soup hot?",
+                options: ["It absorbs heat from the soup", "It prevents conduction and convection by having no particles", "It creates pressure to trap heat", "It uses mirror particles to reflect heat"],
+                correct: 1,
+                hint: "Conduction and Convection need atoms/molecules to work. What's in a vacuum?",
+                explanation: "Since conduction and convection require particles, a vacuum (no particles) prevents these modes of heat loss."
+            },
+            {
+                q: "Assertion: A metal rod's end becomes hot when the other is in a flame. Reason: Molecules move from the hot end to the cold end.",
+                options: ["Both True, Reason explains Assertion", "Both True, Reason does NOT explain Assertion", "Assertion is True, Reason is False", "Assertion is False, Reason is True"],
+                correct: 2,
+                hint: "In a solid rod, do the atoms actually travel down the rod or just vibrate?",
+                explanation: "Molecules in solids only vibrate; they don't move from place to place. Movement of molecules is convection."
+            },
+            {
+                q: "Why are small gaps left between railway track sections?",
+                options: ["To drain rainwater", "To reduce the weight of the track", "To allow metal to expand in summer without buckling", "To create signal vibrations"],
+                correct: 2,
+                hint: "What happens to metal when it gets very hot?",
+                explanation: "Metals expand when heated. Gaps allow space for this expansion so the tracks don't bend or buckle."
+            }
+        ];
 
-    const questions = [
-        {
-            q: "Priya pours hot tea into a cup. After 20 minutes, it feels the same temperature as the room. Why?",
-            options: ["The cup absorbed heat permanently", "Heat flowed to cooler surroundings until thermal equilibrium", "Evaporation made it cool", "Cold air replaced the heat"],
-            ans: 1,
-            explain: "Heat always flows from a hotter object to a cooler one until they reach thermal equilibrium."
-        },
-        {
-            q: "A student wants to express the amount of heat absorbed by water using the S.I. system. Which unit should she use?",
-            options: ["Calorie", "Joule", "Degree Celsius", "Watt"],
-            ans: 1,
-            explain: "The S.I. unit of heat is the Joule (J). Celsius measures temperature, not heat."
-        },
-        {
-            q: "Why was it wrong for Arjun's mother to use a clinical thermometer for boiling water?",
-            options: ["Body thermometers have a limited safe range", "Mercury cannot measure water", "It needed cleaning first", "It only reads below 0°C"],
-            ans: 0,
-            explain: "Boiling water (100°C) is beyond the safe range of clinical thermometers (~37°C)."
-        },
-        {
-            q: "Meena stirs hot soup with a metal spoon. Soon, the handle becomes warm. Which mode of heat transfer is this?",
-            options: ["Convection", "Radiation", "Conduction", "Evaporation"],
-            ans: 2,
-            explain: "This is conduction—heat transfer through a solid by particle-to-particle energy transfer."
-        },
-        {
-            q: "Which of these materials does NOT belong with the others (Odd One Out)?",
-            options: ["Copper", "Brass", "Plastic", "Aluminium"],
-            ans: 2,
-            explain: "Copper, brass, and aluminium are good conductors (metals). Plastic is an insulator."
-        }
-    ];
+        let currentQ = 0;
+        let score = 0;
+        let attempts = 0;
+        let timer;
+        let timeLeft = 45;
 
-    let currentIdx = 0, score = 0, attempts = 0;
+        // Audio Objects (Only initialized if paths provided - per instructions)
+        const sndCorrect = new Audio('assets/correct.mp3');
+        const sndWrong = new Audio('assets/wrong.mp3');
+        const sndClaps = new Audio('assets/freesound_community-claps-44774.mp3');
 
-    function startQuiz() {
-        document.getElementById('start-screen').classList.add('hidden');
-        document.getElementById('quiz-screen').classList.remove('hidden');
-        loadQuestion();
-    }
+        // Logo Timer
+        setTimeout(() => {
+            document.getElementById('logo-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('logo-overlay').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+            }, 500);
+        }, 5000);
 
-    function loadQuestion() {
-        const data = questions[currentIdx];
-        attempts = 0;
-        document.getElementById('q-count').innerText = currentIdx + 1;
-        document.getElementById('q-text').innerText = data.q;
-        document.getElementById('feedback-box').classList.add('hidden');
-        document.getElementById('next-btn').classList.add('hidden');
-        document.getElementById('progress-fill').style.width = ((currentIdx / questions.length) * 100) + '%';
-
-        const box = document.getElementById('options-box');
-        box.innerHTML = '';
-        data.options.forEach((opt, i) => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = opt;
-            btn.onclick = () => checkAns(i, btn);
-            box.appendChild(btn);
+        document.getElementById('start-btn').addEventListener('click', () => {
+            document.getElementById('intro-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            loadQuestion();
         });
-    }
 
-    function checkAns(idx, btn) {
-        const data = questions[currentIdx];
-        const feedback = document.getElementById('feedback-box');
-        const allBtns = document.querySelectorAll('.option-btn');
+        function loadQuestion() {
+            attempts = 0;
+            timeLeft = 45;
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('q-num').innerText = currentQ + 1;
+            document.getElementById('q-text').innerText = questions[currentQ].q;
+            
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            
+            questions[currentQ].options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(idx, btn);
+                optionsDiv.appendChild(btn);
+            });
 
-        allBtns.forEach(b => b.disabled = true);
-
-        if (idx === data.ans) {
-            btn.classList.add('correct');
-            audio.correct.play();
-            audio.correct.onended = () => {
-                audio.claps.play();
-                if (attempts === 0) score++;
-                document.getElementById('score').innerText = score;
-                feedback.innerHTML = `<b>🌟 Correct!</b><br>${data.explain}`;
-                feedback.classList.remove('hidden');
-                document.getElementById('next-btn').classList.remove('hidden');
-            };
-        } else {
-            btn.classList.add('wrong');
-            audio.wrong.play();
-            audio.wrong.onended = () => {
-                attempts++;
-                if (attempts < 2) {
-                    allBtns.forEach(b => { if(!b.classList.contains('wrong')) b.disabled = false; });
-                    feedback.innerHTML = `<b>Incorrect!</b> You have 1 chance left.`;
-                    feedback.classList.remove('hidden');
-                } else {
-                    allBtns[data.ans].classList.add('correct');
-                    feedback.innerHTML = `<b>Out of chances!</b> The correct answer was: <i>${data.options[data.ans]}</i>.<br>${data.explain}`;
-                    feedback.classList.remove('hidden');
-                    document.getElementById('next-btn').classList.remove('hidden');
-                }
-            };
+            startTimer();
         }
-    }
 
-    function nextQuestion() {
-        currentIdx++;
-        if (currentIdx < questions.length) loadQuestion();
-        else showFinal();
-    }
+        function startTimer() {
+            clearInterval(timer);
+            const fill = document.getElementById('timer-fill');
+            timer = setInterval(() => {
+                timeLeft--;
+                fill.style.width = (timeLeft / 45 * 100) + '%';
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
 
-    function showFinal() {
-        document.getElementById('quiz-screen').classList.add('hidden');
-        document.getElementById('result-screen').classList.remove('hidden');
-        document.getElementById('final-score').innerText = `${score}/${questions.length}`;
-        audio.claps.play();
-        document.getElementById('result-msg').innerText = score >= 4 ? "Excellent Heat Expert!" : "Good effort! Review the heat transfer modes.";
-    }
-</script>
+        function checkAnswer(idx, btn) {
+            const correctIdx = questions[currentQ].correct;
+            
+            if (idx === correctIdx) {
+                // Correct
+                clearInterval(timer);
+                btn.classList.add('correct');
+                score++;
+                document.getElementById('score').innerText = score;
+                sndCorrect.play();
+                createStars();
+                disableOptions();
+                showNext();
+            } else {
+                // Wrong
+                attempts++;
+                sndWrong.play();
+                showCross();
+                btn.classList.add('wrong');
+                
+                if (attempts === 1) {
+                    showFeedback('hint', questions[currentQ].hint);
+                } else {
+                    clearInterval(timer);
+                    showFeedback('explanation', "Correct Answer: " + questions[currentQ].options[correctIdx] + ". " + questions[currentQ].explanation);
+                    disableOptions();
+                    highlightCorrect();
+                    showNext();
+                }
+            }
+        }
+
+        function handleTimeOut() {
+            disableOptions();
+            showFeedback('explanation', "Time's up! Correct Answer: " + questions[currentQ].options[questions[currentQ].correct]);
+            highlightCorrect();
+            showNext();
+        }
+
+        function showFeedback(type, text) {
+            const f = document.getElementById('feedback');
+            f.className = type;
+            f.innerText = text;
+            f.style.display = 'block';
+        }
+
+        function highlightCorrect() {
+            const btns = document.getElementsByClassName('option-btn');
+            btns[questions[currentQ].correct].classList.add('correct');
+        }
+
+        function disableOptions() {
+            const btns = document.getElementsByClassName('option-btn');
+            for (let b of btns) b.disabled = true;
+        }
+
+        function showNext() {
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            currentQ++;
+            if (currentQ < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        });
+
+        function showResults() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+            sndClaps.play();
+
+            let msg = "";
+            if (score === 13) msg = "Perfect! You're a Heat Master! 🌟";
+            else if (score > 9) msg = "Great job! You have a solid grasp of the concepts.";
+            else if (score > 6) msg = "Good effort! A bit more review and you'll be an expert.";
+            else msg = "Keep learning! Science is all about discovery.";
+            document.getElementById('result-msg').innerText = msg;
+        }
+
+        function createStars() {
+            for (let i = 0; i < 15; i++) {
+                const star = document.createElement('div');
+                star.className = 'confetti';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                document.body.appendChild(star);
+                setTimeout(() => star.remove(), 2000);
+            }
+        }
+
+        function showCross() {
+            const cross = document.getElementById('wrong-indicator');
+            cross.style.display = 'block';
+            setTimeout(() => cross.style.display = 'none', 800);
+        }
+    </script>
 </body>
 </html>
