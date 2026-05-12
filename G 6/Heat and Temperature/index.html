@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Heat & Temperature: Grade 6 Challenge</title>
+    <title>Heat & Temperature Assessment</title>
     <style>
         :root {
             --primary: #4361ee;
-            --correct: #2ec4b6;
-            --wrong: #e71d36;
+            --success: #2ec4b6;
+            --error: #e71d36;
             --bg: #f8f9fa;
             --text: #2b2d42;
         }
@@ -16,7 +16,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
@@ -31,56 +31,62 @@
             width: 100%;
             max-width: 550px;
             background: #ffffff;
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
             position: relative;
-            min-height: 400px;
+            overflow: hidden;
         }
 
-        /* Mandatory Branding - 5s Splash */
+        /* Branding Logic: Only at Start */
         #splash-screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: white;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            border-radius: 20px;
         }
 
-        .logo-static { width: 180px; height: auto; }
+        .logo-static { width: 180px; height: auto; margin-bottom: 20px; }
 
-        /* General Styles */
-        .header { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 10px; }
-        .timer-track { width: 100%; height: 6px; background: #eee; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        /* Progress & Timer */
+        .header { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 10px; font-size: 0.9rem; }
+        .timer-track { width: 100%; height: 6px; background: #edf2f4; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
         #timer-bar { height: 100%; width: 100%; background: var(--primary); transition: width 1s linear; }
 
-        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 15px; }
+        /* Content Area */
+        .question-text { font-size: 1.15rem; font-weight: 600; line-height: 1.5; margin-bottom: 15px; }
         
-        /* Table Visibility */
-        .table-container { width: 100%; overflow-x: auto; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .table-container { width: 100%; overflow-x: auto; margin: 15px 0; border: 1px solid #dee2e6; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { border: 1px solid #dee2e6; padding: 12px; text-align: left; }
         th { background: #f1f4ff; color: var(--primary); }
 
+        /* Interaction Buttons */
         .options-grid { display: grid; gap: 10px; }
         .opt-btn {
-            background: #fff; border: 2px solid #f0f0f0; padding: 14px;
-            border-radius: 12px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
+            background: #fff; border: 2px solid #edf2f4; padding: 16px;
+            border-radius: 14px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
         }
-        .opt-btn.correct { background: var(--correct) !important; color: white; border-color: var(--correct); }
-        .opt-btn.wrong { background: var(--wrong) !important; color: white; border-color: var(--wrong); }
+        .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: #f8faff; }
+        .opt-btn.correct { background: var(--success) !important; color: white; border-color: var(--success); }
+        .opt-btn.wrong { background: var(--error) !important; color: white; border-color: var(--error); }
 
-        .feedback { margin-top: 15px; padding: 15px; border-radius: 10px; display: none; line-height: 1.4; font-size: 0.95rem; }
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 12px; display: none; line-height: 1.5; font-size: 0.95rem; animation: slideIn 0.3s ease; }
         .hint-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; }
         .expl-box { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
 
-        #nav-btn { width: 100%; margin-top: 20px; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
+        #action-btn { width: 100%; margin-top: 20px; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; }
         
-        .red-cross { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; color: rgba(231, 29, 54, 0.3); pointer-events: none; display: none; }
-        .confetti { position: absolute; width: 10px; height: 10px; background: #FFD700; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); pointer-events: none; }
+        /* Visual Effects */
+        .red-cross { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 120px; color: rgba(231, 29, 54, 0.25); pointer-events: none; display: none; z-index: 10; }
+        .star { position: absolute; width: 12px; height: 12px; background: #FFD700; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); pointer-events: none; animation: pop 1s ease-out forwards; }
+
+        @keyframes pop { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(1.5) translate(var(--tx), var(--ty)); opacity: 0; } }
+        @keyframes slideIn { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         .hidden { display: none !important; }
     </style>
@@ -88,82 +94,92 @@
 <body>
 
 <div id="app-container">
-    <div id="splash-screen"><img src="assets/logo.png" class="logo-static"></div>
-    
-    <img src="assets/logo.png" style="width:100px; margin-bottom:15px; display:block;" id="top-logo" class="hidden">
-
-    <div id="start-screen" class="hidden">
-        <h1 style="text-align:center;">Heat & Temperature Challenge</h1>
-        <p style="text-align:center; color:#666;">12 Competency-Based Questions<br>45 seconds per question</p>
-        <button id="start-quiz-btn" style="width:100%; padding:16px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">Start Assessment</button>
+    <div id="splash-screen">
+        <img src="assets/logo.png" class="logo-static" alt="Innovine">
+        <div style="font-weight:600; color:#999; letter-spacing: 2px;">LOADING...</div>
     </div>
 
-    <div id="quiz-screen" class="hidden">
+    <div id="intro-view" class="hidden">
+        <h1 style="margin-top:0; color:var(--primary); text-align:center;">Heat & Temperature</h1>
+        <p style="text-align:center; color:#64748b; margin-bottom:25px;">Grade 6 Science Chapter Assessment</p>
+        <div style="background:#f1f5f9; padding:20px; border-radius:15px; margin-bottom:25px;">
+            <ul style="margin:0; padding-left:20px; color:#475569; line-height:1.8;">
+                <li>12 Competency-based questions</li>
+                <li>45 seconds per question</li>
+                <li>One retry allowed for mistakes</li>
+            </ul>
+        </div>
+        <button id="start-btn" style="width:100%; padding:18px; background:var(--primary); color:white; border:none; border-radius:14px; font-weight:bold; font-size:1.1rem; cursor:pointer;">Start Challenge</button>
+    </div>
+
+    <div id="quiz-view" class="hidden">
         <div class="header">
-            <span>Question <span id="q-idx">1</span>/12</span>
+            <span>Question <span id="q-num">1</span>/12</span>
             <span style="color:var(--primary);">Score: <span id="score-val">0</span></span>
         </div>
         <div class="timer-track"><div id="timer-bar"></div></div>
+        
         <div id="q-text" class="question-text"></div>
-        <div id="q-table"></div>
+        <div id="table-area"></div>
+        
         <div id="options-area" class="options-grid"></div>
-        <div id="feedback-area" class="feedback"></div>
-        <button id="nav-btn" class="hidden">Continue →</button>
-        <div id="wrong-cross" class="red-cross">✖</div>
+        
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="hidden">Continue →</button>
+        <div id="cross-mark" class="red-cross">✖</div>
     </div>
 
-    <div id="result-screen" class="hidden" style="text-align:center;">
-        <h2>Challenge Complete!</h2>
-        <div style="font-size: 3.5rem; font-weight: 800; color: var(--primary); margin: 20px 0;"><span id="final-score">0</span>/12</div>
-        <p id="result-msg"></p>
-        <button onclick="location.reload()" style="padding:15px 40px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">Restart Quiz</button>
+    <div id="result-view" class="hidden" style="text-align:center;">
+        <h2 style="font-size:1.8rem; margin-bottom:10px;">Assessment Result</h2>
+        <div style="font-size: 4rem; font-weight: 800; color: var(--primary); margin: 20px 0;"><span id="final-pts">0</span>/12</div>
+        <p id="result-msg" style="color:#64748b; font-size:1.1rem; margin-bottom:30px;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:16px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:700; cursor:pointer;">Restart Quiz</button>
     </div>
 </div>
 
 <script>
-    // Questions derived from heat.pdf [cite: 1, 2, 3, 4]
+    // Data from heat.pdf [cite: 4, 18, 30, 43, 54, 64, 76, 87, 98, 108, 126, 151]
     const questions = [
-        { q: "Priya's hot tea reached room temperature after 20 minutes. What explains this?", opts: ["Cup absorbed heat permanently", "Heat flowed to surroundings until thermal equilibrium", "Tea lost water only", "Cold air replaced the heat"], ans: 1, hint: "Heat flows from hot to cold objects.", expl: "Heat flows until both reach the same temperature (thermal equilibrium)[cite: 13, 15]." },
-        { q: "Refer to the table. Which S.I. unit should be used for heat?", tbl: "<table><tr><th>Unit</th><th>System</th><th>Used For</th></tr><tr><td>Joule (J)</td><td>S.I.</td><td>Standard scientific</td></tr><tr><td>Calorie</td><td>c)G.S.</td><td>Smaller quantities</td></tr><tr><td>Watt (W)</td><td>S.I.</td><td>Power</td></tr></table>", opts: ["Calorie", "Joule", "Degree Celsius", "Watt"], ans: 1, hint: "Check the 'S.I.' column in the table.", expl: "The S.I. unit of heat is the Joule (J)[cite: 26]." },
-        { q: "Why did Arjun's clinical thermometer break in boiling water?", opts: ["Limited range; high heat breaks it", "Only works with mercury", "Needed cleaning", "Reads below 0°C"], ans: 0, hint: "Body temp is ~37°C; boiling water is 100°C.", expl: "Clinical thermometers have a narrow range (up to ~42°C)[cite: 38]." },
-        { q: "Heat moving through a metal spoon handle in hot soup is:", opts: ["Convection", "Radiation", "Conduction", "Evaporation"], ans: 2, hint: "Heat transfer through a solid.", expl: "Conduction is particle-to-particle energy transfer through solids[cite: 51]." },
-        { q: "Which material does NOT belong in this group?", opts: ["Copper", "Brass", "Plastic", "Aluminium"], ans: 2, hint: "Three are metal conductors, one is an insulator.", expl: "Plastic is an insulator; the others are metals[cite: 60, 61]." },
-        { q: "Why install AC vents near the ceiling?", opts: ["Cold air sinks", "Warm air rises; cool air replaces it via convection", "Floor is hotter", "Ceiling is hotter"], ans: 1, hint: "Warm air is lighter and rises.", expl: "Cool air from the top displaces rising warm air, creating convection currents[cite: 73]." },
-        { q: "How does heat reach your face from a bonfire without wind?", opts: ["Conduction (ground)", "Convection", "Radiation (waves)", "Conduction (air)"], ans: 2, hint: "It travels like light waves.", expl: "Radiation does not need a medium and travels as electromagnetic waves[cite: 84]." },
-        { q: "Which conclusion is supported by the box data?", tbl: "<table><tr><th>Box</th><th>Temp</th></tr><tr><td>White</td><td>34°C</td></tr><tr><td>Black</td><td>52°C</td></tr><tr><td>Silver</td><td>31°C</td></tr><tr><td>Red</td><td>45°C</td></tr></table>", opts: ["Silver is hottest", "Colors don't matter", "Darker colors absorb more heat", "White absorbs more than red"], ans: 2, hint: "Compare Black (52°C) vs Silver (31°C).", expl: "Dark surfaces absorb more radiant heat than reflective ones[cite: 95]." },
-        { q: "Why does sea breeze blow towards land during the day?", opts: ["Sea is hotter", "Land heats faster; warm air rises and cool sea air moves in", "Sun heats sea more", "Evaporation"], ans: 1, hint: "Land heats up quicker than water.", expl: "Warm air rises over land, and cooler sea air flows in to fill the gap[cite: 105]." },
-        { q: "Which classification is INCORRECT?", opts: ["Ice melting - Physical", "Grilling - Chemical", "Chocolate solidifying - Chemical", "Burning paper - Chemical"], ans: 2, hint: "Is the change reversible?", expl: "Chocolate solidifying is a physical, reversible change[cite: 122]." },
-        { q: "How does the vacuum in a thermos flask help keep soup hot?", opts: ["Absorbs heat", "Prevents conduction/convection (no particles)", "Traps pressure", "Reflects heat"], ans: 1, hint: "Conduction and convection need matter to travel.", expl: "A vacuum has no particles, stopping conduction and convection[cite: 135]." },
-        { q: "Why are small gaps left between railway track sections?", opts: ["Drain water", "Save metal", "Allow for expansion in summer", "Vibration signals"], ans: 2, hint: "Metals get bigger when heated.", expl: "Gaps allow metal to expand without the tracks buckling dangerously[cite: 158]." }
+        { q: "Priya's hot tea cooled to room temperature after 20 minutes. What best explains this?", opts: ["The cup absorbed all heat permanently", "Heat flowed to surroundings until thermal equilibrium", "Tea lost water due to evaporation", "Cold air replaced the heat"], ans: 1, hint: "Heat flows from hot to cold objects [cite: 13].", expl: "Heat flows until both reach thermal equilibrium at the same temperature[cite: 9, 15]." },
+        { q: "Refer to the table. Which unit should be used for heat in the S.I. system?", tbl: "<table><tr><th>Unit</th><th>System</th><th>Used For</th></tr><tr><td>Joule (J)</td><td>S.I.</td><td>Standard scientific</td></tr><tr><td>Calorie</td><td>c)G.S.</td><td>Smaller quantities</td></tr><tr><td>Watt (W)</td><td>S.I.</td><td>Power</td></tr></table>", opts: ["Calorie", "Joule", "Degree Celsius", "Watt"], ans: 1, hint: "Look at the 'S.I.' row in the table[cite: 18].", expl: "The S.I. unit of heat is the Joule (J). Celsius is for temperature[cite: 26, 27]." },
+        { q: "Why did a clinical thermometer break when placed in boiling water?", opts: ["Designed for body temp; high heat breaks it", "Only works with mercury", "Needed cleaning", "Reads below 0°C"], ans: 0, hint: "Check the range of clinical vs laboratory thermometers[cite: 38, 40].", expl: "Clinical thermometers have a limited range (~35-42°C). Boiling water is 100°C[cite: 38, 39]." },
+        { q: "A metal spoon handle gets warm while stirring hot soup. Which mode of heat transfer is this?", opts: ["Convection", "Radiation", "Conduction", "Evaporation"], ans: 2, hint: "Heat transfer through a solid [cite: 51].", expl: "Conduction is the transfer of heat through solids via particle-to-particle energy transfer[cite: 51]." },
+        { q: "Which material does NOT belong in this group based on conductivity?", opts: ["Copper", "Brass", "Plastic", "Aluminium"], ans: 2, hint: "Find the insulator among the conductors[cite: 60, 61].", expl: "Copper, brass, and aluminium are metal conductors. Plastic is an insulator[cite: 60, 61]." },
+        { q: "Why are AC vents installed near the ceiling rather than the floor?", opts: ["Cold air is heavy and sinks", "Warm air rises; cool air from top replaces it", "Floor is hotter", "Ceiling is hotter"], ans: 1, hint: "Think about convection currents[cite: 73].", expl: "Warm air rises. Cool air from the top displaces it, setting up convection currents[cite: 72, 73]." },
+        { q: "How does heat from a bonfire reach someone's face without wind?", opts: ["Conduction (ground)", "Convection", "Radiation waves through air", "Conduction (air)"], ans: 2, hint: "This mode does not need a medium [cite: 84].", expl: "Radiation travels as electromagnetic waves and warms objects directly[cite: 81, 84]." },
+        { q: "Based on the box data, which conclusion is correct?", tbl: "<table><tr><th>Box</th><th>Temperature</th></tr><tr><td>White</td><td>34°C</td></tr><tr><td>Black</td><td>52°C</td></tr><tr><td>Silver</td><td>31°C</td></tr><tr><td>Red</td><td>45°C</td></tr></table>", opts: ["Silver is the hottest", "All colors absorb same heat", "Dark colors absorb more heat", "White absorbs more than red"], ans: 2, hint: "Compare Black (52°C) and Silver (31°C) [cite: 87].", expl: "Darker surfaces absorb more radiant heat; reflective surfaces like silver reflect it[cite: 94, 95]." },
+        { q: "Why does sea breeze blow towards the land during a hot afternoon?", opts: ["Sea is hotter than land", "Land heats faster; warm air rises and cool sea air moves in", "Sun heats sea more", "Evaporation pushes air"], ans: 1, hint: "Land and sea heat up at different rates[cite: 104].", expl: "Land heats faster. Warm air rises and cooler sea air flows in to fill the gap[cite: 104, 105]." },
+        { q: "Which of these is INCORRECTLY classified as a chemical change?", opts: ["Ice melting", "Grilling vegetables", "Melted chocolate solidifying", "Burning paper"], ans: 2, hint: "A physical change is reversible [cite: 122].", expl: "Chocolate solidifying is a physical change because no new substance is formed and it is reversible[cite: 122]." },
+        { q: "How does a vacuum help in a thermos flask?", opts: ["Absorbs heat", "No particles for conduction/convection", "Creates pressure", "Reflects heat"], ans: 1, hint: "Conduction and convection need matter to travel [cite: 135].", expl: "A vacuum has no particles, preventing heat loss via conduction and convection[cite: 131, 135]." },
+        { q: "Why are small gaps left between railway track sections?", opts: ["Drain rainwater", "Reduce weight", "Allow expansion in summer", "Vibration signals"], ans: 2, hint: "Metals expand when heated [cite: 158].", expl: "Gaps allow metal tracks to expand in heat without buckling or bending[cite: 156, 158]." }
     ];
 
-    let cur = 0, score = 0, tries = 0, timer, tLeft = 45;
+    let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
     const sndC = new Audio('assets/correct.mp3');
     const sndW = new Audio('assets/wrong.mp3');
-    const sndClap = new Audio('assets/freesound_community-claps-44774.mp3');
+    const sndF = new Audio('assets/freesound_community-claps-44774.mp3');
 
     window.onload = () => {
         setTimeout(() => {
-            document.getElementById('splash-screen').classList.add('hidden');
-            document.getElementById('start-screen').classList.remove('hidden');
-            document.getElementById('top-logo').classList.remove('hidden');
+            document.getElementById('splash-screen').style.display = 'none';
+            document.getElementById('intro-view').classList.remove('hidden');
         }, 5000);
     };
 
-    document.getElementById('start-quiz-btn').onclick = () => {
-        document.getElementById('start-screen').classList.add('hidden');
-        document.getElementById('quiz-screen').classList.remove('hidden');
-        loadQ();
+    document.getElementById('start-btn').onclick = () => {
+        document.getElementById('intro-view').classList.add('hidden');
+        document.getElementById('quiz-view').classList.remove('hidden');
+        loadQuestion();
     };
 
-    function loadQ() {
-        tries = 0; tLeft = 45;
-        const q = questions[cur];
-        document.getElementById('feedback-area').style.display = 'none';
-        document.getElementById('nav-btn').classList.add('hidden');
-        document.getElementById('q-idx').innerText = cur + 1;
+    function loadQuestion() {
+        attempts = 0; timeLeft = 45;
+        const q = questions[current];
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').classList.add('hidden');
+        document.getElementById('q-num').innerText = current + 1;
         document.getElementById('q-text').innerText = q.q;
-        document.getElementById('q-table').innerHTML = q.tbl ? `<div class="table-container">${q.tbl}</div>` : "";
+        document.getElementById('table-area').innerHTML = q.tbl ? `<div class="table-container">${q.tbl}</div>` : "";
         
         const area = document.getElementById('options-area');
         area.innerHTML = "";
@@ -174,76 +190,82 @@
             b.onclick = () => check(i, b);
             area.appendChild(b);
         });
-        startT();
+        startTimer();
     }
 
-    function startT() {
+    function startTimer() {
         clearInterval(timer);
         timer = setInterval(() => {
-            tLeft--;
-            document.getElementById('timer-bar').style.width = (tLeft/45*100) + "%";
-            if(tLeft <= 0) { clearInterval(timer); showAns(); }
+            timeLeft--;
+            document.getElementById('timer-bar').style.width = (timeLeft/45*100) + "%";
+            if(timeLeft <= 0) { clearInterval(timer); endTurn(); }
         }, 1000);
     }
 
     function check(i, b) {
-        if(i === questions[cur].ans) {
+        if(i === questions[current].ans) {
             clearInterval(timer);
             b.classList.add('correct');
             score++;
             document.getElementById('score-val').innerText = score;
             sndC.play();
-            pop();
-            showAns();
+            createStars();
+            endTurn();
         } else {
-            tries++;
+            attempts++;
             sndW.play();
-            document.getElementById('wrong-cross').style.display = 'block';
-            setTimeout(() => document.getElementById('wrong-cross').style.display = 'none', 600);
+            showCross();
             b.classList.add('wrong');
             b.disabled = true;
-            if(tries === 1) {
-                const f = document.getElementById('feedback-area');
+            if(attempts === 1) {
+                const f = document.getElementById('feedback-box');
                 f.className = 'feedback hint-box';
-                f.innerText = "Hint: " + questions[cur].hint;
+                f.innerText = "Hint: " + questions[current].hint;
                 f.style.display = 'block';
             } else {
                 clearInterval(timer);
-                showAns();
+                endTurn();
             }
         }
     }
 
-    function showAns() {
+    function endTurn() {
         document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
-        const f = document.getElementById('feedback-area');
+        const f = document.getElementById('feedback-box');
         f.className = 'feedback expl-box';
-        f.innerText = questions[cur].expl;
+        f.innerText = questions[current].expl;
         f.style.display = 'block';
-        document.querySelectorAll('.opt-btn')[questions[cur].ans].classList.add('correct');
-        document.getElementById('nav-btn').classList.remove('hidden');
+        document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
+        document.getElementById('action-btn').classList.remove('hidden');
     }
 
-    function pop() {
-        for(let i=0; i<15; i++) {
-            const c = document.createElement('div');
-            c.className = 'confetti';
-            c.style.left = Math.random()*100+"%";
-            c.style.top = Math.random()*100+"%";
-            document.getElementById('app-container').appendChild(c);
-            setTimeout(() => c.remove(), 1000);
+    function showCross() {
+        const c = document.getElementById('cross-mark');
+        c.style.display = 'block';
+        setTimeout(() => c.style.display = 'none', 600);
+    }
+
+    function createStars() {
+        for(let i=0; i<12; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.setProperty('--tx', (Math.random()*200 - 100) + 'px');
+            s.style.setProperty('--ty', (Math.random()*200 - 100) + 'px');
+            s.style.left = '50%'; s.style.top = '50%';
+            document.getElementById('app-container').appendChild(s);
+            setTimeout(() => s.remove(), 1000);
         }
     }
 
-    document.getElementById('nav-btn').onclick = () => {
-        cur++;
-        if(cur < questions.length) loadQ();
+    document.getElementById('action-btn').onclick = () => {
+        current++;
+        if(current < questions.length) loadQuestion();
         else {
-            document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('final-score').innerText = score;
-            sndClap.play();
-            document.getElementById('result-msg').innerText = score > 9 ? "Expert! You've mastered Heat & Temperature!" : "Good effort! Keep reviewing the concepts.";
+            document.getElementById('quiz-view').classList.add('hidden');
+            document.getElementById('result-view').classList.remove('hidden');
+            document.getElementById('final-pts').innerText = score;
+            sndF.play();
+            document.getElementById('result-msg').innerText = score >= 10 ? "Excellent! You are a Science Expert!" : "Well done! Keep practicing the concepts of Heat.";
         }
     };
 </script>
