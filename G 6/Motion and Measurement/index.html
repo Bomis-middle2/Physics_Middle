@@ -104,7 +104,7 @@
     <div class="game-card">
         <div id="screen-start" class="text-center">
             <h1 style="color:var(--primary)">Science Lab: Motion</h1>
-            <p>You have <b>2 chances</b> per question! <br><strong>Turn up your volume 🔊</strong></p>
+            <p><strong>Strict Rule:</strong> Only 2 chances per question! 🧪</p>
             <button class="btn-fancy" onclick="startQuiz()">Start 🚀</button>
         </div>
 
@@ -191,6 +191,7 @@
             const data = questions[curIdx];
             const feedback = document.getElementById('feedback-box');
             
+            // Disable everything immediately to wait for sound
             document.querySelectorAll('.option-item').forEach(b => b.disabled = true);
 
             if(idx === data.ans) {
@@ -211,19 +212,20 @@
                 audio.wrong.onended = () => {
                     attempts++;
                     if (attempts < 2) {
-                        // Give second chance
+                        // First mistake: Re-enable remaining buttons for the final chance
                         document.querySelectorAll('.option-item').forEach(b => {
                             if(!b.classList.contains('wrong')) b.disabled = false;
                         });
-                        feedback.innerHTML = `<b>Not quite!</b> You have 1 chance left.`;
+                        feedback.innerHTML = `<b>Wrong!</b> You have 1 chance left.`;
                         feedback.classList.remove('hidden');
                     } else {
-                        // No more chances - reveal correct answer
+                        // Second mistake: Game Over for this question
                         const btns = document.querySelectorAll('.option-item');
-                        btns[data.ans].classList.add('correct');
-                        feedback.innerHTML = `<b>Out of chances!</b> The correct answer is highlighted.<br>${data.explain}`;
+                        btns[data.ans].classList.add('correct'); // Reveal the right one
+                        feedback.innerHTML = `<b>No more chances!</b> The correct answer was: <i>${data.options[data.ans]}</i>.<br>${data.explain}`;
                         feedback.classList.remove('hidden');
                         document.getElementById('btn-continue').classList.remove('hidden');
+                        // Buttons stay disabled
                     }
                 };
             }
@@ -240,7 +242,7 @@
             document.getElementById('screen-result').classList.remove('hidden');
             document.getElementById('final-score').innerText = `${score}/12`;
             audio.claps.play();
-            document.getElementById('result-msg').innerText = score > 8 ? "Excellent science skills!" : "Good effort! Try again for 12/12 stars.";
+            document.getElementById('result-msg').innerText = score > 8 ? "Excellent science skills!" : "Good effort! Let's study and try again.";
         }
     </script>
 </body>
