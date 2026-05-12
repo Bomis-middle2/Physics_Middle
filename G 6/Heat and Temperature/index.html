@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Heat & Temperature Challenge</title>
+    <title>Heat & Temperature Grade 6</title>
     <style>
         :root {
             --primary: #4361ee;
@@ -36,7 +36,7 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.08);
             position: relative;
             overflow: hidden;
-            min-height: 450px;
+            min-height: 480px;
         }
 
         /* --- MANDATORY SPLASH SCREEN --- */
@@ -45,38 +45,28 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background: #ffffff;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
         }
 
-        .logo-main {
-            width: 110px; /* Increased size for visibility */
+        .logo-only {
+            width: 250px;
             height: auto;
-            max-width: 80%;
+            max-width: 85%;
             object-fit: contain;
         }
 
-        .loader-text {
-            margin-top: 20px;
-            font-size: 12px;
-            letter-spacing: 3px;
-            color: #adb5bd;
-            font-weight: bold;
-        }
-
-        /* --- PROGRESS & TIMER --- */
+        /* --- UI COMPONENTS --- */
         .header { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 10px; font-size: 0.9rem; }
         .timer-track { width: 100%; height: 8px; background: #edf2f4; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
         #timer-bar { height: 100%; width: 100%; background: var(--primary); transition: width 1s linear; }
 
-        /* --- CONTENT --- */
-        .question-text { font-size: 1.15rem; font-weight: 600; line-height: 1.5; margin-bottom: 15px; }
+        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 15px; }
         
         .table-container { width: 100%; overflow-x: auto; margin: 15px 0; border: 1px solid #dee2e6; border-radius: 10px; background: #fff; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        th, td { border: 1px solid #dee2e6; padding: 12px; text-align: left; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { border: 1px solid #dee2e6; padding: 10px; text-align: left; }
         th { background: #f1f4ff; color: var(--primary); }
 
         .options-grid { display: grid; gap: 12px; }
@@ -104,19 +94,18 @@
 
 <div id="app-container">
     <div id="splash-screen">
-        <img src="assets/logo.png" class="logo-main" alt="Innovine Logo">
-        <div class="loader-text">POWERED BY INNOVINE</div>
+        <img src="assets/logo.png" class="logo-only" alt="Logo">
     </div>
 
     <div id="intro-view" class="hidden">
         <h1 style="text-align:center; color:var(--primary); margin-bottom: 5px;">Heat & Temperature</h1>
-        <p style="text-align:center; color:#6c757d; margin-top: 0;">Grade 6 Challenge</p>
-        <button id="start-btn" style="width:100%; padding:18px; background:var(--primary); color:white; border:none; border-radius:14px; font-weight:bold; font-size:1.1rem; cursor:pointer; margin-top: 30px;">Start Now</button>
+        <p style="text-align:center; color:#6c757d; margin-top: 0;">Grade 6 Interactive Assessment</p>
+        <button id="start-btn" style="width:100%; padding:18px; background:var(--primary); color:white; border:none; border-radius:14px; font-weight:bold; font-size:1.1rem; cursor:pointer; margin-top: 30px;">Start Quiz</button>
     </div>
 
     <div id="quiz-view" class="hidden">
         <div class="header">
-            <span>Question <span id="q-num">1</span>/12</span>
+            <span>Q: <span id="q-num">1</span>/12</span>
             <span style="color:var(--primary);">Score: <span id="score-val">0</span></span>
         </div>
         <div class="timer-track"><div id="timer-bar"></div></div>
@@ -131,27 +120,27 @@
     </div>
 
     <div id="result-view" class="hidden" style="text-align:center;">
-        <h2 style="font-size:1.5rem;">Assessment Complete</h2>
+        <h2 style="font-size:1.5rem;">Challenge Complete</h2>
         <div style="font-size: 4rem; font-weight: 800; color: var(--primary); margin: 15px 0;"><span id="final-pts">0</span>/12</div>
         <p id="result-msg" style="color:#6c757d; margin-bottom:30px;"></p>
-        <button onclick="location.reload()" style="width:100%; padding:16px; background:var(--primary); color:white; border:none; border-radius:14px; font-weight:700; cursor:pointer;">Try Again</button>
+        <button onclick="location.reload()" style="width:100%; padding:16px; background:var(--primary); color:white; border:none; border-radius:14px; font-weight:700; cursor:pointer;">Restart Challenge</button>
     </div>
 </div>
 
 <script>
     const questions = [
-        { q: "Priya's hot tea cooled to room temperature after 20 minutes. Why?", opts: ["The cup absorbed all heat permanently", "Heat flowed to surroundings until thermal equilibrium", "Tea evaporated completely", "Cold air replaced the heat"], ans: 1, hint: "Heat flows from hot to cold objects.", expl: "Heat transfer continues until both objects reach the same temperature (thermal equilibrium)." },
-        { q: "Which S.I. unit should be used for heat based on this table?", tbl: "<table><tr><th>Unit</th><th>System</th><th>Used For</th></tr><tr><td>Joule (J)</td><td>S.I.</td><td>Standard scientific</td></tr><tr><td>Calorie</td><td>c)G.S.</td><td>Smaller quantities</td></tr><tr><td>Watt (W)</td><td>S.I.</td><td>Power</td></tr></table>", opts: ["Calorie", "Joule", "Degree Celsius", "Watt"], ans: 1, hint: "Look at the 'S.I.' column in the first row.", expl: "The Joule (J) is the S.I. unit of heat. Celsius measures temperature." },
-        { q: "Why did a clinical thermometer break in boiling water?", opts: ["Designed for body temp; high heat breaks it", "Only works with mercury", "Needed cleaning", "Reads below 0°C"], ans: 0, hint: "Boiling water is 100°C; clinical range is much lower.", expl: "Clinical thermometers have a narrow range (35°C to 42°C) and cannot handle boiling water." },
-        { q: "Stirring hot soup makes a metal spoon handle warm. This is:", opts: ["Convection", "Radiation", "Conduction", "Evaporation"], ans: 2, hint: "Heat transfer through a solid metal.", expl: "Conduction is the transfer of heat through solids via vibrating particles." },
-        { q: "Which material is the odd one out?", opts: ["Copper", "Brass", "Plastic", "Aluminium"], ans: 2, hint: "Three are metals, one is an insulator.", expl: "Plastic is an insulator; the others are thermal conductors." },
-        { q: "Why install AC vents near the ceiling?", opts: ["Cold air sinks", "Warm air rises; cool air replaces it", "Floor is hotter", "Ceiling is hotter"], ans: 1, hint: "Think about convection currents.", expl: "Warm air rises; cool air from the top sinks and displaces it to cool the room." },
-        { q: "How does heat from a bonfire reach you without wind?", opts: ["Conduction (ground)", "Convection", "Radiation waves", "Conduction (air)"], ans: 2, hint: "This mode doesn't need air to move.", expl: "Radiation travels as waves and warms objects directly across space." },
-        { q: "Which conclusion is correct according to the box data?", tbl: "<table><tr><th>Box</th><th>Temp</th></tr><tr><td>White</td><td>34°C</td></tr><tr><td>Black</td><td>52°C</td></tr><tr><td>Silver</td><td>31°C</td></tr><tr><td>Red</td><td>45°C</td></tr></table>", opts: ["Silver is hottest", "Colors don't matter", "Dark colors absorb more heat", "White absorbs more than red"], ans: 2, hint: "Compare Black (52°C) vs Silver (31°C).", expl: "Darker surfaces absorb more heat; reflective surfaces like silver reflect it." },
-        { q: "Why does sea breeze blow towards land in the afternoon?", opts: ["Sea is hotter", "Land heats faster; warm air rises", "Sun heats sea more", "Evaporation"], ans: 1, hint: "Land and sea heat up at different rates.", expl: "Land heats faster. Warm air rises and cooler sea air flows in to fill the gap." },
-        { q: "Which is incorrectly classified as a chemical change?", opts: ["Ice melting", "Grilling vegetables", "Chocolate solidifying", "Burning paper"], ans: 2, hint: "Physical changes are reversible.", expl: "Solidifying chocolate is a physical change because it is reversible." },
-        { q: "How does a vacuum in a thermos flask help?", opts: ["Absorbs heat", "No particles for conduction/convection", "Creates pressure", "Reflects heat"], ans: 1, hint: "Conduction/convection need matter to travel.", expl: "A vacuum has no particles, preventing heat loss through conduction or convection." },
-        { q: "Why leave small gaps between railway tracks?", opts: ["Drain rainwater", "Reduce weight", "Allow expansion in summer", "Vibration signals"], ans: 2, hint: "Metals get bigger when they are hot.", expl: "Gaps allow metal tracks to expand in summer heat without buckling." }
+        { q: "Priya's hot tea cooled to room temperature after 20 minutes. What explains this?", opts: ["The cup absorbed all the heat permanently", "Heat flowed to surroundings until thermal equilibrium", "The tea lost water due to evaporation", "Cold air replaced the heat"], ans: 1, hint: "Heat flows from hot to cold objects.", expl: "Heat always flows from a hotter object to a cooler one until both reach the same temperature." },
+        { q: "A student wants to measure heat in the standard international (S.I.) system. Which unit is correct?", tbl: "<table><tr><th>Unit</th><th>System</th><th>Used For</th></tr><tr><td>Joule (J)</td><td>S.I.</td><td>Scientific measurement</td></tr><tr><td>Calorie</td><td>c)G.S.</td><td>Smaller heat quantities</td></tr><tr><td>Watt (W)</td><td>S.I.</td><td>Power</td></tr></table>", opts: ["Calorie", "Joule", "Degree Celsius", "Watt"], ans: 1, hint: "Check the table for the S.I. system row.", expl: "The S.I. unit of heat is the Joule (J). Celsius measures temperature, not heat." },
+        { q: "Why did a clinical thermometer break when placed in boiling water?", opts: ["Designed for body temp; boiling water is beyond its range", "Only works with mercury", "The thermometer needed cleaning", "It only reads temperatures below 0°C"], ans: 0, hint: "Boiling water is 100°C; body temp is around 37°C.", expl: "Clinical thermometers have a narrow range. Boiling water (100°C) is beyond its safe limit." },
+        { q: "Stirring hot soup with a metal spoon makes the handle warm. Which mode of heat transfer is this?", opts: ["Convection", "Radiation", "Conduction", "Evaporation"], ans: 2, hint: "Heat transfer through a solid object.", expl: "Conduction is the transfer of heat through solids via particle-to-particle energy transfer." },
+        { q: "Which material does NOT belong in this group based on heat conduction?", opts: ["Copper", "Brass", "Plastic", "Aluminium"], ans: 2, hint: "Look for the insulator among the metals.", expl: "Copper, brass, and aluminium are metals (conductors). Plastic is a bad conductor (insulator)." },
+        { q: "Why is an air conditioner vent usually installed near the ceiling?", opts: ["Cold air is heavy and sinks", "Warm air rises; cool air from the top replaces it", "The floor is hotter", "The ceiling needs to be cooled first"], ans: 1, hint: "Warm air is lighter than cool air.", expl: "Warm air rises. Cool air from the vent sinks and displaces it, cooling the room through convection." },
+        { q: "How does warmth from a bonfire reach your face even without wind?", opts: ["Conduction through ground", "Convection currents", "Radiation waves through the air", "Conduction through the air"], ans: 2, hint: "This mode of transfer does not need a medium.", expl: "Radiation travels as electromagnetic waves and warms objects directly across a space." },
+        { q: "Which conclusion is supported by this temperature data?", tbl: "<table><tr><th>Box</th><th>Temp</th></tr><tr><td>White box</td><td>34°C</td></tr><tr><td>Black box</td><td>52°C</td></tr><tr><td>Silver box</td><td>31°C</td></tr><tr><td>Red box</td><td>45°C</td></tr></table>", opts: ["Silver is the hottest", "All colors absorb same heat", "Darker colors absorb more heat", "White absorbs more than red"], ans: 2, hint: "Compare the Black box (52°C) to the Silver box (31°C).", expl: "Dark surfaces absorb more radiant heat; light or shiny surfaces reflect most of it." },
+        { q: "Why does a sea breeze blow from sea to land during a hot day?", opts: ["The sea is hotter than land", "Land heats faster; warm air rises and cool sea air flows in", "Sun heats sea more", "Evaporation pushes the air"], ans: 1, hint: "Land and water heat up at different rates.", expl: "Land heats faster than the sea. Warm air over land rises, and cooler air from the sea replaces it." },
+        { q: "Which observation has been INCORRECTLY classified?", opts: ["Ice melting - Physical", "Grilling vegetables - Chemical", "Chocolate solidifying - Chemical", "Burning paper - Chemical"], ans: 2, hint: "Is the solidifying of chocolate reversible?", expl: "Chocolate solidifying is a physical change because it is reversible and no new substance forms." },
+        { q: "How does a vacuum help in a thermos flask?", opts: ["It absorbs heat from soup", "Prevents heat loss as there are no particles", "Creates pressure to keep heat in", "Reflects heat using mirror particles"], ans: 1, hint: "Conduction and convection need matter (particles) to move heat.", expl: "A vacuum has no particles. Since conduction and convection need matter, they cannot occur in a vacuum." },
+        { q: "Why are small gaps left between railway track sections?", opts: ["To drain rainwater", "To use less metal", "To allow for metal expansion in summer", "To create vibration signals"], ans: 2, hint: "Metals expand (get bigger) when they are heated.", expl: "Metals expand when hot. Gaps allow tracks to expand in summer heat without buckling." }
     ];
 
     let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
@@ -159,7 +148,7 @@
     const sndW = new Audio('assets/wrong.mp3');
     const sndF = new Audio('assets/freesound_community-claps-44774.mp3');
 
-    // Mandatory Splash Logic
+    // Splash Timer
     window.onload = () => {
         setTimeout(() => {
             document.getElementById('splash-screen').style.display = 'none';
@@ -246,7 +235,7 @@
     }
 
     function createStars() {
-        for(let i=0; i<12; i++) {
+        for(let i=0; i<15; i++) {
             const s = document.createElement('div');
             s.className = 'star';
             s.style.setProperty('--tx', (Math.random()*200 - 100) + 'px');
@@ -265,7 +254,7 @@
             document.getElementById('result-view').classList.remove('hidden');
             document.getElementById('final-pts').innerText = score;
             sndF.play();
-            document.getElementById('result-msg').innerText = score >= 10 ? "Great work, Science Expert!" : "Keep learning about Heat!";
+            document.getElementById('result-msg').innerText = score >= 10 ? "Great job! You've mastered Heat and Temperature!" : "Well done! Review the concepts to aim for a higher score.";
         }
     };
 </script>
