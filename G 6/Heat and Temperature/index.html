@@ -3,241 +3,354 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heat and Temperature Assessment - Grade 6</title>
+    <title>Heat & Temperature Challenge</title>
     <style>
         :root {
-            --primary-bg: #f8fafc;
+            --bg-color: #f0f9ff;
             --card-bg: #ffffff;
-            --accent-color: #2563eb;
-            --correct-color: #16a34a;
-            --wrong-color: #dc2626;
-            --text-color: #1e293b;
-            --border-color: #e2e8f0;
+            --primary: #3b82f6;
+            --success: #22c55e;
+            --error: #ef4444;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
         }
 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #f1f5f9;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            color: var(--text-color);
+            padding: 15px;
         }
 
         #app-container {
-            width: 95%;
-            max-width: 650px;
+            width: 100%;
+            max-width: 600px;
             background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
             position: relative;
         }
 
-        /* Static Logo Style - No Animations */
         .brand-logo {
             display: block;
-            max-width: 150px;
-            height: auto;
-            margin: 0 auto 2rem auto;
+            max-width: 140px;
+            margin: 0 auto 20px auto;
         }
 
-        /* Tables for Data Interpretation */
+        /* Engagement Elements */
+        h1 { font-size: 1.5rem; text-align: center; margin-bottom: 10px; color: var(--primary); }
+        .score-pill { background: #dbeafe; color: var(--primary); padding: 5px 15px; border-radius: 20px; font-weight: 700; }
+
+        /* Mobile-Friendly Table Container */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto; /* Swipe support for mobile */
+            margin: 20px 0;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1.5rem 0;
-            background: #fff;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            min-width: 400px; /* Ensures readability on small screens */
+            background: white;
         }
+
         .data-table th, .data-table td {
-            border: 1px solid var(--border-color);
+            border: 1px solid #e2e8f0;
             padding: 12px;
             text-align: left;
             font-size: 0.9rem;
         }
-        .data-table th {
-            background-color: #f8fafc;
-            font-weight: 600;
-        }
 
-        /* Header & Progress */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-        .timer-bar {
-            width: 100%;
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 3px;
-            margin-bottom: 2rem;
-            overflow: hidden;
-        }
-        #timer-fill {
-            height: 100%;
-            background: var(--accent-color);
-            width: 100%;
-            transition: width 1s linear;
-        }
-        
-        /* Question & Options */
-        .question-text {
-            font-weight: 600;
-            font-size: 1.15rem;
-            line-height: 1.5;
-            margin-bottom: 1rem;
-        }
-        .options-container {
-            display: grid;
-            gap: 0.8rem;
-            margin-top: 1.5rem;
-        }
-        .option-btn {
-            padding: 14px 18px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
+        .data-table th { background-color: #f8fafc; color: var(--primary); }
+
+        /* Quiz Layout */
+        .timer-container { width: 100%; height: 8px; background: #e2e8f0; border-radius: 10px; margin: 15px 0; overflow: hidden; }
+        #timer-fill { height: 100%; width: 100%; background: var(--primary); transition: width 1s linear; }
+
+        .question-box { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 20px; }
+
+        .options-list { display: grid; gap: 12px; }
+        .opt-btn {
             background: white;
-            cursor: pointer;
+            border: 2px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 15px;
             text-align: left;
             font-size: 1rem;
-            transition: all 0.2s;
-        }
-        .option-btn:hover:not(:disabled) {
-            background: #f1f5f9;
-            border-color: var(--accent-color);
-        }
-        .option-btn.correct {
-            background: var(--correct-color) !important;
-            color: white;
-            border-color: var(--correct-color);
-        }
-        .option-btn.wrong {
-            background: var(--wrong-color) !important;
-            color: white;
-            border-color: var(--wrong-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        /* Feedback Boxes */
-        #feedback {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            border-radius: 8px;
+        .opt-btn:active { transform: scale(0.98); }
+        .opt-btn.correct { background: var(--success) !important; color: white; border-color: var(--success); }
+        .opt-btn.wrong { background: var(--error) !important; color: white; border-color: var(--error); }
+
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
             display: none;
-            font-size: 0.95rem;
-            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
         }
-        .hint { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
-        .explanation { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .hint { background: #fffbeb; border: 1px solid #fef3c7; color: #92400e; }
+        .explanation { background: #f0fdf4; border: 1px solid #dcfce7; color: #166534; }
 
-        .hidden { display: none !important; }
         #next-btn {
-            margin-top: 1.5rem;
-            padding: 12px 28px;
-            background: var(--accent-color);
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 15px;
+            font-weight: 700;
             cursor: pointer;
-            float: right;
-            font-weight: 600;
         }
-        
-        /* Visual Indicators */
-        .red-cross {
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 140px;
-            color: rgba(220, 38, 38, 0.4);
-            pointer-events: none;
-            display: none;
-            z-index: 100;
-        }
-        .star {
-            position: absolute;
-            width: 12px; height: 12px;
-            background: #fbbf24;
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-            pointer-events: none;
-            animation: burst 1.5s ease-out forwards;
-        }
-        @keyframes burst {
-            0% { transform: scale(0) rotate(0deg); opacity: 1; }
-            100% { transform: scale(1.5) rotate(360deg) translateY(50px); opacity: 0; }
+
+        .hidden { display: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Tablet/Desktop Adjustments */
+        @media (min-width: 768px) {
+            #app-container { padding: 40px; }
+            h1 { font-size: 1.8rem; }
         }
     </style>
 </head>
 <body>
 
 <div id="app-container">
-    <img src="assets/logo.png" class="brand-logo" alt="Innovine Logo">
+    <img src="assets/logo.png" class="brand-logo" alt="Innovine">
 
-    <div id="intro-screen">
-        <h1 style="margin-top: 0; font-size: 1.8rem;">Heat and Temperature</h1>
-        <p style="color: #64748b; margin-bottom: 2rem;">Grade 6 Science Chapter Assessment</p>
-        <ul style="text-align: left; color: #475569; line-height: 1.8;">
-            <li>13 Competency-based questions</li>
-            <li>45 seconds per question</li>
-            <li>One retry allowed for wrong attempts</li>
-        </ul>
-        <button id="start-btn" style="width: 100%; padding: 16px; background: var(--accent-color); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 1.1rem; font-weight: bold; margin-top: 1rem;">Start Quiz</button>
+    <div id="start-screen">
+        <h1>Science Quiz: Heat</h1>
+        <p style="text-align:center; color: var(--text-muted);">Test your knowledge on thermal equilibrium, conduction, and more!</p>
+        <button id="begin-quiz" style="width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 15px; font-weight: 700; margin-top: 20px;">Let's Start!</button>
     </div>
 
     <div id="quiz-screen" class="hidden">
-        <div class="header">
-            <span>Question <span id="q-num">1</span>/13</span>
-            <span>Score: <span id="score">0</span></span>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:600;">Question <span id="q-num">1</span>/13</span>
+            <span class="score-pill">Score: <span id="score">0</span></span>
         </div>
-        <div class="timer-bar"><div id="timer-fill"></div></div>
-        <div id="q-text" class="question-text"></div>
-        <div id="q-table-container"></div>
-        <div class="options-container" id="options"></div>
-        <div id="feedback"></div>
-        <button id="next-btn" class="hidden">Next Question</button>
+        
+        <div class="timer-container"><div id="timer-fill"></div></div>
+        
+        <div id="q-text" class="question-box"></div>
+        <div id="table-area" class="table-wrapper hidden"></div>
+        
+        <div id="options" class="options-list"></div>
+        
+        <div id="feedback" class="feedback-box"></div>
+        <button id="next-btn" class="hidden">Next Question →</button>
     </div>
 
     <div id="result-screen" class="hidden" style="text-align: center;">
-        <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Assessment Complete</h2>
-        <div style="font-size: 3.5rem; font-weight: 800; color: var(--accent-color); margin: 1.5rem 0;"><span id="final-score">0</span>/13</div>
-        <p id="result-msg" style="font-size: 1.2rem; margin-bottom: 2.5rem; color: #475569;"></p>
-        <button onclick="location.reload()" style="padding: 14px 40px; background: var(--accent-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Restart Assessment</button>
+        <h1>Well Done! 🎉</h1>
+        <div style="font-size: 3rem; font-weight: 800; margin: 20px 0;"><span id="final-score">0</span>/13</div>
+        <p id="result-msg" style="margin-bottom: 30px; color: var(--text-muted);"></p>
+        <button onclick="location.reload()" style="width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 15px; font-weight: 700;">Try Again</button>
     </div>
 </div>
-
-<div class="red-cross" id="wrong-indicator">✖</div>
 
 <script>
     const questions = [
         {
-            q: "Priya pours hot tea into a cup and places it on the table. After 20 minutes, she finds the tea is no longer hot — it feels the same temperature as the room. What best explains why the tea cooled down?",
-            options: ["The cup absorbed all the heat from the tea permanently", "Heat flowed from the hot tea to the cooler surroundings until thermal equilibrium", "The tea lost water due to evaporation, which made it cool", "Cold air entered the cup from outside and replaced the heat"],
+            q: "Priya pours hot tea into a cup. After 20 minutes, the tea is the same temperature as the room. Why?",
+            options: ["Cup absorbed heat permanently", "Heat flowed to surroundings until equilibrium", "Tea lost water only", "Cold air replaced heat"],
             correct: 1,
-            hint: "Heat always flows from a hotter object to a cooler one.",
-            explanation: "This continues until both are at the same temperature — a state called thermal equilibrium."
+            hint: "Heat always flows from hotter to cooler objects.",
+            explanation: "Heat flows until thermal equilibrium is reached."
         },
         {
-            q: "A student wants to express the amount of heat absorbed by water during an experiment using the standard international system. Refer to the table below:",
-            table: `<table class="data-table"><tr><th>Unit</th><th>System</th><th>Used For</th></tr><tr><td>Joule (J)</td><td>S.I.</td><td>Standard scientific measurement</td></tr><tr><td>Calorie</td><td>c)G.S.</td><td>Smaller heat quantities</td></tr><tr><td>Watt (W)</td><td>S.I.</td><td>Power (rate of energy use)</td></tr><tr><td>Celsius (°c)</td><td>-</td><td>Temperature scale</td></tr></table>`,
+            q: "Which S.I. unit should be used for heat measurement?",
+            table: `<table class="data-table"><tr><th>Unit</th><th>System</th><th>Used For</th></tr><tr><td>Joule (J)</td><td>S.I.</td><td>Standard scientific</td></tr><tr><td>Calorie</td><td>c)G.S.</td><td>Smaller quantities</td></tr><tr><td>Watt (W)</td><td>S.I.</td><td>Power</td></tr></table>`,
             options: ["Calorie", "Joule", "Degree Celsius", "Watt"],
             correct: 1,
-            hint: "Identify which unit is classified under the 'S.I.' system in the table.",
-            explanation: "The S.I. unit of heat is the Joule (J). Celsius is used for temperature, and Watt for power."
+            hint: "Look for 'S.I.' in the table.",
+            explanation: "The S.I. unit of heat is the Joule (J)."
         },
         {
-            q: "Why was it wrong for Arjun's mother to use a clinical thermometer to check the temperature of boiling water?",
-            options: ["It can only measure body temperature and might break at high heat", "It only works with mercury and mercury hates water", "It needed to be cleaned first", "It only reads temperatures below 0°C"],
+            q: "Why did the clinical thermometer break in boiling water?",
+            options: ["Limited range", "Mercury hates water", "Needed cleaning", "Reads below 0°C"],
             correct: 0,
-            hint: "Think about the limited temperature range shown on a thermometer used for fever.",
-            explanation: "Clinical thermometers have a narrow range (35°C–42°C). Boiling water (100°C) would damage it."
+            hint: "Clinical thermometers only go up to about 42°C.",
+            explanation: "Boiling water (100°C) is beyond its safe range."
         },
         {
-            q: "Meena stirs hot soup with a metal spoon. After a few seconds, the handle of the spoon becomes warm. This is due to:",
+            q: "Heat moving through a metal spoon is called:",
             options: ["Convection", "Radiation", "Conduction", "Evaporation"],
             correct: 2,
-            hint: "How does heat move through a solid
+            hint: "Solid-to-solid transfer.",
+            explanation: "Conduction transfers heat through solids."
+        },
+        {
+            q: "Which material is the 'Odd One Out'?",
+            options: ["Copper", "Brass", "Plastic", "Aluminium"],
+            correct: 2,
+            hint: "Three are metals, one is an insulator.",
+            explanation: "Plastic is a bad conductor (insulator)."
+        },
+        {
+            q: "Why install AC vents near the ceiling?",
+            options: ["Cold air sinks", "Sets up convection currents", "Floor is too cold", "Ceiling is hotter"],
+            correct: 1,
+            hint: "Warm air rises, cool air sinks.",
+            explanation: "This creates convection currents that cool the whole room."
+        },
+        {
+            q: "How does heat reach your face from a bonfire?",
+            options: ["Conduction (ground)", "Convection (air)", "Radiation (waves)", "Conduction (air)"],
+            correct: 2,
+            hint: "Travels as electromagnetic waves.",
+            explanation: "Radiation does not need a medium to travel."
+        },
+        {
+            q: "Which conclusion is best supported by the box data?",
+            table: `<table class="data-table"><tr><th>Box</th><th>Temp</th></tr><tr><td>White</td><td>34°C</td></tr><tr><td>Black</td><td>52°C</td></tr><tr><td>Silver</td><td>31°C</td></tr><tr><td>Red</td><td>45°C</td></tr></table>`,
+            options: ["Silver is hottest", "Colors don't matter", "Darker absorbs more", "White absorbs more than red"],
+            correct: 2,
+            hint: "Compare Black vs Silver.",
+            explanation: "Darker colors absorb more radiant heat."
+        },
+        {
+            q: "Why does sea breeze blow towards land during the day?",
+            options: ["Sea is hotter", "Land heats up faster", "Sun heats sea more", "Evaporation pushes air"],
+            correct: 1,
+            hint: "Land gets hot faster than water.",
+            explanation: "Warm air rises over land, and cool sea air moves in."
+        },
+        {
+            q: "Which is INCORRECTLY classified?",
+            options: ["Ice melting - Physical", "Grilling - Chemical", "Chocolate solidifying - Chemical", "Burning paper - Chemical"],
+            correct: 2,
+            hint: "Solidifying is reversible.",
+            explanation: "Solidifying is a physical change."
+        },
+        {
+            q: "How does a vacuum help in a thermos flask?",
+            options: ["Absorbs heat", "No particles for conduction/convection", "Creates pressure", "Reflects heat"],
+            correct: 1,
+            hint: "Conduction needs particles to work.",
+            explanation: "A vacuum stops conduction and convection."
+        },
+        {
+            q: "Assertion: Metal rod end gets hot. Reason: Molecules move to cold end.",
+            options: ["Both True, R explains A", "Both True, R doesn't explain", "A is true, R is false", "A is false, R is true"],
+            correct: 2,
+            hint: "Do molecules travel in solids?",
+            explanation: "In solids, molecules only vibrate in place."
+        },
+        {
+            q: "Why leave gaps in railway tracks?",
+            options: ["Drain water", "Save metal", "Allow for expansion", "Create vibrations"],
+            correct: 2,
+            hint: "Metals get larger when hot.",
+            explanation: "Gaps allow metal to expand without buckling."
+        }
+    ];
+
+    let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
+    const sndCorrect = new Audio('assets/correct.mp3');
+    const sndWrong = new Audio('assets/wrong.mp3');
+    const sndClaps = new Audio('assets/freesound_community-claps-44774.mp3');
+
+    document.getElementById('begin-quiz').onclick = () => {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        loadQ();
+    };
+
+    function loadQ() {
+        attempts = 0; timeLeft = 45;
+        document.getElementById('feedback').style.display = 'none';
+        document.getElementById('next-btn').classList.add('hidden');
+        const q = questions[current];
+        document.getElementById('q-num').innerText = current + 1;
+        document.getElementById('q-text').innerText = q.q;
+        
+        const tbl = document.getElementById('table-area');
+        if(q.table) { tbl.innerHTML = q.table; tbl.classList.remove('hidden'); }
+        else { tbl.classList.add('hidden'); }
+
+        const optBox = document.getElementById('options');
+        optBox.innerHTML = "";
+        q.options.forEach((o, i) => {
+            const b = document.createElement('button');
+            b.className = 'opt-btn';
+            b.innerText = o;
+            b.onclick = () => check(i, b);
+            optBox.appendChild(b);
+        });
+        startT();
+    }
+
+    function startT() {
+        clearInterval(timer);
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer-fill').style.width = (timeLeft/45*100) + "%";
+            if(timeLeft <= 0) { clearInterval(timer); endTurn(); }
+        }, 1000);
+    }
+
+    function check(i, b) {
+        if(i === questions[current].correct) {
+            clearInterval(timer);
+            b.classList.add('correct');
+            score++;
+            document.getElementById('score').innerText = score;
+            sndCorrect.play();
+            endTurn();
+        } else {
+            attempts++;
+            sndWrong.play();
+            b.classList.add('wrong');
+            b.disabled = true;
+            if(attempts === 1) {
+                const f = document.getElementById('feedback');
+                f.className = 'feedback-box hint';
+                f.innerText = "Hint: " + questions[current].hint;
+                f.style.display = 'block';
+            } else {
+                clearInterval(timer);
+                endTurn();
+            }
+        }
+    }
+
+    function endTurn() {
+        document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
+        const f = document.getElementById('feedback');
+        f.className = 'feedback-box explanation';
+        f.innerText = questions[current].explanation;
+        f.style.display = 'block';
+        document.querySelectorAll('.opt-btn')[questions[current].correct].classList.add('correct');
+        document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    document.getElementById('next-btn').onclick = () => {
+        current++;
+        if(current < questions.length) loadQ();
+        else {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+            sndClaps.play();
+            document.getElementById('result-msg').innerText = score > 10 ? "Excellent job! You're a Science Star! ⭐" : "Good effort! Keep learning!";
+        }
+    };
+</script>
+</body>
+</html>
