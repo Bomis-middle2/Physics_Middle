@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heat & Temperature: CBQ Lab</title>
+    <style>
+        :root {
+            --primary: #e67e22;
+            --accent: #d35400;
+            --success: #27ae60;
+            --danger: #c0392b;
+            --bg: #fff5e6;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 650px;
+            background: white;
+            padding: 35px;
+            border-radius: 30px;
+            box-shadow: 0 20px 0px rgba(230, 126, 34, 0.2);
+            border: 4px solid var(--primary);
+        }
+
+        .hidden { display: none !important; }
+
+        /* HUD */
+        .hud { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: bold; color: var(--accent); }
+        .progress-container { height: 12px; background: #eee; border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
+        #progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s; }
+
+        /* Quiz UI */
+        .question-text { font-size: 1.25rem; color: #2d3436; line-height: 1.5; margin-bottom: 20px; }
+        .options-grid { display: grid; gap: 12px; }
+        .option-btn {
+            padding: 15px 20px;
+            border: 3px solid #f1f1f1;
+            border-radius: 15px;
+            background: #fafafa;
+            cursor: pointer;
+            font-size: 1.05rem;
+            text-align: left;
+            transition: 0.2s;
+        }
+        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #fff9f0; }
+        .correct { background: var(--success) !important; color: white !important; border-color: #1e8449 !important; }
+        .wrong { background: var(--danger) !important; color: white !important; border-color: #922b21 !important; animation: shake 0.4s; }
+
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-6px);} 75% {transform: translateX(6px);} }
+
+        .feedback {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 15px;
+            background: #fff9f0;
+            border-left: 6px solid var(--primary);
+            font-size: 1rem;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
+
+        .btn-action {
+            margin-top: 25px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 5px 0px #a04000;
+            float: right;
+        }
+        .btn-action:active { transform: translateY(3px); box-shadow: 0 2px 0px #a04000; }
+        
+        .text-center { text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="screen-start" class="text-center">
+        <h1 style="color: var(--primary);">🔥 Heat Lab: CBQ Edition</h1>
+        <p>Apply your knowledge of thermal energy!<br><b>Warning: Only 2 chances per puzzle!</b></p>
+        <button class="btn-action" style="float:none;" onclick="startQuiz()">Enter Lab 🚀</button>
+    </div>
+
+    <div id="screen-quiz" class="hidden">
+        <div class="hud">
+            <span>Task <span id="q-count">1</span>/5</span>
+            <span>⭐ Stars: <span id="score">0</span></span>
+        </div>
+        <div class="progress-container"><div id="progress-bar"></div></div>
+        
+        <div id="question-area">
+            <div class="question-text" id="q-text"></div>
+            <div class="options-grid" id="options-box"></div>
+            <div id="feedback-box" class="feedback hidden"></div>
+            <div style="height: 80px;">
+                <button id="btn-next" class="btn-action hidden" onclick="nextQuestion()">Next Question ➡️</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-result" class="hidden text-center">
+        <h2 style="color: var(--primary);">Experiment Successful!</h2>
+        <h1 id="final-score" style="font-size: 4rem; color: var(--accent); margin: 10px 0;">0/5</h1>
+        <p id="result-msg" style="font-size: 1.2rem;"></p>
+        <button class="btn-action" style="float:none;" onclick="location.reload()">Try Again 🔄</button>
+    </div>
+</div>
+
+<script>
+    // Audio Resources
+    const audio = {
+        correct: new Audio('assets/correct.mp3'),
+        wrong: new Audio('assets/wrong.mp3'),
+        claps: new Audio('assets/freesound_community-claps-44774.mp3')
+    };
+
+    // Questions from PDF
+    const questions = [
+        {
+            q: "Priya pours hot tea into a cup. After 20 minutes, it feels the same temperature as the room. What best explains this?",
+            options: ["The cup absorbed all the heat permanently", "Heat flowed from hot tea to cooler surroundings", "Water lost due to evaporation", "Cold air replaced the heat"],
+            ans: 1,
+            explain: "Heat always flows from hotter to cooler objects until thermal equilibrium is reached."
+        },
+        {
+            q: "A student wants to express the amount of heat absorbed by water during an experiment using the S.I. system. Which unit is correct?",
+            options: ["Calorie", "Joule (J)", "Degree Celsius", "Watt (W)"],
+            ans: 1,
+            explain: "Joule (J) is the Standard International (S.I.) unit for heat energy."
+        },
+        {
+            q: "Arjun's mother uses a clinical thermometer to check boiling water. It suddenly breaks. Why?",
+            options: ["It was not sterilized", "Boiling water is beyond its limited safe range", "Mercury does not work with water", "Clinical thermometers only read 0°C"],
+            ans: 1,
+            explain: "Clinical thermometers are designed only for human body range (35°C to 42°C). 100°C water breaks them!"
+        },
+        {
+            q: "Meena notices the handle of a metal spoon becomes hot when left in a soup bowl. This is due to:",
+            options: ["Radiation", "Convection", "Conduction", "Evaporation"],
+            ans: 2,
+            explain: "Conduction is the transfer of heat through solids from the hotter end to the colder end."
+        },
+        {
+            q: "Which of these is a 'Poor Conductor' (Insulator) of heat?",
+            options: ["Iron Nail", "Copper Wire", "Plastic Scale", "Aluminium Foil"],
+            ans: 2,
+            explain: "Metals are good conductors. Plastic does not allow heat to flow through it easily."
+        }
+    ];
+
+    let curIdx = 0, score = 0, attempts = 0;
+
+    function startQuiz() {
+        document.getElementById('screen-start').classList.add('hidden');
+        document.getElementById('screen-quiz').classList.remove('hidden');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const data = questions[curIdx];
+        attempts = 0;
+        document.getElementById('q-count').innerText = curIdx + 1;
+        document.getElementById('q-text').innerText = data.q;
+        document.getElementById('feedback-box').classList.add('hidden');
+        document.getElementById('btn-next').classList.add('hidden');
+        document.getElementById('progress-bar').style.width = ((curIdx / questions.length) * 100) + '%';
+
+        const box = document.getElementById('options-box');
+        box.innerHTML = '';
+        data.options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAns(i, btn);
+            box.appendChild(btn);
+        });
+    }
+
+    function checkAns(idx, btn) {
+        const data = questions[curIdx];
+        const feedback = document.getElementById('feedback-box');
+        const allBtns = document.querySelectorAll('.option-btn');
+
+        // Disable all buttons immediately
+        allBtns.forEach(b => b.disabled = true);
+
+        if(idx === data.ans) {
+            // Correct flow
+            btn.classList.add('correct');
+            audio.correct.play();
+            audio.correct.onended = () => {
+                audio.claps.play();
+                if(attempts === 0) score++;
+                document.getElementById('score').innerText = score;
+                feedback.innerHTML = `<b>🌟 Correct!</b><br>${data.explain}`;
+                feedback.classList.remove('hidden');
+                document.getElementById('btn-next').classList.remove('hidden');
+            };
+        } else {
+            // Wrong flow
+            btn.classList.add('wrong');
+            audio.wrong.play();
+            audio.wrong.onended = () => {
+                attempts++;
+                if(attempts < 2) {
+                    // First wrong: Give 1 more chance
+                    allBtns.forEach(b => { if(!b.classList.contains('wrong')) b.disabled = false; });
+                    feedback.innerHTML = `<b>Not quite!</b> You have 1 chance remaining.`;
+                    feedback.classList.remove('hidden');
+                } else {
+                    // Second wrong: Reveal and force Next
+                    allBtns[data.ans].classList.add('correct');
+                    feedback.innerHTML = `<b>Chances used!</b> The right answer is highlighted.<br>${data.explain}`;
+                    feedback.classList.remove('hidden');
+                    document.getElementById('btn-next').classList.remove('hidden');
+                }
+            };
+        }
+    }
+
+    function nextQuestion() {
+        curIdx++;
+        if(curIdx < questions.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('screen-quiz').classList.add('hidden');
+        document.getElementById('screen-result').classList.remove('hidden');
+        document.getElementById('final-score').innerText = `${score}/${questions.length}`;
+        audio.claps.play();
+        
+        let msg = "Great effort! Keep studying heat transfer.";
+        if(score === 5) msg = "Perfect! You are a Thermal Scientist! 👨‍🔬";
+        else if(score >= 3) msg = "Good job! You understand the core concepts.";
+        
+        document.getElementById('result-msg').innerText = msg;
+    }
+</script>
+
+</body>
+</html>
