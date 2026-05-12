@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Magnetism Arctic Rescue</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --success: #2ec4b6;
+            --error: #e71d36;
+            --bg: #f8f9fa;
+            --text: #2b2d42;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 500px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+            min-height: 480px;
+        }
+
+        /* --- SPLASH SCREEN --- */
+        #splash-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .logo-only {
+            width: 250px;
+            height: auto;
+            max-width: 85%;
+            object-fit: contain;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- UI COMPONENTS --- */
+        .header { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 10px; font-size: 0.9rem; }
+        .timer-track { width: 100%; height: 8px; background: #edf2f4; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        #timer-bar { height: 100%; width: 100%; background: var(--primary); transition: width 1s linear; }
+
+        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 15px; }
+        
+        .img-container { width: 100%; margin: 15px 0; text-align: center; }
+        .q-img { max-width: 100%; border-radius: 12px; border: 1px solid #dee2e6; }
+
+        .options-grid { display: grid; gap: 12px; }
+        .opt-btn {
+            background: #fff; border: 2px solid #edf2f4; padding: 16px;
+            border-radius: 14px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
+        }
+        .opt-btn.correct { background: var(--success) !important; color: white; border-color: var(--success); }
+        .opt-btn.wrong { background: var(--error) !important; color: white; border-color: var(--error); }
+
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 12px; display: none; line-height: 1.5; font-size: 0.95rem; }
+        .hint-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; }
+        .expl-box { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+
+        #action-btn { width: 100%; margin-top: 20px; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; }
+        
+        .red-cross { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; color: rgba(231, 29, 54, 0.3); pointer-events: none; display: none; z-index: 10; }
+        .star { position: absolute; width: 12px; height: 12px; background: #FFD700; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); pointer-events: none; animation: pop 1s ease-out forwards; }
+
+        @keyframes pop { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(1.5) translate(var(--tx), var(--ty)); opacity: 0; } }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div id="splash-screen">
+        <img src="assets/logo.png" class="logo-only" alt="Innovine Logo">
+        <div class="loader"></div>
+    </div>
+
+    <div id="intro-view" class="hidden">
+        <h1 style="text-align:center; color:var(--primary); margin-bottom: 5px;">Magnetism Challenge</h1>
+        <p style="text-align:center; color:#6c757d; margin-top: 0;">Arctic Rescue Mission</p>
+        <button id="start-btn" style="width:100%; padding:18px; background:var(--primary); color:white; border:none; border-radius:14px; font-weight:bold; font-size:1.1rem; cursor:pointer; margin-top: 30px;">Begin Mission</button>
+    </div>
+
+    <div id="quiz-view" class="hidden">
+        <div class="header">
+            <span>Mission <span id="q-num">1</span>/10</span>
+            <span style="color:var(--primary);">Points: <span id="score-val">0</span></span>
+        </div>
+        <div class="timer-track"><div id="timer-bar"></div></div>
+        
+        <div id="q-text" class="question-text"></div>
+        <div id="image-area"></div>
+        <div id="options-area" class="options-grid"></div>
+        
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="hidden">Next Task →</button>
+        <div id="cross-mark" class="red-cross">✖</div>
+    </div>
+
+    <div id="result-view" class="hidden" style="text-align:center;">
+        <h2 style="font-size:1.5rem;">Mission Briefing</h2>
+        <div style="font-size: 4rem; font-weight: 800; color: var(--primary); margin: 15px 0;"><span id="final-pts">0</span>/10</div>
+        <p id="result-msg" style="color:#6c757d; margin-bottom:30px;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:16px; background:var(--primary); color:white; border:none; border-radius:14px; font-weight:700; cursor:pointer;">Restart Mission</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { q: "A rescue worker drops steel nails and brass screws into deep snow. Which can they recover with a bar magnet?", opts: ["Both the steel nails and brass screws", "Only the steel nails", "Only the brass screws", "Neither, magnets don't work in the cold"], ans: 1, hint: "Brass is not a magnetic material.", expl: "Steel contains iron, making it a magnetic material, while brass is non-magnetic[cite: 167]." },
+        { q: "A sailor's compass points toward the Geographic North Pole. Which magnetic pole is it attracted to?", img: "q2.png", opts: ["Earth's Magnetic North Pole", "Earth's Magnetic South Pole", "The Equator", "The Sun's magnetic field"], ans: 1, hint: "Opposite poles attract each other.", expl: "The Earth's Magnetic South Pole is located near the Geographic North Pole[cite: 179, 182]." },
+        { q: "Bar 1 attracts iron filings. Bar 3 attracts Bar 1 at one end but pushes it away at the other. Which is a magnet?", opts: ["Bar 2", "Bar 1 only", "Bar 3 only", "Both Bar 1 and Bar 3"], ans: 3, hint: "Repulsion is the surest test of a magnet.", expl: "Bar 1 attracts filings (magnetism) and Bar 3 shows repulsion (like poles), proving both are magnets[cite: 192, 193]." },
+        { q: "A 'Maglev' train floats above the tracks. What magnetic property allows this?", opts: ["Unlike poles attracting", "Like poles repelling to create a gap", "Magnets acting as insulators", "Attracting iron in the wheels"], ans: 1, hint: "How do you push something upward using magnets?", expl: "Like poles repel each other, creating the force needed for the train to float[cite: 198, 201]." },
+        { q: "Why should you NOT store a magnet near a television or computer?", opts: ["It will lose its magnetism", "Magnetic fields interfere with electronic data", "The screen will attract the magnet", "Both are false"], ans: 0, hint: "Think about how data is stored on electronics.", expl: "Magnetic fields can interfere with or damage electronic components and data storage[cite: 204, 209]." },
+        { q: "Amit strokes a nail back and forth 50 times, but it doesn't become a magnet. Why?", opts: ["Not enough strokes", "Used a nail instead of a ruler", "Failed to stroke in one direction only", "The magnet was too strong"], ans: 2, hint: "Stroking must align the internal magnetic domains.", expl: "To magnetize a material, you must stroke it in a single direction repeatedly[cite: 216, 218]." },
+        { q: "Which of these will NOT cause a magnet to lose its magnetism?", opts: ["Hammering it", "Dropping it from a height", "Storing it with a wooden 'keeper'", "Heating it in a flame"], ans: 2, hint: "Keepers are used specifically to preserve magnetism.", expl: "Wooden keepers help maintain a magnet's strength[cite: 222, 224]." },
+        { q: "A recycling crane turns off electricity to drop metal. What kind of magnet is it?", opts: ["Permanent bar magnet", "Natural magnetite rock", "An electromagnet", "A horseshoe magnet"], ans: 2, hint: "Its magnetism can be turned on and off.", expl: "Electromagnets only work when electricity is flowing through them[cite: 231, 233]." },
+        { q: "If you cut a bar magnet exactly in half, what is the result?", img: "q9.png", opts: ["One North pole and one South pole piece", "Two smaller, complete magnets", "Two pieces of non-magnetic metal", "One strong and one weak magnet"], ans: 1, hint: "Magnetic poles always exist in pairs.", expl: "Cutting a magnet creates two new magnets, each with its own North and South pole[cite: 241, 244]." },
+        { q: "What is the fastest way to separate iron filings from sand?", opts: ["Using a sieve", "Using a magnet", "Adding water", "Picking them by hand"], ans: 1, hint: "One of these materials is magnetic.", expl: "A magnet will attract the iron filings directly, leaving the sand behind[cite: 249, 252]." }
+    ];
+
+    let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
+    const sndC = new Audio('assets/correct.mp3');
+    const sndW = new Audio('assets/wrong.mp3');
+    const sndF = new Audio('assets/freesound_community-claps-44774.mp3');
+
+    // Splash Loader
+    window.onload = () => {
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.display = 'none';
+            document.getElementById('intro-view').classList.remove('hidden');
+        }, 5000);
+    };
+
+    document.getElementById('start-btn').onclick = () => {
+        document.getElementById('intro-view').classList.add('hidden');
+        document.getElementById('quiz-view').classList.remove('hidden');
+        loadQuestion();
+    };
+
+    function loadQuestion() {
+        attempts = 0; timeLeft = 45;
+        const q = questions[current];
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').classList.add('hidden');
+        document.getElementById('q-num').innerText = current + 1;
+        document.getElementById('q-text').innerText = q.q;
+        
+        const imgArea = document.getElementById('image-area');
+        imgArea.innerHTML = q.img ? `<div class="img-container"><img src="assets/${q.img}" class="q-img" alt="Question Image"></div>` : "";
+        
+        const area = document.getElementById('options-area');
+        area.innerHTML = "";
+        q.opts.forEach((o, i) => {
+            const b = document.createElement('button');
+            b.className = 'opt-btn';
+            b.innerText = o;
+            b.onclick = () => check(i, b);
+            area.appendChild(b);
+        });
+        startTimer();
+    }
+
+    function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer-bar').style.width = (timeLeft/45*100) + "%";
+            if(timeLeft <= 0) { clearInterval(timer); endTurn(); }
+        }, 1000);
+    }
+
+    function check(i, b) {
+        if(i === questions[current].ans) {
+            clearInterval(timer);
+            b.classList.add('correct');
+            score++;
+            document.getElementById('score-val').innerText = score;
+            sndC.play();
+            createStars();
+            endTurn();
+        } else {
+            attempts++;
+            sndW.play();
+            showCross();
+            b.classList.add('wrong');
+            b.disabled = true;
+            if(attempts === 1) {
+                const f = document.getElementById('feedback-box');
+                f.className = 'feedback hint-box';
+                f.innerText = "Hint: " + questions[current].hint;
+                f.style.display = 'block';
+            } else {
+                clearInterval(timer);
+                endTurn();
+            }
+        }
+    }
+
+    function endTurn() {
+        document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
+        const f = document.getElementById('feedback-box');
+        f.className = 'feedback expl-box';
+        f.innerText = questions[current].expl;
+        f.style.display = 'block';
+        document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
+        document.getElementById('action-btn').classList.remove('hidden');
+    }
+
+    function showCross() {
+        const c = document.getElementById('cross-mark');
+        c.style.display = 'block';
+        setTimeout(() => c.style.display = 'none', 600);
+    }
+
+    function createStars() {
+        for(let i=0; i<15; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.setProperty('--tx', (Math.random()*200 - 100) + 'px');
+            s.style.setProperty('--ty', (Math.random()*200 - 100) + 'px');
+            s.style.left = '50%'; s.style.top = '50%';
+            document.getElementById('app-container').appendChild(s);
+            setTimeout(() => s.remove(), 1000);
+        }
+    }
+
+    document.getElementById('action-btn').onclick = () => {
+        current++;
+        if(current < questions.length) loadQuestion();
+        else {
+            document.getElementById('quiz-view').classList.add('hidden');
+            document.getElementById('result-view').classList.remove('hidden');
+            document.getElementById('final-pts').innerText = score;
+            sndF.play();
+            document.getElementById('result-msg').innerText = score >= 8 ? "Rescue Mission Successful! You are a Magnetism Expert." : "Mission Complete. Review your knowledge to become a Lead Explorer!";
+        }
+    };
+</script>
+</body>
+</html>
