@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Innovine Science Lab - Heat & Temperature</title>
+    <title>Grade 6 Science - Heat & Temperature Lab</title>
     <style>
         :root {
-            --primary: #e67e22;
+            --primary: #e67e22; /* Warm Orange for Heat */
             --accent: #d35400;
             --success: #27ae60;
             --danger: #c0392b;
-            --bg: #fffbf0;
-            --card-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            --bg: #fdf2e9;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
             background: var(--bg);
             margin: 0;
             display: flex;
@@ -24,259 +23,177 @@
             min-height: 100vh;
         }
 
-        /* Branding Screen */
-        #brand-screen {
-            position: fixed;
-            inset: 0;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        #brand-screen img { max-width: 250px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-        /* Main Container */
         .game-card {
             width: 90%;
-            max-width: 700px;
+            max-width: 650px;
             background: white;
             padding: 30px;
             border-radius: 25px;
-            box-shadow: var(--card-shadow);
-            border: 4px solid var(--primary);
-            position: relative;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border: 5px solid var(--primary);
         }
 
         .hidden { display: none !important; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .logo-small { height: 40px; }
+        .hud { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; }
+        
+        .progress-bar {
+            height: 12px;
+            background: #eee;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        #progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
 
-        .hud { font-weight: bold; color: var(--accent); display: flex; gap: 20px; }
+        .question-box h2 { font-size: 1.2rem; color: #333; line-height: 1.5; }
 
-        .progress-container { height: 12px; background: #eee; border-radius: 10px; margin: 15px 0; overflow: hidden; }
-        #progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s; }
+        .options-grid { display: grid; gap: 12px; margin-top: 20px; }
 
-        .question-text { font-size: 1.2rem; color: #2c3e50; line-height: 1.6; margin-bottom: 20px; }
-
-        /* Table Styling */
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background: #f9f9f9; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 0.95rem; }
-        th { background: var(--primary); color: white; }
-
-        .options-grid { display: grid; gap: 12px; }
         .option-btn {
             padding: 15px;
-            border: 2px solid #f0f0f0;
+            border: 3px solid #eee;
             border-radius: 12px;
-            background: #fff;
+            background: #fafafa;
             cursor: pointer;
             font-size: 1rem;
             text-align: left;
             transition: 0.2s;
         }
-        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #fff9f0; }
-        .correct { background: var(--success) !important; color: white; border-color: #1e8449 !important; }
-        .wrong { background: var(--danger) !important; color: white; border-color: #922b21 !important; animation: shake 0.4s; }
+
+        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #fff5eb; }
+        .correct { background: var(--success) !important; color: white !important; border-color: #1e8449 !important; }
+        .wrong { background: var(--danger) !important; color: white !important; border-color: #922b21 !important; animation: shake 0.3s; }
 
         @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
 
-        .feedback-box { margin-top: 20px; padding: 15px; border-radius: 12px; background: #fdf2e9; border-left: 5px solid var(--primary); }
+        .feedback-area {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #fdf2e9;
+            border-left: 5px solid var(--primary);
+        }
 
         .btn-next {
             margin-top: 20px;
-            background: var(--accent);
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 30px;
-            border-radius: 50px;
+            padding: 12px 25px;
+            border-radius: 20px;
             font-weight: bold;
             cursor: pointer;
             float: right;
-            box-shadow: 0 4px 0 #a04000;
         }
-        .btn-next:active { transform: translateY(2px); box-shadow: 0 2px 0 #a04000; }
     </style>
 </head>
 <body>
 
-<div id="brand-screen">
-    <img src="Screenshot 2026-05-12 at 16.00.11.png" alt="Innovine Logo">
-    <h2 style="color: #444;">Initializing Science Lab...</h2>
-</div>
-
-<div class="game-card hidden" id="game-card">
-    <div class="header">
-        <img src="Screenshot 2026-05-12 at 16.00.11.png" class="logo-small" alt="Innovine">
-        <div class="hud">
-            <span>Question: <span id="q-num">1</span>/13</span>
-            <span>Stars: ⭐ <span id="score">0</span></span>
-        </div>
+<div class="game-card">
+    <div id="start-screen" class="text-center" style="text-align: center;">
+        <h1 style="color: var(--primary);">🔥 Heat & Temperature Quiz</h1>
+        <p>Based on your CBQ Document. <br><strong>Rule:</strong> Only 2 chances per question!</p>
+        <button class="btn-next" style="float: none;" onclick="startQuiz()">Start Experiment 🚀</button>
     </div>
 
-    <div class="progress-container"><div id="progress-bar"></div></div>
+    <div id="quiz-screen" class="hidden">
+        <div class="hud">
+            <span>Question: <span id="q-count">1</span>/5</span>
+            <span>Stars: ⭐ <span id="score">0</span></span>
+        </div>
+        <div class="progress-bar"><div id="progress-fill"></div></div>
+        
+        <div class="question-box">
+            <h2 id="q-text"></h2>
+            <div id="options-box" class="options-grid"></div>
+        </div>
 
-    <div id="quiz-content">
-        <div id="data-table-container"></div>
-        <div class="question-text" id="q-text"></div>
-        <div class="options-grid" id="options-box"></div>
-        <div id="feedback-area" class="feedback-box hidden"></div>
+        <div id="feedback-box" class="feedback-area hidden"></div>
         <div style="height: 60px;">
-            <button id="next-btn" class="btn-next hidden" onclick="handleNext()">Next Challenge ➡️</button>
+            <button id="next-btn" class="btn-next hidden" onclick="nextQuestion()">Next Question ➡️</button>
         </div>
     </div>
 
     <div id="result-screen" class="hidden" style="text-align: center;">
-        <h1 style="color: var(--primary);">Lab Results</h1>
-        <h2 id="final-score" style="font-size: 3rem; margin: 10px 0;">0/13</h2>
-        <p id="result-msg" style="font-size: 1.2rem;"></p>
-        <button class="btn-next" style="float: none;" onclick="location.reload()">Restart Experiment</button>
+        <h2 style="color: var(--success);">Lab Complete!</h2>
+        <h1 id="final-score" style="font-size: 3rem;">0/5</h1>
+        <p id="result-msg"></p>
+        <button class="btn-next" style="float: none;" onclick="location.reload()">Restart 🔄</button>
     </div>
 </div>
 
 <script>
     const audio = {
-        correct: new Audio('assets/correct.mp3'),
-        wrong: new Audio('assets/wrong.mp3'),
-        claps: new Audio('assets/freesound_community-claps-44774.mp3')
+        correct: new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'),
+        wrong: new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3'),
+        claps: new Audio('https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3')
     };
 
     const questions = [
         {
-            q: "Priya pours hot tea into a cup and places it on the table. After 20 minutes, she finds the tea is no longer hot—it feels the same temperature as the room. What best explains this?",
-            options: ["The cup absorbed all the heat permanently", "Heat flowed from hot tea to cooler surroundings until thermal equilibrium", "The tea lost water due to evaporation", "Cold air entered the cup and replaced the heat"],
+            q: "Priya pours hot tea into a cup. After 20 minutes, it feels the same temperature as the room. Why?",
+            options: ["The cup absorbed heat permanently", "Heat flowed to cooler surroundings until thermal equilibrium", "Evaporation made it cool", "Cold air replaced the heat"],
             ans: 1,
             explain: "Heat always flows from a hotter object to a cooler one until they reach thermal equilibrium."
         },
         {
-            q: "A student wants to express the amount of heat absorbed by water during an experiment using the standard international (S.I.) system. Refer to the table. Which unit should she use?",
-            table: [["Unit", "System", "Used For"], ["Joule (J)", "S.I.", "Standard scientific measurement"], ["Calorie", "c)G.S.", "Smaller heat quantities"], ["Watt (W)", "S.I.", "Power (rate of energy use)"], ["Celsius (°C)", "-", "Temperature scale"]],
+            q: "A student wants to express the amount of heat absorbed by water using the S.I. system. Which unit should she use?",
             options: ["Calorie", "Joule", "Degree Celsius", "Watt"],
             ans: 1,
-            explain: "The S.I. unit of heat is the Joule (J). Celsius measures temperature, and Watt measures power."
+            explain: "The S.I. unit of heat is the Joule (J). Celsius measures temperature, not heat."
         },
         {
-            q: "Arjun's mother uses a clinical thermometer to check his fever, then tries to check boiling water in a pot. The thermometer breaks. Why?",
-            options: ["Clinical thermometers cannot measure very high temperatures", "Mercury cannot measure water temperature", "It needed to be cleaned first", "It only reads temperatures below 0°C"],
+            q: "Why was it wrong for Arjun's mother to use a clinical thermometer for boiling water?",
+            options: ["Body thermometers have a limited safe range", "Mercury cannot measure water", "It needed cleaning first", "It only reads below 0°C"],
             ans: 0,
-            explain: "Clinical thermometers have a limited range (around 37°C). Boiling water (100°C) is beyond its safe range."
+            explain: "Boiling water (100°C) is beyond the safe range of clinical thermometers (~37°C)."
         },
         {
-            q: "Meena stirs hot soup with a metal spoon. Soon, the handle becomes warm even though it wasn't touching the soup. Which mode of heat transfer is this?",
+            q: "Meena stirs hot soup with a metal spoon. Soon, the handle becomes warm. Which mode of heat transfer is this?",
             options: ["Convection", "Radiation", "Conduction", "Evaporation"],
             ans: 2,
-            explain: "Conduction is heat transfer through a solid by particle-to-particle energy transfer."
+            explain: "This is conduction—heat transfer through a solid by particle-to-particle energy transfer."
         },
         {
-            q: "Look at the following materials. Which one does NOT belong with the others (Odd One Out)?",
+            q: "Which of these materials does NOT belong with the others (Odd One Out)?",
             options: ["Copper", "Brass", "Plastic", "Aluminium"],
             ans: 2,
             explain: "Copper, brass, and aluminium are good conductors (metals). Plastic is an insulator."
-        },
-        {
-            q: "The air conditioner vent is near the ceiling. Is it better to keep it there? Why?",
-            options: ["No, because cold air sinks and should be pushed down", "Yes, because warm air rises and cool air replaces it, circulating the room", "No, because warm air stays near the floor", "Yes, because the ceiling is hotter"],
-            ans: 1,
-            explain: "Warm air is lighter and rises. Cool air from the top displaces it, setting up convection currents."
-        },
-        {
-            q: "Rahul feels warmth from a bonfire on his face without touching it or feeling wind. How is heat reaching him?",
-            options: ["Conduction through the ground", "Convection currents", "Radiation travelling as electromagnetic waves", "Conduction through the air"],
-            ans: 2,
-            explain: "Radiation doesn't need a medium; heat travels as electromagnetic waves to warm objects directly."
-        },
-        {
-            q: "Refer to the solar group's experiment data. Which conclusion is best supported?",
-            table: [["Box", "Temperature"], ["White box", "34°C"], ["Black box", "52°C"], ["Silver box", "31°C"], ["Red box", "45°C"]],
-            options: ["Silver boxes are hottest because they are shiny", "All boxes absorb the same heat", "Darker colours absorb more heat than reflective colours", "White boxes absorb more heat than red"],
-            ans: 2,
-            explain: "Black (darkest) reached the highest temp, while silver (reflective) reached the lowest."
-        },
-        {
-            q: "Kavya notices a sea breeze blowing from sea to land during a hot afternoon. Why?",
-            options: ["Sea is hotter than land", "Land heats up faster, warm air rises, and cooler sea air moves in", "The sun heats the sea more", "Sea water evaporates and pushes air"],
-            ans: 1,
-            explain: "Land heats faster. Warm air above land rises (convection), and cooler air from the sea flows in."
-        },
-        {
-            q: "A student classified heat observations. Which one is INCORRECTLY classified?",
-            options: ["Ice melting into water - Physical change", "Grilling vegetables - Chemical change", "Melted chocolate solidifying - Chemical change", "Burning paper - Chemical change"],
-            ans: 2,
-            explain: "Melted chocolate solidifying is a physical change because it is reversible and no new substance forms."
-        },
-        {
-            q: "A thermos flask has a vacuum between double walls. How does this help keep soup hot?",
-            options: ["The vacuum absorbs heat", "It prevents heat loss by conduction and convection (no particles)", "It creates pressure to trap heat", "It reflects heat using mirror particles"],
-            ans: 1,
-            explain: "Conduction and convection require particles. A vacuum has no particles, preventing these modes of loss."
-        },
-        {
-            q: "Assertion: A metal rod held over flame at one end makes the other end hot. Reason: Molecules move from hot to cold carrying heat.",
-            options: ["Both A and R are true, and R explains A", "Both are true, but R does NOT explain A", "A is true, but R is false", "A is false, but R is true"],
-            ans: 2,
-            explain: "In solids, molecules do NOT move; they vibrate and pass energy. Molecules moving is convection."
-        },
-        {
-            q: "An engineer leaves small gaps between railway track sections. Why?",
-            options: ["To drain rainwater", "To reduce weight", "To allow metal to expand in summer without buckling", "To create vibrations"],
-            ans: 2,
-            explain: "Metal expands when heated. Without gaps, expansion in summer would cause the tracks to buckle."
         }
     ];
 
     let currentIdx = 0, score = 0, attempts = 0;
 
-    // Loading Sequence
-    setTimeout(() => {
-        document.getElementById('brand-screen').style.display = 'none';
-        document.getElementById('game-card').classList.remove('hidden');
+    function startQuiz() {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
         loadQuestion();
-    }, 2500);
+    }
 
     function loadQuestion() {
         const data = questions[currentIdx];
         attempts = 0;
-        document.getElementById('q-num').innerText = currentIdx + 1;
+        document.getElementById('q-count').innerText = currentIdx + 1;
         document.getElementById('q-text').innerText = data.q;
-        document.getElementById('feedback-area').classList.add('hidden');
+        document.getElementById('feedback-box').classList.add('hidden');
         document.getElementById('next-btn').classList.add('hidden');
-        document.getElementById('progress-bar').style.width = ((currentIdx / questions.length) * 100) + '%';
+        document.getElementById('progress-fill').style.width = ((currentIdx / questions.length) * 100) + '%';
 
-        // Table Handling
-        const tableCont = document.getElementById('data-table-container');
-        tableCont.innerHTML = '';
-        if (data.table) {
-            const table = document.createElement('table');
-            data.table.forEach((row, i) => {
-                const tr = document.createElement('tr');
-                row.forEach(cell => {
-                    const el = i === 0 ? document.createElement('th') : document.createElement('td');
-                    el.innerText = cell;
-                    tr.appendChild(el);
-                });
-                table.appendChild(tr);
-            });
-            tableCont.appendChild(table);
-        }
-
-        // Options
         const box = document.getElementById('options-box');
         box.innerHTML = '';
         data.options.forEach((opt, i) => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
             btn.innerText = opt;
-            btn.onclick = () => checkAnswer(i, btn);
+            btn.onclick = () => checkAns(i, btn);
             box.appendChild(btn);
         });
     }
 
-    function checkAnswer(idx, btn) {
+    function checkAns(idx, btn) {
         const data = questions[currentIdx];
-        const feedback = document.getElementById('feedback-area');
+        const feedback = document.getElementById('feedback-box');
         const allBtns = document.querySelectorAll('.option-btn');
 
         allBtns.forEach(b => b.disabled = true);
@@ -284,53 +201,46 @@
         if (idx === data.ans) {
             btn.classList.add('correct');
             audio.correct.play();
-            if (attempts === 0) score++;
-            document.getElementById('score').innerText = score;
-            feedback.innerHTML = `<b>🌟 Excellent!</b><br>${data.explain}`;
-            feedback.classList.remove('hidden');
-            document.getElementById('next-btn').classList.remove('hidden');
-            if(currentIdx === questions.length - 1) audio.claps.play();
+            audio.correct.onended = () => {
+                audio.claps.play();
+                if (attempts === 0) score++;
+                document.getElementById('score').innerText = score;
+                feedback.innerHTML = `<b>🌟 Correct!</b><br>${data.explain}`;
+                feedback.classList.remove('hidden');
+                document.getElementById('next-btn').classList.remove('hidden');
+            };
         } else {
             btn.classList.add('wrong');
             audio.wrong.play();
-            attempts++;
-            if (attempts < 2) {
-                setTimeout(() => {
+            audio.wrong.onended = () => {
+                attempts++;
+                if (attempts < 2) {
                     allBtns.forEach(b => { if(!b.classList.contains('wrong')) b.disabled = false; });
-                    feedback.innerHTML = `<b>Not quite!</b> Check the details and try one more time.`;
+                    feedback.innerHTML = `<b>Incorrect!</b> You have 1 chance left.`;
                     feedback.classList.remove('hidden');
-                }, 500);
-            } else {
-                allBtns[data.ans].classList.add('correct');
-                feedback.innerHTML = `<b>Chances used!</b> The correct answer was: <i>${data.options[data.ans]}</i>.<br>${data.explain}`;
-                feedback.classList.remove('hidden');
-                document.getElementById('next-btn').classList.remove('hidden');
-            }
+                } else {
+                    allBtns[data.ans].classList.add('correct');
+                    feedback.innerHTML = `<b>Out of chances!</b> The correct answer was: <i>${data.options[data.ans]}</i>.<br>${data.explain}`;
+                    feedback.classList.remove('hidden');
+                    document.getElementById('next-btn').classList.remove('hidden');
+                }
+            };
         }
     }
 
-    function handleNext() {
+    function nextQuestion() {
         currentIdx++;
-        if (currentIdx < questions.length) {
-            loadQuestion();
-        } else {
-            showResults();
-        }
+        if (currentIdx < questions.length) loadQuestion();
+        else showFinal();
     }
 
-    function showResults() {
-        document.getElementById('quiz-content').classList.add('hidden');
+    function showFinal() {
+        document.getElementById('quiz-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
         document.getElementById('final-score').innerText = `${score}/${questions.length}`;
         audio.claps.play();
-        
-        let msg = "Keep investigating! Science is all about curiosity.";
-        if (score === questions.length) msg = "Perfect Score! You are a Thermal Energy Expert! 🏆";
-        else if (score >= 10) msg = "Fantastic work! You have a great grasp of Heat & Temperature.";
-        
-        document.getElementById('result-msg').innerText = msg;
+        document.getElementById('result-msg').innerText = score >= 4 ? "Excellent Heat Expert!" : "Good effort! Review the heat transfer modes.";
     }
 </script>
-
 </body>
 </html>
