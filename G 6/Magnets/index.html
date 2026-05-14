@@ -39,7 +39,7 @@
             min-height: 480px;
         }
 
-        /* Splash Screen - Pure Logo */
+        /* Splash Screen */
         #splash-screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -64,8 +64,9 @@
 
         .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 15px; }
         
-        .img-container { width: 100%; margin: 15px 0; text-align: center; }
-        .q-img { max-width: 100%; border-radius: 12px; border: 1px solid #dee2e6; }
+        /* Image Logic */
+        .img-container { width: 100%; margin: 15px 0; text-align: center; background: #fdfdfd; border-radius: 12px; }
+        .q-img { max-width: 100%; height: auto; border-radius: 12px; border: 1px solid #eee; display: block; margin: 0 auto; }
 
         .options-grid { display: grid; gap: 12px; }
         .opt-btn {
@@ -97,8 +98,8 @@
 
     <div id="intro-view" class="hidden">
         <h1 style="text-align:center; color:var(--primary); margin-bottom: 5px;">Magnetism Mission</h1>
-        <p style="text-align:center; color:#6c757d; margin-top: 0;">Grade 6 Challenge</p>
-        <button id="start-btn" style="width:100%; padding:18px; background:var(--primary); color:white; border:none; border-radius:14px; font-weight:bold; cursor:pointer; margin-top: 30px;">Start Mission</button>
+        <p style="text-align:center; color:#6c757d; margin-top: 0;">Arctic Rescue Challenge</p>
+        <button id="start-btn" style="width:100%; padding:18px; background:var(--primary); color:white; border:none; border-radius:14px; font-weight:bold; cursor:pointer; margin-top: 30px;">Start Quiz</button>
     </div>
 
     <div id="quiz-view" class="hidden">
@@ -111,29 +112,29 @@
         <div id="image-area"></div>
         <div id="options-area" class="options-grid"></div>
         <div id="feedback-box" class="feedback"></div>
-        <button id="action-btn" class="hidden">Next Task →</button>
+        <button id="action-btn" class="hidden">Next →</button>
         <div id="cross-mark" class="red-cross">✖</div>
     </div>
 
     <div id="result-view" class="hidden" style="text-align:center;">
         <h2 style="font-size:1.5rem;">Mission Complete</h2>
         <div style="font-size: 4rem; font-weight: 800; color: var(--primary); margin: 15px 0;"><span id="final-pts">0</span>/10</div>
-        <button onclick="location.reload()" style="width:100%; padding:16px; background:var(--primary); color:white; border:none; border-radius:14px; font-weight:700; cursor:pointer;">Restart</button>
+        <button onclick="location.reload()" style="width:100%; padding:16px; background:var(--primary); color:white; border:none; border-radius:14px; font-weight:700; cursor:pointer;">Restart Challenge</button>
     </div>
 </div>
 
 <script>
     const questions = [
-        { q: "A rescue worker drops steel nails and brass screws into deep snow. Which will the magnet recover?", img: "q1.png", opts: ["Both the nails and screws", "Only the steel nails", "Only the brass screws", "Neither"], ans: 1, hint: "One of these is non-magnetic.", expl: "Steel contains iron, making it magnetic. Brass is a non-magnetic alloy." },
-        { q: "A sailor's compass points toward the Geographic North Pole. Which magnetic pole attracts it?", img: "q2.png", opts: ["Earth's Magnetic North", "Earth's Magnetic South", "The Equator", "The Sun"], ans: 1, hint: "Remember: Opposite poles attract.", expl: "The needle is a North pole, so it is attracted to Earth's Magnetic South Pole, which is located near Geographic North." },
-        { q: "You have three metal bars. Bar 1 attracts filings. Bar 3 repels Bar 1. Which is a magnet?", opts: ["Bar 2", "Bar 1 only", "Bar 3 only", "Both Bar 1 and Bar 3"], ans: 3, hint: "Repulsion only happens between two magnets.", expl: "Bar 1 has attraction and Bar 3 has repulsion; both are key indicators of magnetism." },
-        { q: "How does a 'Maglev' train stay above the tracks without touching?", img: "q4.png", opts: ["Gravity pull", "Magnetic repulsion (Like poles)", "Magnetic attraction", "Friction"], ans: 1, hint: "Think about pushing things apart.", expl: "Like poles of powerful magnets on the train and track repel each other to lift the train." },
-        { q: "Why should you keep magnets away from credit cards and computers?", opts: ["Magnets will lose strength", "Magnetic fields can erase digital data", "Electronics will melt", "None of these"], ans: 1, hint: "Data is often stored magnetically.", expl: "Magnets can scramble or delete data stored on magnetic strips or hard drives." },
-        { q: "What is the result of cutting a bar magnet in half?", img: "q6.png", opts: ["One North pole and one South pole piece", "Two smaller, complete magnets", "Two non-magnetic pieces", "It loses magnetism"], ans: 1, hint: "Magnetic poles always come in pairs.", expl: "Every magnet must have both a North and a South pole. Cutting one simply creates new pairs." },
-        { q: "A recycling crane uses electricity to lift and drop scrap metal. This is a/an:", img: "q7.png", opts: ["Permanent magnet", "Natural magnet", "Electromagnet", "Bar magnet"], ans: 2, hint: "The magnetism can be turned off.", expl: "An electromagnet uses electricity to create a magnetic field that can be controlled." },
-        { q: "Which of these will cause a magnet to lose its strength?", opts: ["Painting it", "Heating it in a flame", "Keeping it in a wooden box", "Cooling it"], ans: 1, hint: "High energy can scramble the internal particles.", expl: "Heating, hammering, or dropping a magnet can misalign its magnetic domains." },
-        { q: "What is the surest test for a magnet?", opts: ["Attraction to iron", "Repulsion from another magnet", "Pointing North", "Weight"], ans: 1, hint: "Non-magnets can still attract magnets.", expl: "Only a magnet can repel another magnet. Simple iron can only attract." },
-        { q: "Which material would be best to use as a 'keeper' to store magnets?", opts: ["Plastic", "Wood", "Soft Iron", "Copper"], ans: 2, hint: "The material should provide a path for the magnetic field.", expl: "Soft iron keepers help complete the magnetic loop, preserving the magnet's strength." }
+        { q: "A rescue worker drops steel nails and brass screws into deep snow. Which will the magnet recover?", img: "q1.png", opts: ["Both the nails and screws", "Only the steel nails", "Only the brass screws", "Neither"], ans: 1, hint: "Check which material contains iron.", expl: "Steel is a magnetic material because it contains iron. Brass is non-magnetic and will not be attracted to the magnet." },
+        { q: "A sailor's compass needle points toward Geographic North. Which magnetic pole attracts it?", img: "q2.png", opts: ["Earth's Magnetic North", "Earth's Magnetic South", "The Equator", "The Sun"], ans: 1, hint: "Remember that opposite poles attract.", expl: "The North pole of the compass needle is attracted to Earth's Magnetic South Pole, which is located near the Geographic North." },
+        { q: "You test three metal bars. Bar 1 attracts filings. Bar 3 repels Bar 1. Which is a magnet?", opts: ["Bar 2", "Bar 1 only", "Bar 3 only", "Both Bar 1 and Bar 3"], ans: 3, hint: "Repulsion is the only sure test for a magnet.", expl: "Bar 1 shows attraction and Bar 3 shows repulsion. Repulsion only occurs between two magnets." },
+        { q: "How does a 'Maglev' train stay above the tracks?", img: "q4.png", opts: ["Gravity pull", "Magnetic repulsion", "Magnetic attraction", "Friction"], ans: 1, hint: "Think about poles that push away from each other.", expl: "Maglev trains use the principle of magnetic repulsion where like poles push against each other to lift the train." },
+        { q: "Why keep magnets away from computers and credit cards?", opts: ["Magnets lose strength", "Magnetic fields can scramble data", "The screen will break", "Magnets get too hot"], ans: 1, hint: "Data is often stored using magnetic patterns.", expl: "Electronic devices and magnetic strips on cards store data that can be erased or corrupted by strong magnetic fields." },
+        { q: "What happens if you cut a bar magnet in half?", img: "q6.png", opts: ["One North and one South piece", "Two smaller, complete magnets", "Two non-magnetic pieces", "It becomes twice as strong"], ans: 1, hint: "Magnetic poles always exist in pairs.", expl: "Magnets are dipoles. Cutting a magnet results in two smaller magnets, each having its own North and South pole." },
+        { q: "A crane uses electricity to lift scrap metal. This is a/an:", img: "q7.png", opts: ["Permanent magnet", "Natural magnet", "Electromagnet", "Bar magnet"], ans: 2, hint: "The magnetism is turned on and off with a switch.", expl: "An electromagnet works only when an electric current flows through it, making it ideal for industrial lifting." },
+        { q: "Which action will cause a magnet to lose its strength?", opts: ["Painting it blue", "Heating it in a flame", "Storing it in a wooden box", "Cleaning it with water"], ans: 1, hint: "Extreme energy can ruin a magnet's internal alignment.", expl: "Heating, dropping, or hammering a magnet misaligns its internal magnetic domains, causing it to lose magnetism." },
+        { q: "What is the only sure test to identify a magnet?", opts: ["Attraction to iron", "Repulsion of another magnet", "The way it looks", "Its weight"], ans: 1, hint: "Non-magnets like iron can still be attracted to magnets.", expl: "Only a magnet can repel another magnet. Magnetic materials like iron are always attracted but never repelled." },
+        { q: "What is the best material for a 'keeper' to store magnets?", opts: ["Plastic", "Wood", "Soft Iron", "Copper"], ans: 2, hint: "It must allow magnetic lines to pass through it.", expl: "Soft iron keepers are used to provide a closed path for the magnetic field, preserving the magnet's strength over time." }
     ];
 
     let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
@@ -163,6 +164,7 @@
         document.getElementById('q-text').innerText = q.q;
         
         const imgArea = document.getElementById('image-area');
+        // Ensuring the path is assets/filename.png
         imgArea.innerHTML = q.img ? `<div class="img-container"><img src="assets/${q.img}" class="q-img" alt="Illustration"></div>` : "";
         
         const area = document.getElementById('options-area');
