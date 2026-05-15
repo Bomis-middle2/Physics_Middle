@@ -6,22 +6,21 @@
     <title>Spark City: Electrical Inspector</title>
     <style>
         :root {
-            --electric-blue: #00d4ff;
-            --volt-yellow: #fee440;
-            --danger-red: #ff0054;
-            --circuit-bg: #0a1128;
-            --panel-bg: #1282a2;
-            --success: #2ec4b6;
+            --primary-blue: #4361ee;
+            --electric-yellow: #ffd60a;
+            --success-green: #2ec4b6;
+            --error-red: #e71d36;
+            --light-bg: #f8f9fa;
+            --text-dark: #2b2d42;
+            --panel-white: #ffffff;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--circuit-bg);
-            background-image: radial-gradient(var(--panel-bg) 0.5px, transparent 0.5px);
-            background-size: 20px 20px;
-            color: #fff;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
             margin: 0;
             display: flex;
             justify-content: center;
@@ -31,18 +30,19 @@
 
         #app-container {
             width: 100%;
-            max-width: 450px;
-            background: rgba(2, 62, 138, 0.95);
-            border: 3px solid var(--electric-blue);
-            border-radius: 25px;
-            padding: 20px;
+            max-width: 480px;
+            background: var(--panel-white);
+            border-radius: 24px;
+            padding: 25px;
             margin: 10px;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             position: relative;
             overflow: hidden;
+            min-height: 520px;
+            border-top: 8px solid var(--primary-blue);
         }
 
-        /* --- SPLASH --- */
+        /* --- SPLASH SCREEN (AS BEFORE) --- */
         #splash-screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -53,41 +53,46 @@
             z-index: 9999;
         }
 
-        .logo-only { width: 200px; height: auto; }
+        .logo-only {
+            width: 250px;
+            height: auto;
+            max-width: 85%;
+            object-fit: contain;
+        }
 
-        /* --- PROGRESS --- */
-        .header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .badge { background: var(--volt-yellow); color: #000; padding: 4px 10px; border-radius: 15px; font-weight: 800; font-size: 0.75rem; }
+        /* --- UI ELEMENTS --- */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .case-label { background: var(--primary-blue); color: white; padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; }
+        .score-display { color: var(--primary-blue); font-weight: 800; font-size: 1rem; }
+
+        .timer-track { width: 100%; height: 10px; background: #edf2f4; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        #timer-bar { height: 100%; width: 100%; background: var(--primary-blue); transition: width 1s linear; }
+
+        .question-text { font-size: 1.15rem; font-weight: 600; line-height: 1.5; margin-bottom: 15px; color: var(--text-dark); }
         
-        .timer-track { width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-bottom: 15px; overflow: hidden; border: 1px solid var(--electric-blue); }
-        #timer-bar { height: 100%; width: 100%; background: var(--electric-blue); transition: width 1s linear; }
+        .img-container { width: 100%; margin-bottom: 15px; text-align: center; border: 1px solid #dee2e6; border-radius: 12px; overflow: hidden; }
+        .q-img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
 
-        /* --- CONTENT --- */
-        .question-box { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border-left: 4px solid var(--volt-yellow); margin-bottom: 15px; }
-        .question-text { font-size: 1.05rem; font-weight: 600; line-height: 1.4; }
-        
-        .img-container { width: 100%; margin-bottom: 15px; border-radius: 10px; overflow: hidden; background: #fff; }
-        .q-img { width: 100%; height: auto; display: block; }
-
-        .options-grid { display: grid; gap: 10px; }
+        .options-grid { display: grid; gap: 12px; }
         .opt-btn {
-            background: rgba(255, 255, 255, 0.1); 
-            border: 2px solid rgba(255, 255, 255, 0.2); 
-            padding: 14px; border-radius: 12px; color: #fff;
-            text-align: left; font-size: 0.95rem; cursor: pointer;
+            background: #fff; border: 2px solid #edf2f4; padding: 16px;
+            border-radius: 14px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
+            color: var(--text-dark); font-weight: 500;
         }
         
-        .opt-btn.correct { background: var(--success) !important; border-color: #fff; }
-        .opt-btn.wrong { background: var(--danger-red) !important; border-color: #fff; }
+        .opt-btn:active { background: #f0f0f0; }
+        .opt-btn.correct { background: var(--success-green) !important; color: white; border-color: var(--success-green); }
+        .opt-btn.wrong { background: var(--error-red) !important; color: white; border-color: var(--error-red); }
 
-        .feedback { margin-top: 15px; padding: 12px; border-radius: 12px; display: none; font-size: 0.9rem; line-height: 1.4; }
-        .hint-box { background: var(--volt-yellow); color: #000; }
-        .expl-box { background: #fff; color: #000; }
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 12px; display: none; line-height: 1.5; font-size: 0.95rem; }
+        .hint-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; }
+        .expl-box { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
 
         #action-btn { 
-            width: 100%; margin-top: 15px; padding: 16px; 
-            background: var(--volt-yellow); color: #000; 
-            border: none; border-radius: 12px; font-weight: 800; cursor: pointer;
+            width: 100%; margin-top: 20px; padding: 18px; 
+            background: var(--primary-blue); color: white; 
+            border: none; border-radius: 14px; font-weight: 700; 
+            font-size: 1rem; cursor: pointer; 
         }
 
         .hidden { display: none !important; }
@@ -96,35 +101,137 @@
 <body>
 
 <div id="app-container">
-    <div id="splash-screen"><img src="assets/logo.png" class="logo-only"></div>
+    <div id="splash-screen">
+        <img src="assets/logo.png" class="logo-only" alt="Innovine Logo">
+    </div>
 
-    <div id="intro-view" class="hidden" style="text-align:center;">
-        <h1 style="color:var(--volt-yellow);">SPARK CITY</h1>
-        <p>Master the circuits and keep the city glowing!</p>
-        <button id="start-btn" style="width:100%; padding:18px; background:var(--volt-yellow); border:none; border-radius:50px; font-weight:900; margin-top:20px;">START INSPECTION</button>
+    <div id="intro-view" class="hidden" style="text-align: center;">
+        <h1 style="color: var(--primary-blue); margin-bottom: 10px;">Spark City</h1>
+        <p style="color: #6c757d; font-size: 1.1rem;">Electrical Inspector Training</p>
+        <div style="background: #e9ecef; padding: 20px; border-radius: 15px; margin: 20px 0; text-align: left;">
+            Welcome, Young Scientist! Use your knowledge of circuits and safety to solve real-world problems.
+        </div>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">START INSPECTION</button>
     </div>
 
     <div id="quiz-view" class="hidden">
         <div class="header">
-            <div class="badge">Case <span id="q-num">1</span></div>
-            <div style="color:var(--volt-yellow); font-weight:800;">XP: <span id="score-val">0</span></div>
+            <div class="case-label">CASE <span id="q-num">1</span></div>
+            <div class="score-display">XP: <span id="score-val">0</span></div>
         </div>
+        
         <div class="timer-track"><div id="timer-bar"></div></div>
-        <div class="question-box"><div id="q-text" class="question-text"></div></div>
+        <div id="q-text" class="question-text"></div>
         <div id="image-area"></div>
         <div id="options-area" class="options-grid"></div>
+        
         <div id="feedback-box" class="feedback"></div>
         <button id="action-btn" class="hidden">NEXT CASE →</button>
     </div>
 
     <div id="result-view" class="hidden" style="text-align:center;">
-        <h2 style="color:var(--volt-yellow);">INSPECTION COMPLETE</h2>
-        <div style="font-size:4rem; font-weight:900;"><span id="final-pts">0</span>/10</div>
-        <button onclick="location.reload()" style="width:100%; padding:15px; background:var(--electric-blue); color:#fff; border:none; border-radius:12px; font-weight:700;">RESTART</button>
+        <h2 style="color: var(--primary-blue);">Mission Report</h2>
+        <div style="font-size: 4.5rem; font-weight: 900; color: var(--text-dark); margin: 20px 0;"><span id="final-pts">0</span>/10</div>
+        <p id="result-msg" style="color:#6c757d; margin-bottom:30px; padding: 0 10px;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:14px; font-weight:700; cursor:pointer;">RESTART MISSION</button>
     </div>
 </div>
 
 <script>
     const questions = [
-        { q: "Riya's clock won't work. She put the flat end (negative) where the metal cap (positive) should be. Why?", opts: ["The cell is fused", "Chemicals can't react", "Terminals are reversed", "Dry cells only work in torches"], ans: 2, hint: "Check the direction of the power flow.", expl: "Terminals must be aligned (+ to +) for the current to flow through the clock's circuit." },
-        { q: "What happens if a Dry Cell is missing its chemical paste?", img: "q2.png", opts: ["Produces more power", "Chemical reaction won't happen", "Rod turns to wire", "Zinc melts"], ans: 1, hint: "No chemicals means no fuel.", expl: "Electricity is produced by chemicals. Without them
+        { q: "Riya's clock won't move. She put the flat end (negative) against the spring where the metal cap (positive) should be. Why?", opts: ["The cell is fused", "Chemicals can't react upside down", "Terminals are reversed, blocking correct flow", "Dry cells only work in torches"], ans: 2, hint: "A circuit needs current to flow in a specific direction.", expl: "Terminals must be aligned correctly for the current to flow correctly through the clock's circuit." },
+        { q: "A Dry Cell contains Ammonium Chloride paste. If a manufacturer left the cell empty, what would happen?", img: "q2.png", opts: ["Produces more power", "Chemical reaction would not take place", "Rod turns to metal", "Zinc container melts"], ans: 1, hint: "Chemicals are the 'fuel' for the battery.", expl: "Electricity is produced by chemical reactions. No chemicals means no energy can be generated." },
+        { q: "Arjun connects both wires from the positive terminal to a bulb. Why does it NOT glow?", opts: ["Copper wires don't conduct", "Path is not complete (must use both terminals)", "It will explode without a switch", "Needs plastic wires"], ans: 1, hint: "A circuit needs a start and an end point on the cell.", expl: "To form a complete circuit, wires must connect to both the positive and negative terminals." },
+        { q: "Which is LEAST safe to use as a protective barrier when touching a live wire?", opts: ["Dry rubber gloves", "Thick plastic sheet", "A metal ruler held with a cloth", "A dry wooden plank"], ans: 2, hint: "One of these materials allows electricity to pass through it.", expl: "Metal is a conductor. Even if held with a cloth, the current can travel through the ruler to your hand." },
+        { q: "A 'fused' bulb has a broken tungsten filament. Why does it stay dark in a closed circuit?", opts: ["Glass blocks the electricity", "The broken filament creates a 'gap' in the circuit", "Battery is too strong", "Only works with secondary cells"], ans: 1, hint: "Electricity needs a continuous bridge to travel.", expl: "A broken filament acts like an open switch, creating a gap that stops the flow of electricity." },
+        { q: "Data: Steel glows, Rubber doesn't, Graphite glows. Which material should cover an electric plug?", opts: ["Steel key material", "Rubber eraser material", "Graphite material", "Any of these"], ans: 1, hint: "You need an insulator to stop the current.", expl: "Rubber is an insulator. It stops electricity from reaching your hand, keeping you safe." },
+        { q: "Assertion: Never touch a switch with wet hands. Reason: Pure water is a perfect insulator.", opts: ["Both are true", "Assertion is true, Reason is false (ordinary water conducts)", "Assertion is false, Reason is true", "Both are false"], ans: 1, hint: "Tap water isn't 100% pure.", expl: "While pure water is an insulator, the water from taps contains minerals that make it conduct electricity." },
+        { q: "Why is it dangerous to pull a kite from power lines with a metallic rod?", opts: ["Kite might tear", "Metal conducts current to your body", "Rod is too heavy", "Electricity stays in wires"], ans: 1, hint: "Metal is a conductor.", expl: "High-voltage electricity will travel down the metal rod through your body to reach the ground." },
+        { q: "To turn a light ON using a safety-pin switch, what must the pin do?", img: "q9.png", opts: ["Be removed completely", "Touch both drawing pins to complete the path", "Be covered with tape", "Touch the battery"], ans: 1, hint: "A switch 'closes' the gap.", expl: "Touching both drawing pins creates a complete path for the electricity to flow." },
+        { q: "A farmer wants sustainable sun energy for a field bulb. What is the best choice?", opts: ["Primary Dry Cell", "Solar Cell", "Button Cell", "Secondary Cell"], ans: 1, hint: "Which cell turns light into power?", expl: "Solar cells convert sunlight directly into electrical energy." }
+    ];
+
+    let current = 0, score = 0, timer, timeLeft = 45;
+
+    window.onload = () => {
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.display = 'none';
+            document.getElementById('intro-view').classList.remove('hidden');
+        }, 5000);
+    };
+
+    document.getElementById('start-btn').onclick = () => {
+        document.getElementById('intro-view').classList.add('hidden');
+        document.getElementById('quiz-view').classList.remove('hidden');
+        loadQuestion();
+    };
+
+    function loadQuestion() {
+        timeLeft = 45;
+        const q = questions[current];
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').classList.add('hidden');
+        document.getElementById('q-num').innerText = current + 1;
+        document.getElementById('q-text').innerText = q.q;
+        
+        const imgArea = document.getElementById('image-area');
+        imgArea.innerHTML = q.img ? `<div class="img-container"><img src="assets/${q.img}" class="q-img" alt="Illustration"></div>` : "";
+        
+        const area = document.getElementById('options-area');
+        area.innerHTML = "";
+        q.opts.forEach((o, i) => {
+            const b = document.createElement('button');
+            b.className = 'opt-btn';
+            b.innerText = o;
+            b.onclick = () => checkAnswer(i, b);
+            area.appendChild(b);
+        });
+        startTimer();
+    }
+
+    function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer-bar').style.width = (timeLeft/45*100) + "%";
+            if(timeLeft <= 0) { clearInterval(timer); endTurn(); }
+        }, 1000);
+    }
+
+    function checkAnswer(i, b) {
+        clearInterval(timer);
+        const correct = questions[current].ans;
+        if(i === correct) {
+            b.classList.add('correct');
+            score++;
+            document.getElementById('score-val').innerText = score * 10;
+        } else {
+            b.classList.add('wrong');
+            document.querySelectorAll('.opt-btn')[correct].classList.add('correct');
+        }
+        endTurn();
+    }
+
+    function endTurn() {
+        document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
+        const f = document.getElementById('feedback-box');
+        f.className = 'feedback expl-box';
+        f.innerHTML = "<b>Inspection Note:</b> " + questions[current].expl;
+        f.style.display = 'block';
+        document.getElementById('action-btn').classList.remove('hidden');
+    }
+
+    document.getElementById('action-btn').onclick = () => {
+        current++;
+        if(current < questions.length) loadQuestion();
+        else {
+            document.getElementById('quiz-view').classList.add('hidden');
+            document.getElementById('result-view').classList.remove('hidden');
+            document.getElementById('final-pts').innerText = score;
+            const msg = score >= 8 ? "Excellent! You are a Master Electrical Inspector." : "Good effort! Keep studying to earn your full license.";
+            document.getElementById('result-msg').innerText = msg;
+        }
+    };
+</script>
+</body>
+</html>
