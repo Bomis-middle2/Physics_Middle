@@ -129,7 +129,7 @@
 </div>
 
 <script>
-    // --- AUDIO ASSETS ---
+    // --- AUDIO SYSTEM ---
     const sfx = {
         correct: new Audio('assets/correct.mp3'),
         wrong: new Audio('assets/wrong.mp3'),
@@ -203,14 +203,14 @@
     function handleChoice(i, b) {
         if(i === questions[current].ans) {
             clearInterval(timer);
-            sfx.correct.play().catch(e => {}); // Catch prevents error if browser blocks auto-play
+            sfx.correct.play().catch(e => {}); // Play correct sound
             b.classList.add('correct');
             score++;
             document.getElementById('score-val').innerText = score * 100;
             endTurn();
         } else {
             attempts++;
-            sfx.wrong.play().catch(e => {});
+            sfx.wrong.play().catch(e => {}); // Play wrong sound
             b.classList.add('wrong');
             b.disabled = true;
             if(attempts === 1) {
@@ -239,7 +239,7 @@
         current++;
         if(current < questions.length) loadQuestion();
         else {
-            sfx.victory.play().catch(e => {});
+            sfx.victory.play().catch(e => {}); // Play victory sound
             showResults();
         }
     };
