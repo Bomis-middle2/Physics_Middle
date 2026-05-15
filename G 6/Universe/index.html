@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Intergalactic Observation Hub</title>
+    <style>
+        :root {
+            --space-blue: #1a73e8;
+            --nebula-purple: #8ab4f8;
+            --star-gold: #f9ab00;
+            --success: #1e8e3e;
+            --danger: #d93025;
+            --light-bg: #f8f9fa;
+            --text-main: #3c4043;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e8eaed;
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 480px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 25px;
+            margin: 10px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+            position: relative;
+            overflow: hidden;
+            min-height: 550px;
+            border-top: 8px solid var(--space-blue);
+        }
+
+        /* --- SPLASH SCREEN --- */
+        #splash-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .logo-main { width: 260px; height: auto; max-width: 80%; margin-bottom: 20px; }
+        
+        .loader-bar {
+            width: 150px; height: 4px; background: #e8eaed;
+            border-radius: 2px; position: relative; overflow: hidden;
+        }
+        .loader-fill {
+            width: 0%; height: 100%; background: var(--space-blue);
+            animation: load 5s linear forwards;
+        }
+        @keyframes load { to { width: 100%; } }
+
+        /* --- HUB UI --- */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .mission-tag { background: var(--space-blue); color: white; padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; }
+        .stats { font-weight: 800; color: var(--space-blue); }
+
+        .timer-track { width: 100%; height: 8px; background: #f1f3f4; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        #timer-bar { height: 100%; width: 100%; background: var(--space-blue); transition: width 1s linear; }
+
+        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 20px; }
+        
+        .img-container { width: 100%; margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 1px solid #dadce0; }
+        .q-img { width: 100%; display: block; }
+
+        .options-grid { display: grid; gap: 12px; }
+        .opt-btn {
+            background: #fff; border: 2px solid #dadce0; padding: 16px;
+            border-radius: 14px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
+            color: var(--text-main); font-weight: 500;
+        }
+        
+        .opt-btn.correct { background: var(--success) !important; color: white; border-color: var(--success); }
+        .opt-btn.wrong { background: var(--danger) !important; color: white; border-color: var(--danger); opacity: 0.7; }
+
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 14px; display: none; line-height: 1.5; animation: fadeInUp 0.3s ease; }
+        .hint-box { background: #fef7e0; border-left: 5px solid var(--star-gold); color: #b06000; }
+        .expl-box { background: #e8f0fe; border-left: 5px solid var(--space-blue); color: #1967d2; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #action-btn { 
+            width: 100%; margin-top: 20px; padding: 18px; 
+            background: var(--space-blue); color: white; 
+            border: none; border-radius: 16px; font-weight: 700; 
+            font-size: 1rem; cursor: pointer;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div id="splash-screen">
+        <img src="assets/logo.png" class="logo-main" alt="Innovine Logo">
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+    </div>
+
+    <div id="intro-view" class="hidden" style="text-align: center;">
+        <div style="font-size: 3.5rem; margin-bottom: 10px;">🔭</div>
+        <h1 style="color: var(--space-blue); margin: 0;">Intergalactic Hub</h1>
+        <p style="color: #5f6368; margin-top: 10px;">Space Cadet Rank: <b>Trainee</b></p>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px solid #dadce0;">
+            Welcome, Cadet! Your mission is to identify celestial bodies and manage light pollution. You have <b>2 attempts</b> per observation. Good luck!
+        </div>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--space-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">START MISSION</button>
+    </div>
+
+    <div id="quiz-view" class="hidden">
+        <div class="header">
+            <div class="mission-tag">MISSION #<span id="q-num">1</span></div>
+            <div class="stats">EXP: <span id="score-val">0</span></div>
+        </div>
+        <div class="timer-track"><div id="timer-bar"></div></div>
+        <div id="q-text" class="question-text"></div>
+        <div id="image-area"></div>
+        <div id="options-area" class="options-grid"></div>
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="hidden">NEXT SYSTEM →</button>
+    </div>
+
+    <div id="result-view" class="hidden" style="text-align:center;">
+        <div id="result-icon" style="font-size: 4rem; margin-bottom: 10px;">🌟</div>
+        <h2 style="color: var(--space-blue);">Mission Summary</h2>
+        <div style="font-size: 4.5rem; font-weight: 900; color: var(--text-main); margin: 10px 0;"><span id="final-pts">0</span>/10</div>
+        <p id="result-msg" style="color:#5f6368; margin-bottom:30px; line-height: 1.4;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--space-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">NEW MISSION</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { q: "Aarav can't see the stars from his city balcony, but his friend in a remote village sees a sky full of stars. Why?", opts: ["The city is closer to the Sun", "Light pollution from streetlights hides the faint stars", "Stars don't shine over cities", "Aarav needs stronger sunglasses"], ans: 1, hint: "Cities use a lot of artificial lights at night.", expl: "Artificial light pollution brightens the night sky, making the much fainter light from distant stars invisible." },
+        { q: "If you see a group of stars in the northern sky that looks like a 'Big Spoon,' which constellation is it?", img: "q2.png", opts: ["Orion (The Hunter)", "Ursa Major (The Big Dipper)", "Cassiopeia", "The Milky Way"], ans: 1, hint: "It is often used to find the North Star.", expl: "Ursa Major contains the seven bright stars known as the Big Dipper, which resembles a large ladle or spoon." },
+        { q: "Why is discovering an 'Exoplanet' orbiting a star similar to our Sun exciting?", opts: ["We can power our flashlights with it", "Exoplanets are made of gold", "It might be a planet that supports life", "It is closer to Earth than the Moon"], ans: 2, hint: "Think about humanity's search for a new home.", expl: "Finding planets in the 'habitable zone' of other stars is the first step toward finding life beyond Earth." },
+        { q: "Why does a comet's tail always point away from the Sun?", opts: ["The comet is moving backward", "Solar wind and heat push gas and dust away", "Heavy rocks fall behind it", "The tail is just a shadow"], ans: 1, hint: "The Sun is constantly 'blowing' particles out into space.", expl: "Solar radiation and solar wind push the comet's coma (gas and dust) away from the Sun, regardless of the comet's direction." },
+        { q: "Statement: Planets do not have their own light. Reason: Planets act like mirrors and reflect Sun light.", opts: ["Both are true and reason explains statement", "Statement is true, Reason is false", "Statement is false", "Both are false"], ans: 0, hint: "Planets are like the Moon in this regard.", expl: "Planets are non-luminous bodies; we only see them because they reflect the light from the Sun." },
+        { q: "Sneha put the 'Asteroid Belt' between Earth and Mars. Why is this wrong?", opts: ["It is located between Mars and Jupiter", "There are no asteroids in our solar system", "Asteroids only exist outside the Milky Way", "It should be on the Sun's surface"], ans: 0, hint: "It separates the rocky planets from the gas giants.", expl: "The Asteroid Belt is the region between the orbits of Mars and Jupiter where most asteroids are found." },
+        { q: "Which of these is NOT a member of our Solar System?", opts: ["The Moon", "Halley’s Comet", "The North Star (Polaris)", "The Planet Saturn"], ans: 2, hint: "Our Solar System has only ONE star.", expl: "The North Star is a distant star many light-years away; our Solar System consists only of objects orbiting our Sun." },
+        { q: "You see a sudden, bright streak of light. Your brother says 'A star fell down!' How do you correct him?", opts: ["It was a comet hitting the Moon", "It was a meteor burning in our atmosphere", "It was a fast exoplanet", "It was a piece of the Sun"], ans: 1, hint: "People often call them 'shooting stars.'", expl: "Meteors are small pieces of space rock that heat up and glow due to friction as they enter Earth's atmosphere." },
+        { q: "Using binoculars to look at the Moon, what feature will you see more clearly?", opts: ["Flags left by astronauts", "Craters and mountain ranges", "Liquid water oceans", "Green forests"], ans: 1, hint: "The Moon is a rocky, dry place with many impacts.", expl: "Binoculars reveal the rugged landscape of the Moon, including its deep craters and high peaks." },
+        { q: "What are the BEST conditions to organize a 'Star Gazing' night for your school?", opts: ["A rainy night with clouds", "Full moon in the center of the city", "Clear, moonless night far from city lights", "A sunny afternoon"], ans: 2, hint: "You want the darkest sky possible.", expl: "A dark location away from city lights and a moonless sky provide the best contrast to see faint stars and galaxies." }
+    ];
+
+    let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
+
+    window.onload = () => {
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.display = 'none';
+            document.getElementById('intro-view').classList.remove('hidden');
+        }, 5000);
+    };
+
+    document.getElementById('start-btn').onclick = () => {
+        document.getElementById('intro-view').classList.add('hidden');
+        document.getElementById('quiz-view').classList.remove('hidden');
+        loadQuestion();
+    };
+
+    function loadQuestion() {
+        attempts = 0; timeLeft = 45;
+        const q = questions[current];
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').classList.add('hidden');
+        document.getElementById('q-num').innerText = current + 1;
+        document.getElementById('q-text').innerText = q.q;
+        
+        const imgArea = document.getElementById('image-area');
+        imgArea.innerHTML = q.img ? `<div class="img-container"><img src="assets/${q.img}" class="q-img"></div>` : "";
+        
+        const area = document.getElementById('options-area');
+        area.innerHTML = "";
+        q.opts.forEach((o, i) => {
+            const b = document.createElement('button');
+            b.className = 'opt-btn';
+            b.innerText = o;
+            b.onclick = () => handleChoice(i, b);
+            area.appendChild(b);
+        });
+        startTimer();
+    }
+
+    function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer-bar').style.width = (timeLeft/45*100) + "%";
+            if(timeLeft <= 0) { clearInterval(timer); endTurn(); }
+        }, 1000);
+    }
+
+    function handleChoice(i, b) {
+        if(i === questions[current].ans) {
+            clearInterval(timer);
+            b.classList.add('correct');
+            score++;
+            document.getElementById('score-val').innerText = score * 100;
+            endTurn();
+        } else {
+            attempts++;
+            b.classList.add('wrong');
+            b.disabled = true;
+            if(attempts === 1) {
+                const f = document.getElementById('feedback-box');
+                f.className = 'feedback hint-box';
+                f.innerHTML = "📡 <b>HINT:</b> " + questions[current].hint;
+                f.style.display = 'block';
+            } else {
+                clearInterval(timer);
+                endTurn();
+            }
+        }
+    }
+
+    function endTurn() {
+        document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
+        document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
+        const f = document.getElementById('feedback-box');
+        f.className = 'feedback expl-box';
+        f.innerHTML = "🔭 <b>HUB LOG:</b> " + questions[current].expl;
+        f.style.display = 'block';
+        document.getElementById('action-btn').classList.remove('hidden');
+    }
+
+    document.getElementById('action-btn').onclick = () => {
+        current++;
+        if(current < questions.length) loadQuestion();
+        else showResults();
+    };
+
+    function showResults() {
+        document.getElementById('quiz-view').classList.add('hidden');
+        document.getElementById('result-view').classList.remove('hidden');
+        document.getElementById('final-pts').innerText = score;
+        const msg = document.getElementById('result-msg');
+        if(score >= 9) msg.innerText = "Exceptional work, Commander! You are ready to lead our interstellar explorations.";
+        else if(score >= 7) msg.innerText = "Well done, Cadet! You've earned your Observation License.";
+        else msg.innerText = "Keep studying the stars, Cadet. The universe is full of secrets to discover!";
+    }
+</script>
+</body>
+</html>
