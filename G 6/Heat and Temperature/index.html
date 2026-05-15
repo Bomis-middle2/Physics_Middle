@@ -107,7 +107,7 @@
 
 <div id="app-container">
     <div id="splash-screen">
-        <img src="assets/logo.png" class="logo-only" alt="Innovine Logo">
+        <img src="assets/logo.png" class="logo-only" onerror="this.src='https://via.placeholder.com/250x100?text=INNOVINE'" alt="Logo">
         <div class="loader"></div>
     </div>
 
@@ -156,6 +156,8 @@
     ];
 
     let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
+    
+    // --- AUDIO SYSTEM ---
     const sndC = new Audio('assets/correct.mp3');
     const sndW = new Audio('assets/wrong.mp3');
     const sndF = new Audio('assets/freesound_community-claps-44774.mp3');
@@ -164,7 +166,7 @@
         setTimeout(() => {
             document.getElementById('splash-screen').style.display = 'none';
             document.getElementById('intro-view').classList.remove('hidden');
-        }, 5000);
+        }, 3000); // Shortened splash for development
     };
 
     document.getElementById('start-btn').onclick = () => {
@@ -208,12 +210,12 @@
             b.classList.add('correct');
             score++;
             document.getElementById('score-val').innerText = score;
-            sndC.play();
+            sndC.play().catch(e => console.log("Audio play blocked")); // Correct Sound
             createStars();
             endTurn();
         } else {
             attempts++;
-            sndW.play();
+            sndW.play().catch(e => console.log("Audio play blocked")); // Wrong Sound
             showCross();
             b.classList.add('wrong');
             b.disabled = true;
@@ -264,7 +266,7 @@
             document.getElementById('quiz-view').classList.add('hidden');
             document.getElementById('result-view').classList.remove('hidden');
             document.getElementById('final-pts').innerText = score;
-            sndF.play();
+            sndF.play().catch(e => console.log("Audio play blocked")); // Victory Sound
             document.getElementById('result-msg').innerText = score >= 10 ? "Great job! You've mastered Heat and Temperature!" : "Well done! Keep practicing to improve your score.";
         }
     };
