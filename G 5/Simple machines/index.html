@@ -17,7 +17,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             background-color: #eef1f5;
             margin: 0;
             display: flex;
@@ -66,7 +66,6 @@
         .q-title { font-size: 0.9rem; color: #5f6368; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
         .q-text { font-size: 1.1rem; font-weight: 600; line-height: 1.4; margin-bottom: 20px; color: var(--text-dark); }
 
-        /* TABLE STYLING */
         .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 1rem; }
         .data-table td { border: 1px solid #dadce0; padding: 12px; text-align: left; }
 
@@ -92,7 +91,7 @@
 
 <div id="app-container">
     <div id="splash-screen">
-        <img src="assets/logo.png" class="logo-main" alt="Innovine">
+        <img src="assets/logo.png" class="logo-main" onerror="this.src='https://via.placeholder.com/280x100?text=INNOVINE'" alt="Logo">
         <div class="loader"></div>
     </div>
 
@@ -130,80 +129,26 @@
 </div>
 
 <script>
+    // --- AUDIO ASSETS ---
+    const sfx = {
+        correct: new Audio('assets/correct.mp3'),
+        wrong: new Audio('assets/wrong.mp3'),
+        victory: new Audio('assets/freesound_community-claps-44774.mp3')
+    };
+
     const questions = [
-        { 
-            cat: "Construction Site Problem",
-            q: "Workers use a long wooden ramp to move cement bags into a truck. Why is this method easier?", 
-            opts: ["The bags become lighter", "Effort is reduced by increasing distance", "Gravity disappears", "Friction increases"], 
-            ans: 1, hint: "An inclined plane spreads the work over a longer path.", expl: "A ramp reduces the force needed by increasing the distance over which the load is moved." 
-        },
-        { 
-            cat: "Playground Observation",
-            q: "A lighter child balances a heavier child on a seesaw by sitting farther from the center. What does this show?", 
-            opts: ["Air pressure balances the seesaw", "Distance from the fulcrum affects turning effect", "Gravity changes on both sides", "Friction balances weight"], 
-            ans: 1, hint: "The 'turning power' depends on weight and its distance from the pivot.", expl: "Moving further from the fulcrum increases the mechanical advantage of the lever." 
-        },
-        { 
-            cat: "Engineering Thinking",
-            q: "Why do cranes use multiple pulleys instead of a single pulley?", 
-            opts: ["To increase the load’s weight", "To reduce the effort needed to lift loads", "To stop movement completely", "To reduce the crane’s height"], 
-            ans: 1, hint: "More loops of rope mean less pulling force is required.", expl: "A system of pulleys (block and tackle) divides the load among several ropes." 
-        },
-        { 
-            cat: "Everyday Technology",
-            q: "Suitcases at airports are fitted with wheels mainly to:", 
-            opts: ["increase weight", "reduce friction during movement", "increase effort", "reduce gravity"], 
-            ans: 1, hint: "Rolling is much easier than dragging.", expl: "Wheels replace sliding friction with rolling friction, which is much weaker." 
-        },
-        { 
-            cat: "Higher-Order Application",
-            q: "A mechanic uses a long spanner to loosen a tight nut. Why does a longer spanner help?", 
-            opts: ["It increases turning effect", "It decreases gravity", "It increases the nut’s weight", "It removes friction completely"], 
-            ans: 0, hint: "A longer lever arm makes it easier to twist things.", expl: "Torque (turning effect) is calculated as force multiplied by the length of the lever." 
-        },
-        { 
-            cat: "Image-Based HOTS",
-            q: "Why does the sharp edge of the tool cut more effectively?", 
-            opts: ["It increases pressure on a smaller area", "It increases gravity", "It decreases force", "It removes friction completely"], 
-            ans: 0, hint: "A thinner edge concentrates all your force onto a tiny line.", expl: "Pressure = Force / Area. A smaller area (sharp edge) creates high pressure." 
-        },
-        { 
-            cat: "Assertion–Reason",
-            q: "Assertion (A): Pulleys are used in flagpoles to help in lifting heavy loads easily. \nReason (R): Pulleys reduce the effort needed by changing the direction or distribution of force.", 
-            opts: ["Both A and R are true, and R explains A", "Both A and R are true, but R does not explain A", "A is true, but R is false", "A is false, but R is true"], 
-            ans: 0, hint: "Flagpoles use a single fixed pulley. Does it change the direction you pull?", expl: "Pulleys change the direction of force, making it easier to pull down to lift something up." 
-        },
-        { 
-            cat: "Case-Based Question",
-            q: "Observe the table carefully and determine the conclusion.", 
-            table: "<tr><td>Ramp</td><td>Inclined Plane</td></tr><tr><td>Seesaw</td><td>Lever</td></tr><tr><td>Flag Pole</td><td>Pulley</td></tr>",
-            opts: ["All are simple machines", "Only ramps reduce effort", "Only levers are useful", "Machines remove gravity"], 
-            ans: 0, hint: "Look at the items listed. What category do they all belong to?", expl: "Levers, pulleys, and inclined planes are all different types of simple machines." 
-        },
-        { 
-            cat: "Real-Life Decision Making",
-            q: "A school wants to lift heavy stage equipment safely with minimum effort. Which option would be the BEST choice?", 
-            opts: ["Inclined plane only", "Multiple pulley system", "Knife", "Screwdriver"], 
-            ans: 1, hint: "Which machine is specifically designed to lift heavy loads vertically with ease?", expl: "Multiple pulley systems (pulleys) are the most efficient for vertical lifting of heavy equipment." 
-        },
-        { 
-            cat: "Image-Based Reasoning",
-            q: "Why is a round door knob easier to turn?", 
-            opts: ["It uses wheel and axle principle to increase turning effect", "It removes gravity", "It decreases friction completely", "It reduces the door’s weight"], 
-            ans: 0, hint: "The knob is the wheel, and the internal rod is the axle.", expl: "A wheel and axle setup magnifies the force you apply to the knob to move the latch." 
-        },
-        { 
-            cat: "Error Detection",
-            q: "A student says: “Simple machines reduce the amount of work done.” Identify the correct explanation.", 
-            opts: ["Machines reduce effort, not total work", "Machines make work disappear", "Machines remove force completely", "There is no error"], 
-            ans: 0, hint: "Machines make work easier, but you still move the same amount of energy.", expl: "Work is Force x Distance. Machines reduce force but increase the distance, keeping total work the same." 
-        },
-        { 
-            cat: "Design Thinking Question",
-            q: "Why is the invention of the wheel considered one of the most important discoveries in human history?", 
-            opts: ["It helped reduce friction during movement", "It increased effort during transport", "It removed gravity", "It stopped motion"], 
-            ans: 0, hint: "Before wheels, humans had to drag heavy things across the ground.", expl: "The wheel dramatically reduced friction, enabling the transport of heavy loads over long distances." 
-        }
+        { cat: "Construction Site Problem", q: "Workers use a long wooden ramp to move cement bags into a truck. Why is this method easier?", opts: ["The bags become lighter", "Effort is reduced by increasing distance", "Gravity disappears", "Friction increases"], ans: 1, hint: "An inclined plane spreads the work over a longer path.", expl: "A ramp reduces the force needed by increasing the distance over which the load is moved." },
+        { cat: "Playground Observation", q: "A lighter child balances a heavier child on a seesaw by sitting farther from the center. What does this show?", opts: ["Air pressure balances the seesaw", "Distance from the fulcrum affects turning effect", "Gravity changes on both sides", "Friction balances weight"], ans: 1, hint: "The 'turning power' depends on weight and its distance from the pivot.", expl: "Moving further from the fulcrum increases the mechanical advantage of the lever." },
+        { cat: "Engineering Thinking", q: "Why do cranes use multiple pulleys instead of a single pulley?", opts: ["To increase the load’s weight", "To reduce the effort needed to lift loads", "To stop movement completely", "To reduce the crane’s height"], ans: 1, hint: "More loops of rope mean less pulling force is required.", expl: "A system of pulleys (block and tackle) divides the load among several ropes." },
+        { cat: "Everyday Technology", q: "Suitcases at airports are fitted with wheels mainly to:", opts: ["increase weight", "reduce friction during movement", "increase effort", "reduce gravity"], ans: 1, hint: "Rolling is much easier than dragging.", expl: "Wheels replace sliding friction with rolling friction, which is much weaker." },
+        { cat: "Higher-Order Application", q: "A mechanic uses a long spanner to loosen a tight nut. Why does a longer spanner help?", opts: ["It increases turning effect", "It decreases gravity", "It increases the nut’s weight", "It removes friction completely"], ans: 0, hint: "A longer lever arm makes it easier to twist things.", expl: "Torque (turning effect) is calculated as force multiplied by the length of the lever." },
+        { cat: "Image-Based HOTS", q: "Why does the sharp edge of the tool cut more effectively?", opts: ["It increases pressure on a smaller area", "It increases gravity", "It decreases force", "It removes friction completely"], ans: 0, hint: "A thinner edge concentrates all your force onto a tiny line.", expl: "Pressure = Force / Area. A smaller area (sharp edge) creates high pressure." },
+        { cat: "Assertion–Reason", q: "Assertion (A): Pulleys are used in flagpoles to help in lifting heavy loads easily. \nReason (R): Pulleys reduce the effort needed by changing the direction or distribution of force.", opts: ["Both A and R are true, and R correctly explains A", "Both A and R are true, but R does not explain A", "A is true, but R is false", "A is false, but R is true"], ans: 0, hint: "Flagpoles use a single fixed pulley. Does it change the direction you pull?", expl: "Pulleys change the direction of force, making it easier to pull down to lift something up." },
+        { cat: "Case-Based Question", q: "Observe the table carefully and determine the conclusion.", table: "<tr><td>Ramp</td><td>Inclined Plane</td></tr><tr><td>Seesaw</td><td>Lever</td></tr><tr><td>Flag Pole</td><td>Pulley</td></tr>", opts: ["All are simple machines", "Only ramps reduce effort", "Only levers are useful", "Machines remove gravity"], ans: 0, hint: "Look at the items listed. What category do they all belong to?", expl: "Levers, pulleys, and inclined planes are all different types of simple machines." },
+        { cat: "Real-Life Decision Making", q: "A school wants to lift heavy stage equipment safely with minimum effort. Which option would be the BEST choice?", opts: ["Inclined plane only", "Multiple pulley system", "Knife", "Screwdriver"], ans: 1, hint: "Which machine is specifically designed to lift heavy loads vertically with ease?", expl: "Multiple pulley systems are the most efficient for vertical lifting of heavy equipment." },
+        { cat: "Image-Based Reasoning", q: "Why is a round door knob easier to turn?", opts: ["It uses wheel and axle principle to increase turning effect", "It removes gravity", "It decreases friction completely", "It reduces the door’s weight"], ans: 0, hint: "The knob is the wheel, and the internal rod is the axle.", expl: "A wheel and axle setup magnifies the force applied to the knob to move the latch." },
+        { cat: "Error Detection", q: "A student says: “Simple machines reduce the amount of work done.” Identify the correct explanation.", opts: ["Machines reduce effort, not total work", "Machines make work disappear", "Machines remove force completely", "There is no error"], ans: 0, hint: "Machines make work easier, but you still move the same amount of energy.", expl: "Work is Force x Distance. Machines reduce force but increase distance, keeping total work the same." },
+        { cat: "Design Thinking Question", q: "Why is the invention of the wheel considered one of the most important discoveries in human history?", opts: ["It helped reduce friction during movement", "It increased effort during transport", "It removed gravity", "It stopped motion"], ans: 0, hint: "Before wheels, humans had to drag heavy things across the ground.", expl: "The wheel dramatically reduced friction, enabling the transport of heavy loads." }
     ];
 
     let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
@@ -215,11 +160,12 @@
         }, 5000);
     };
 
-    document.getElementById('start-btn').onclick = () => {
+    function startLab() {
         document.getElementById('intro-view').classList.add('hidden');
         document.getElementById('quiz-view').classList.remove('hidden');
         loadQuestion();
-    };
+    }
+    document.getElementById('start-btn').onclick = startLab;
 
     function loadQuestion() {
         attempts = 0; timeLeft = 45;
@@ -257,12 +203,14 @@
     function handleChoice(i, b) {
         if(i === questions[current].ans) {
             clearInterval(timer);
+            sfx.correct.play().catch(e => {}); // Catch prevents error if browser blocks auto-play
             b.classList.add('correct');
             score++;
             document.getElementById('score-val').innerText = score * 100;
             endTurn();
         } else {
             attempts++;
+            sfx.wrong.play().catch(e => {});
             b.classList.add('wrong');
             b.disabled = true;
             if(attempts === 1) {
@@ -290,7 +238,10 @@
     document.getElementById('action-btn').onclick = () => {
         current++;
         if(current < questions.length) loadQuestion();
-        else showResults();
+        else {
+            sfx.victory.play().catch(e => {});
+            showResults();
+        }
     };
 
     function showResults() {
@@ -298,9 +249,9 @@
         document.getElementById('result-view').classList.remove('hidden');
         document.getElementById('final-pts').innerText = score;
         const msg = document.getElementById('result-msg');
-        if(score >= 10) msg.innerText = "Exceptional! You've mastered simple machines. You're ready for advanced engineering.";
-        else if(score >= 7) msg.innerText = "Great job! You have a solid grasp of how machines make work easier.";
-        else msg.innerText = "Keep investigating! Experiment with different machines to see how they reduce effort.";
+        if(score >= 10) msg.innerText = "Exceptional! You've mastered simple machines.";
+        else if(score >= 7) msg.innerText = "Great job! You have a solid grasp of how machines work.";
+        else msg.innerText = "Keep investigating! Experiment with different machines.";
     }
 </script>
 </body>
