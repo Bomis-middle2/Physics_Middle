@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Spark City Electrical Inspector</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --success: #2ec4b6;
+            --error: #e71d36;
+            --bg: #f8f9fa;
+            --text: #2b2d42;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 500px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+            min-height: 520px;
+        }
+
+        /* --- SPLASH SCREEN --- */
+        #splash-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .logo-only {
+            width: 250px;
+            height: auto;
+            max-width: 85%;
+            object-fit: contain;
+        }
+
+        /* --- UI COMPONENTS --- */
+        .header { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 10px; font-size: 0.9rem; }
+        .timer-track { width: 100%; height: 8px; background: #edf2f4; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        #timer-bar { height: 100%; width: 100%; background: var(--primary); transition: width 1s linear; }
+
+        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 15px; }
+        
+        .img-container { width: 100%; margin-bottom: 15px; text-align: center; }
+        .q-img { max-width: 100%; height: auto; border-radius: 12px; border: 1px solid #dee2e6; display: block; margin: 0 auto; }
+
+        .options-grid { display: grid; gap: 12px; }
+        .opt-btn {
+            background: #fff; border: 2px solid #edf2f4; padding: 16px;
+            border-radius: 14px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
+        }
+        .opt-btn.correct { background: var(--success) !important; color: white; border-color: var(--success); }
+        .opt-btn.wrong { background: var(--error) !important; color: white; border-color: var(--error); }
+
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 12px; display: none; line-height: 1.5; font-size: 0.95rem; }
+        .hint-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; }
+        .expl-box { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+
+        #action-btn { width: 100%; margin-top: 20px; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; }
+        
+        .red-cross { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; color: rgba(231, 29, 54, 0.3); pointer-events: none; display: none; z-index: 10; }
+        .star { position: absolute; width: 12px; height: 12px; background: #FFD700; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); pointer-events: none; animation: pop 1s ease-out forwards; }
+
+        @keyframes pop { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(1.5) translate(var(--tx), var(--ty)); opacity: 0; } }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div id="splash-screen">
+        <img src="assets/logo.png" class="logo-only" alt="Innovine Logo">
+    </div>
+
+    <div id="intro-view" class="hidden">
+        <h1 style="text-align:center; color:var(--primary); margin-bottom: 5px;">Spark City</h1>
+        <p style="text-align:center; color:#6c757d; margin-top: 0;">Electrical Inspector Challenge</p>
+        <button id="start-btn" style="width:100%; padding:18px; background:var(--primary); color:white; border:none; border-radius:14px; font-weight:bold; font-size:1.1rem; cursor:pointer; margin-top: 30px;">Begin Inspection</button>
+    </div>
+
+    <div id="quiz-view" class="hidden">
+        <div class="header">
+            <span>Case <span id="q-num">1</span>/10</span>
+            <span style="color:var(--primary);">License Pts: <span id="score-val">0</span></span>
+        </div>
+        <div class="timer-track"><div id="timer-bar"></div></div>
+        
+        <div id="q-text" class="question-text"></div>
+        <div id="image-area"></div>
+        <div id="options-area" class="options-grid"></div>
+        
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="hidden">Next Case →</button>
+        <div id="cross-mark" class="red-cross">✖</div>
+    </div>
+
+    <div id="result-view" class="hidden" style="text-align:center;">
+        <h2 style="font-size:1.5rem;">Inspection Complete</h2>
+        <div style="font-size: 4rem; font-weight: 800; color: var(--primary); margin: 15px 0;"><span id="final-pts">0</span>/10</div>
+        <p id="result-msg" style="color:#6c757d; margin-bottom:30px;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:16px; background:var(--primary); color:white; border:none; border-radius:14px; font-weight:700; cursor:pointer;">Restart Mission</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { q: "Riya's wall clock stopped. She replaces the cell but puts the flat end (negative) against the spring where the metal cap (positive) used to be. Why won't it work?", opts: ["The new cell is fused", "Chemical reactions stop when upside down", "The terminals are reversed, preventing correct current flow", "Dry cells only work in torches"], ans: 2, hint: "A circuit needs current to flow from positive to negative in a specific direction.", expl: "Terminals must be aligned correctly for the circuit to be complete and for electricity to flow in the right direction." },
+        { q: "A Dry Cell contains Ammonium Chloride paste. If a manufacturer left the cell empty, what would happen?", img: "q2.png", opts: ["It would produce more electricity", "The chemical reaction would not take place", "The carbon rod turns into metal", "The zinc container melts"], ans: 1, hint: "Chemicals are the fuel for a battery.", expl: "Electricity in a cell is produced by chemical reactions. Without the chemicals, no energy can be generated." },
+        { q: "Arjun connects two wires from the SAME positive terminal to a bulb. Why will the bulb NOT glow?", opts: ["Copper wires don't conduct", "The path is not complete (both on one terminal)", "It will explode without a switch", "Wires must be plastic"], ans: 1, hint: "A circuit needs to connect to both ends of the power source.", expl: "To form a complete circuit, wires must connect to both the positive and negative terminals of the cell." },
+        { q: "An electrician needs to touch a live wire safely. Which is LEAST safe to use as a barrier?", opts: ["Dry rubber gloves", "Thick plastic sheet", "A metal ruler held with a cloth", "A dry wooden plank"], ans: 2, hint: "One of these is a strong conductor of electricity.", expl: "Metal is a conductor. Even if held with a cloth, electricity can easily pass through the metal ruler to your hand." },
+        { q: "A 'fused' bulb has a broken tungsten filament. Why does it remain dark in a closed circuit?", opts: ["Glass blocks the electricity", "The broken filament creates a 'break' in the circuit", "Battery energy is too strong", "It only works with secondary cells"], ans: 1, hint: "Electricity needs a continuous path to travel.", expl: "If the filament is broken, the circuit becomes 'open,' and electricity cannot flow through the bulb." },
+        { q: "Based on the lab data (Steel: Glows, Rubber: No Glow, Graphite: Glows), what material should cover an electric plug?", opts: ["Steel key material", "Rubber eraser material", "Graphite material", "Any of these"], ans: 1, hint: "You want a material that STOPS electricity from reaching your hand.", expl: "Insulators like rubber do not allow electricity to pass through, making them safe for covering wires and plugs." },
+        { q: "Assertion: Never touch a switch with wet hands. Reason: Pure water is a perfect insulator.", opts: ["Both are true", "Assertion is true, Reason is false (ordinary water conducts)", "Assertion is false, Reason is true", "Both are false"], ans: 1, hint: "Is the water from your tap 'pure'?", expl: "While pure water is an insulator, the water we use contains minerals that make it a conductor, posing a shock risk." },
+        { q: "Why is it dangerous to pull a kite from power lines using a long metallic rod?", opts: ["The kite might tear", "Metal is a conductor; current will travel down the rod", "The rod is too heavy", "Electricity only stays in wires"], ans: 1, hint: "Metal allows electricity to flow through it easily.", expl: "High-voltage electricity will use the metal rod as a shortcut to reach the ground, passing through your body." },
+        { q: "To turn a light ON using a safety-pin switch, what must the pin do?", img: "q9.png", opts: ["Be removed from the board", "Touch both drawing pins to complete the path", "Be covered with tape", "Touch the battery directly"], ans: 1, hint: "A switch 'closes' the gap in a circuit.", expl: "When the safety pin touches both pins, it acts as a bridge, allowing the current to flow through the circuit." },
+        { q: "A farmer wants sustainable energy from the sun for a remote bulb. What is the best choice?", opts: ["Primary Dry Cell", "Solar Cell", "Button Cell", "Secondary Cell"], ans: 1, hint: "Which device converts light directly into electricity?", expl: "Solar cells convert sunlight into electrical energy, making them a sustainable choice for remote locations." }
+    ];
+
+    let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
+    const sndC = new Audio('assets/correct.mp3');
+    const sndW = new Audio('assets/wrong.mp3');
+    const sndF = new Audio('assets/freesound_community-claps-44774.mp3');
+
+    window.onload = () => {
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.display = 'none';
+            document.getElementById('intro-view').classList.remove('hidden');
+        }, 5000);
+    };
+
+    document.getElementById('start-btn').onclick = () => {
+        document.getElementById('intro-view').classList.add('hidden');
+        document.getElementById('quiz-view').classList.remove('hidden');
+        loadQuestion();
+    };
+
+    function loadQuestion() {
+        attempts = 0; timeLeft = 45;
+        const q = questions[current];
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').classList.add('hidden');
+        document.getElementById('q-num').innerText = current + 1;
+        document.getElementById('q-text').innerText = q.q;
+        
+        const imgArea = document.getElementById('image-area');
+        imgArea.innerHTML = q.img ? `<div class="img-container"><img src="assets/${q.img}" class="q-img" alt="Inspection Photo"></div>` : "";
+        
+        const area = document.getElementById('options-area');
+        area.innerHTML = "";
+        q.opts.forEach((o, i) => {
+            const b = document.createElement('button');
+            b.className = 'opt-btn';
+            b.innerText = o;
+            b.onclick = () => check(i, b);
+            area.appendChild(b);
+        });
+        startTimer();
+    }
+
+    function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer-bar').style.width = (timeLeft/45*100) + "%";
+            if(timeLeft <= 0) { clearInterval(timer); endTurn(); }
+        }, 1000);
+    }
+
+    function check(i, b) {
+        if(i === questions[current].ans) {
+            clearInterval(timer);
+            b.classList.add('correct');
+            score++;
+            document.getElementById('score-val').innerText = score;
+            sndC.play();
+            createStars();
+            endTurn();
+        } else {
+            attempts++;
+            sndW.play();
+            showCross();
+            b.classList.add('wrong');
+            b.disabled = true;
+            if(attempts === 1) {
+                const f = document.getElementById('feedback-box');
+                f.className = 'feedback hint-box';
+                f.innerText = "Hint: " + questions[current].hint;
+                f.style.display = 'block';
+            } else {
+                clearInterval(timer);
+                endTurn();
+            }
+        }
+    }
+
+    function endTurn() {
+        document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
+        const f = document.getElementById('feedback-box');
+        f.className = 'feedback expl-box';
+        f.innerText = questions[current].expl;
+        f.style.display = 'block';
+        document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
+        document.getElementById('action-btn').classList.remove('hidden');
+    }
+
+    function showCross() {
+        const c = document.getElementById('cross-mark');
+        c.style.display = 'block';
+        setTimeout(() => c.style.display = 'none', 600);
+    }
+
+    function createStars() {
+        for(let i=0; i<15; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.setProperty('--tx', (Math.random()*200 - 100) + 'px');
+            s.style.setProperty('--ty', (Math.random()*200 - 100) + 'px');
+            s.style.left = '50%'; s.style.top = '50%';
+            document.getElementById('app-container').appendChild(s);
+            setTimeout(() => s.remove(), 1000);
+        }
+    }
+
+    document.getElementById('action-btn').onclick = () => {
+        current++;
+        if(current < questions.length) loadQuestion();
+        else {
+            document.getElementById('quiz-view').classList.add('hidden');
+            document.getElementById('result-view').classList.remove('hidden');
+            document.getElementById('final-pts').innerText = score;
+            sndF.play();
+            document.getElementById('result-msg').innerText = score >= 8 ? "Certified Inspector! You've mastered the fundamentals of electricity." : "Junior Inspector. Keep studying the circuits to earn your full license!";
+        }
+    };
+</script>
+</body>
+</html>
