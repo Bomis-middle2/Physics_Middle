@@ -3,24 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Arctic Rescue: Magnetism Lab</title>
+    <title>Simple Machines: Engineering Lab</title>
     <style>
         :root {
-            --arctic-blue: #1a73e8;
-            --snow-white: #ffffff;
-            --gear-gold: #f9ab00;
+            --primary-blue: #1a73e8;
+            --accent-gold: #f9ab00;
             --success: #1e8e3e;
             --danger: #d93025;
-            --text-dark: #3c4043;
-            --bg-light: #f1f3f4;
+            --light-grey: #f8f9fa;
+            --text-dark: #202124;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #eef1f5;
             margin: 0;
             display: flex;
             justify-content: center;
@@ -31,18 +29,18 @@
         #app-container {
             width: 100%;
             max-width: 500px;
-            background: var(--snow-white);
+            background: #ffffff;
             border-radius: 24px;
             padding: 25px;
             margin: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.1);
             position: relative;
             overflow: hidden;
-            min-height: 580px;
-            border-top: 8px solid var(--arctic-blue);
+            min-height: 600px;
+            border-top: 8px solid var(--primary-blue);
         }
 
-        /* --- LOGO SPLASH SCREEN --- */
+        /* --- SPLASH SCREEN --- */
         #splash-screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -53,52 +51,40 @@
             align-items: center;
             z-index: 9999;
         }
-
         .logo-main { width: 280px; height: auto; max-width: 85%; margin-bottom: 30px; }
-        
-        .loading-bar {
-            width: 180px; height: 4px; background: #e8eaed;
-            border-radius: 2px; overflow: hidden;
-        }
-        .loading-fill {
-            width: 0%; height: 100%; background: var(--arctic-blue);
-            animation: load 5s linear forwards;
-        }
-        @keyframes load { to { width: 100%; } }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary-blue); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- MISSION UI --- */
+        /* --- UI ELEMENTS --- */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .rank-tag { background: var(--arctic-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; }
-        .score-val { font-weight: 800; color: var(--arctic-blue); }
+        .tag { background: var(--primary-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; }
+        .score { font-weight: 800; color: var(--primary-blue); }
 
-        .timer-track { width: 100%; height: 6px; background: #e8eaed; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
-        #timer-bar { height: 100%; width: 100%; background: var(--arctic-blue); transition: width 1s linear; }
+        .timer-track { width: 100%; height: 8px; background: #e8eaed; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        #timer-bar { height: 100%; width: 100%; background: var(--primary-blue); transition: width 1s linear; }
 
-        .question-text { font-size: 1.15rem; font-weight: 600; line-height: 1.4; margin-bottom: 20px; }
-        
+        .q-title { font-size: 0.9rem; color: #5f6368; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
+        .q-text { font-size: 1.1rem; font-weight: 600; line-height: 1.4; margin-bottom: 20px; color: var(--text-dark); }
+
+        /* TABLE STYLING */
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 1rem; }
+        .data-table td { border: 1px solid #dadce0; padding: 12px; text-align: left; }
+
         .options-grid { display: grid; gap: 12px; }
         .opt-btn {
             background: #fff; border: 2px solid #dadce0; padding: 16px;
             border-radius: 14px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
-            color: var(--text-dark); font-weight: 500;
+            color: #3c4043; font-weight: 500;
         }
-        
         .opt-btn.correct { background: var(--success) !important; color: white; border-color: var(--success); }
         .opt-btn.wrong { background: var(--danger) !important; color: white; border-color: var(--danger); opacity: 0.7; }
 
-        .feedback { margin-top: 15px; padding: 15px; border-radius: 14px; display: none; line-height: 1.4; font-size: 0.95rem; animation: slideIn 0.3s ease; }
-        .hint-box { background: #fff9e6; border-left: 5px solid var(--gear-gold); color: #856404; }
-        .expl-box { background: #e8f0fe; border-left: 5px solid var(--arctic-blue); color: #1967d2; }
+        .feedback { margin-top: 15px; padding: 15px; border-radius: 14px; display: none; line-height: 1.5; font-size: 0.95rem; animation: pop 0.3s ease; }
+        .hint { background: #fff7e0; border-left: 5px solid var(--accent-gold); color: #856404; }
+        .expl { background: #e8f0fe; border-left: 5px solid var(--primary-blue); color: #1967d2; }
+        @keyframes pop { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        #action-btn { 
-            width: 100%; margin-top: 20px; padding: 18px; 
-            background: var(--arctic-blue); color: white; 
-            border: none; border-radius: 16px; font-weight: 700; 
-            font-size: 1.1rem; cursor: pointer;
-        }
-
+        #action-btn { width: 100%; margin-top: 20px; padding: 18px; background: var(--primary-blue); color: white; border: none; border-radius: 16px; font-weight: 700; font-size: 1rem; cursor: pointer; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -106,103 +92,117 @@
 
 <div id="app-container">
     <div id="splash-screen">
-        <img src="assets/logo.png" class="logo-main" alt="Innovine Logo">
-        <div class="loading-bar"><div class="loading-fill"></div></div>
+        <img src="assets/logo.png" class="logo-main" alt="Innovine">
+        <div class="loader"></div>
     </div>
 
     <div id="intro-view" class="hidden" style="text-align: center;">
-        <div style="font-size: 4rem; margin-bottom: 10px;">❄️</div>
-        <h1 style="color: var(--arctic-blue); margin: 0;">Arctic Rescue Team</h1>
-        <p style="color: #5f6368; margin-top: 10px;">Magnetism Specialist: Grade 5</p>
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dadce0;">
-            Welcome, Explorer! Use your knowledge of magnetism to navigate and sort materials in the frozen north. [cite: 3] 
-            You have <b>2 attempts</b> per rescue mission.
+        <div style="font-size: 4rem; margin-bottom: 15px;">⚙️</div>
+        <h1 style="color: var(--primary-blue); margin: 0;">Engineering Lab</h1>
+        <p style="color: #5f6368; margin-top: 10px;">Topic: Simple Machines (CBQs)</p>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dadce0; font-size: 0.95rem; line-height: 1.5;">
+            Welcome, Junior Engineer! Apply your knowledge to solve real-world problems. You have <b>2 attempts</b> per question. 
         </div>
-        <button id="start-btn" style="width:100%; padding:20px; background:var(--arctic-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">BEGIN MISSION</button>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">START LAB CHALLENGE</button>
     </div>
 
     <div id="quiz-view" class="hidden">
         <div class="header">
-            <div class="rank-tag">RESCUE LOG #<span id="q-num">1</span></div>
-            <div class="score-val">XP: <span id="score-val-text">0</span></div>
+            <div class="tag">LAB TASK #<span id="q-num">1</span></div>
+            <div class="score">XP: <span id="score-val">0</span></div>
         </div>
         <div class="timer-track"><div id="timer-bar"></div></div>
-        <div id="q-text" class="question-text"></div>
+        <div id="q-category" class="q-title"></div>
+        <div id="q-text" class="q-text"></div>
+        <div id="table-area"></div>
         <div id="options-area" class="options-grid"></div>
         <div id="feedback-box" class="feedback"></div>
-        <button id="action-btn" class="hidden">NEXT LOG →</button>
+        <button id="action-btn" class="hidden">NEXT TASK →</button>
     </div>
 
     <div id="result-view" class="hidden" style="text-align:center;">
-        <div id="res-icon" style="font-size: 4.5rem; margin-bottom: 10px;">🏆</div>
-        <h2 style="color: var(--arctic-blue);">Mission Complete!</h2>
-        <div style="font-size: 4.5rem; font-weight: 900; color: #202124; margin: 10px 0;"><span id="final-score">0</span>/10</div>
-        <p id="result-msg" style="color:#5f6368; margin-bottom:30px; line-height: 1.5;"></p>
-        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--arctic-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">NEW MISSION</button>
+        <div style="font-size: 4.5rem; margin-bottom: 10px;">⚙️</div>
+        <h2 style="color: var(--primary-blue);">Lab Report Complete</h2>
+        <div style="font-size: 4.5rem; font-weight: 900; color: #202124; margin: 10px 0;"><span id="final-pts">0</span>/12</div>
+        <p id="result-msg" style="color:#5f6368; margin-bottom:30px;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">NEW RESEARCH</button>
     </div>
 </div>
 
 <script>
     const questions = [
         { 
-            q: "A rescue worker drops steel nails and brass screws into deep snow. Which will they recover with a bar magnet? [cite: 5, 6]", 
-            opts: ["Both items", "Only steel nails", "Only brass screws", "Neither, magnets fail in cold"], 
-            ans: 1, hint: "Check which metal is actually attracted to magnets.", 
-            expl: "Steel is a magnetic material (iron alloy), while brass is non-magnetic. [cite: 8]" 
+            cat: "Construction Site Problem",
+            q: "Workers use a long wooden ramp to move cement bags into a truck. Why is this method easier?", 
+            opts: ["The bags become lighter", "Effort is reduced by increasing distance", "Gravity disappears", "Friction increases"], 
+            ans: 1, hint: "An inclined plane spreads the work over a longer path.", expl: "A ramp reduces the force needed by increasing the distance over which the load is moved." 
         },
         { 
-            q: "A sailor's compass points toward 'Geographic North.' Which magnetic pole is it attracted to? [cite: 14]", 
-            opts: ["Magnetic North Pole", "Magnetic South Pole", "Earth's Equator", "Sun's magnetic field"], 
-            ans: 1, hint: "Opposite poles attract. If the needle is a North pole...", 
-            expl: "The North pole of a compass needle is attracted to Earth's Magnetic South Pole. [cite: 23]" 
+            cat: "Playground Observation",
+            q: "A lighter child balances a heavier child on a seesaw by sitting farther from the center. What does this show?", 
+            opts: ["Air pressure balances the seesaw", "Distance from the fulcrum affects turning effect", "Gravity changes on both sides", "Friction balances weight"], 
+            ans: 1, hint: "The 'turning power' depends on weight and its distance from the pivot.", expl: "Moving further from the fulcrum increases the mechanical advantage of the lever." 
         },
         { 
-            q: "Bar 1 attracts iron; Bar 3 attracts Bar 1 at one end but pushes it away at the other. Which is a magnet? [cite: 25-29]", 
-            opts: ["Bar 2", "Bar 1 only", "Bar 3 only", "Both Bar 1 and Bar 3"], 
-            ans: 3, hint: "Magnets attract iron AND show repulsion with other magnets.", 
-            expl: "Bar 1 attracts iron, and Bar 3 shows repulsion—the only sure test of a magnet. [cite: 34]" 
+            cat: "Engineering Thinking",
+            q: "Why do cranes use multiple pulleys instead of a single pulley?", 
+            opts: ["To increase the load’s weight", "To reduce the effort needed to lift loads", "To stop movement completely", "To reduce the crane’s height"], 
+            ans: 1, hint: "More loops of rope mean less pulling force is required.", expl: "A system of pulleys (block and tackle) divides the load among several ropes." 
         },
         { 
-            q: "How does a 'Maglev' train use magnets to float above the tracks? [cite: 36, 37]", 
-            opts: ["Unlike poles attracting", "Like poles repelling", "Turning into insulators", "Attracting iron wheels"], 
-            ans: 1, hint: "To stay up, the magnets must push away from the track.", 
-            expl: "Maglev stands for magnetic levitation; like poles repel to create a gap. [cite: 42]" 
+            cat: "Everyday Technology",
+            q: "Suitcases at airports are fitted with wheels mainly to:", 
+            opts: ["increase weight", "reduce friction during movement", "increase effort", "reduce gravity"], 
+            ans: 1, hint: "Rolling is much easier than dragging.", expl: "Wheels replace sliding friction with rolling friction, which is much weaker." 
         },
         { 
-            q: "Statement: Never store magnets near TVs or computers. Reason: Fields interfere with electronics. [cite: 44, 45]", 
-            opts: ["Both true & R explains A", "A true, R false", "Statement is false", "Both are false"], 
-            ans: 0, hint: "Think about how data is stored on hard drives.", 
-            expl: "Strong magnetic fields can scramble data and damage electronic components. [cite: 50]" 
+            cat: "Higher-Order Application",
+            q: "A mechanic uses a long spanner to loosen a tight nut. Why does a longer spanner help?", 
+            opts: ["It increases turning effect", "It decreases gravity", "It increases the nut’s weight", "It removes friction completely"], 
+            ans: 0, hint: "A longer lever arm makes it easier to twist things.", expl: "Torque (turning effect) is calculated as force multiplied by the length of the lever." 
         },
         { 
-            q: "Amit stroked an iron nail back and forth 50 times, but it didn't become a magnet. Why? [cite: 52-54]", 
-            opts: ["Not enough strokes", "Used iron instead of plastic", "Did not stroke in one direction only", "Magnet was too strong"], 
-            ans: 2, hint: "Magnetic domains must be aligned in a single direction.", 
-            expl: "Stroking back and forth scrambles the domains; you must stroke in one direction. [cite: 59]" 
+            cat: "Image-Based HOTS",
+            q: "Why does the sharp edge of the tool cut more effectively?", 
+            opts: ["It increases pressure on a smaller area", "It increases gravity", "It decreases force", "It removes friction completely"], 
+            ans: 0, hint: "A thinner edge concentrates all your force onto a tiny line.", expl: "Pressure = Force / Area. A smaller area (sharp edge) creates high pressure." 
         },
         { 
-            q: "Which of these will NOT cause a magnet to lose its magnetism? [cite: 60-64]", 
-            opts: ["Hammering it", "Dropping it", "Storing it with a wooden keeper", "Heating it in a flame"], 
-            ans: 2, hint: "Keepers actually help preserve magnetism.", 
-            expl: "Hammering, heating, and dropping scramble domains, but keepers protect them. [cite: 65]" 
+            cat: "Assertion–Reason",
+            q: "Assertion (A): Pulleys are used in flagpoles to help in lifting heavy loads easily. \nReason (R): Pulleys reduce the effort needed by changing the direction or distribution of force.", 
+            opts: ["Both A and R are true, and R explains A", "Both A and R are true, but R does not explain A", "A is true, but R is false", "A is false, but R is true"], 
+            ans: 0, hint: "Flagpoles use a single fixed pulley. Does it change the direction you pull?", expl: "Pulleys change the direction of force, making it easier to pull down to lift something up." 
         },
         { 
-            q: "A recycling crane turns off electricity to drop scrap metal. What kind of magnet is it? [cite: 67-69]", 
-            opts: ["Permanent bar magnet", "Natural magnetite", "An electromagnet", "Horseshoe magnet"], 
-            ans: 2, hint: "Which magnet can be 'switched off' by cutting power?", 
-            expl: "Electromagnets only work when electricity flows through them. [cite: 74]" 
+            cat: "Case-Based Question",
+            q: "Observe the table carefully and determine the conclusion.", 
+            table: "<tr><td>Ramp</td><td>Inclined Plane</td></tr><tr><td>Seesaw</td><td>Lever</td></tr><tr><td>Flag Pole</td><td>Pulley</td></tr>",
+            opts: ["All are simple machines", "Only ramps reduce effort", "Only levers are useful", "Machines remove gravity"], 
+            ans: 0, hint: "Look at the items listed. What category do they all belong to?", expl: "Levers, pulleys, and inclined planes are all different types of simple machines." 
         },
         { 
-            q: "If you cut a bar magnet exactly in half across the middle, what will you have? [cite: 76]", 
-            opts: ["One North and one South piece", "Two smaller, complete magnets", "Two non-magnetic pieces", "One strong and one weak magnet"], 
-            ans: 1, hint: "Can a magnet ever have only one pole?", 
-            expl: "Magnets always exist as dipoles; cutting one creates two new pairs of poles. [cite: 85]" 
+            cat: "Real-Life Decision Making",
+            q: "A school wants to lift heavy stage equipment safely with minimum effort. Which option would be the BEST choice?", 
+            opts: ["Inclined plane only", "Multiple pulley system", "Knife", "Screwdriver"], 
+            ans: 1, hint: "Which machine is specifically designed to lift heavy loads vertically with ease?", expl: "Multiple pulley systems (pulleys) are the most efficient for vertical lifting of heavy equipment." 
         },
         { 
-            q: "Raveena wants to separate iron filings from sand quickly. What is the best way? [cite: 87, 88]", 
-            opts: ["Use a sieve", "Use a magnet", "Add water to float them", "Pick them by hand"], 
-            ans: 1, hint: "Only one of these materials is magnetic.", 
-            expl: "A magnet will instantly pull the magnetic iron filings away from the sand. [cite: 93]" 
+            cat: "Image-Based Reasoning",
+            q: "Why is a round door knob easier to turn?", 
+            opts: ["It uses wheel and axle principle to increase turning effect", "It removes gravity", "It decreases friction completely", "It reduces the door’s weight"], 
+            ans: 0, hint: "The knob is the wheel, and the internal rod is the axle.", expl: "A wheel and axle setup magnifies the force you apply to the knob to move the latch." 
+        },
+        { 
+            cat: "Error Detection",
+            q: "A student says: “Simple machines reduce the amount of work done.” Identify the correct explanation.", 
+            opts: ["Machines reduce effort, not total work", "Machines make work disappear", "Machines remove force completely", "There is no error"], 
+            ans: 0, hint: "Machines make work easier, but you still move the same amount of energy.", expl: "Work is Force x Distance. Machines reduce force but increase the distance, keeping total work the same." 
+        },
+        { 
+            cat: "Design Thinking Question",
+            q: "Why is the invention of the wheel considered one of the most important discoveries in human history?", 
+            opts: ["It helped reduce friction during movement", "It increased effort during transport", "It removed gravity", "It stopped motion"], 
+            ans: 0, hint: "Before wheels, humans had to drag heavy things across the ground.", expl: "The wheel dramatically reduced friction, enabling the transport of heavy loads over long distances." 
         }
     ];
 
@@ -227,7 +227,11 @@
         document.getElementById('feedback-box').style.display = 'none';
         document.getElementById('action-btn').classList.add('hidden');
         document.getElementById('q-num').innerText = current + 1;
+        document.getElementById('q-category').innerText = q.cat;
         document.getElementById('q-text').innerText = q.q;
+        
+        const tableArea = document.getElementById('table-area');
+        tableArea.innerHTML = q.table ? `<table class="data-table">${q.table}</table>` : "";
         
         const area = document.getElementById('options-area');
         area.innerHTML = "";
@@ -255,7 +259,7 @@
             clearInterval(timer);
             b.classList.add('correct');
             score++;
-            document.getElementById('score-val-text').innerText = score * 100;
+            document.getElementById('score-val').innerText = score * 100;
             endTurn();
         } else {
             attempts++;
@@ -263,8 +267,8 @@
             b.disabled = true;
             if(attempts === 1) {
                 const f = document.getElementById('feedback-box');
-                f.className = 'feedback hint-box';
-                f.innerHTML = "📡 <b>RESCUE HINT:</b> " + questions[current].hint;
+                f.className = 'feedback hint';
+                f.innerHTML = "💡 <b>LAB HINT:</b> " + questions[current].hint;
                 f.style.display = 'block';
             } else {
                 clearInterval(timer);
@@ -277,8 +281,8 @@
         document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
         document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
         const f = document.getElementById('feedback-box');
-        f.className = 'feedback expl-box';
-        f.innerHTML = "❄️ <b>MISSION LOG:</b> " + questions[current].expl;
+        f.className = 'feedback expl';
+        f.innerHTML = "🔍 <b>SCIENTIFIC ANALYSIS:</b> " + questions[current].expl;
         f.style.display = 'block';
         document.getElementById('action-btn').classList.remove('hidden');
     }
@@ -292,19 +296,11 @@
     function showResults() {
         document.getElementById('quiz-view').classList.add('hidden');
         document.getElementById('result-view').classList.remove('hidden');
-        document.getElementById('final-score').innerText = score;
+        document.getElementById('final-pts').innerText = score;
         const msg = document.getElementById('result-msg');
-        const icon = document.getElementById('res-icon');
-        if(score >= 9) {
-            msg.innerText = "Exceptional work, Commander! You are a master of magnetic forces.";
-            icon.innerText = "💎";
-        } else if(score >= 7) {
-            msg.innerText = "Great job, Explorer! You've successfully navigated the Arctic lab.";
-            icon.innerText = "🌟";
-        } else {
-            msg.innerText = "The cold was tough today. Review your mission logs and try the rescue again!";
-            icon.innerText = "🏔️";
-        }
+        if(score >= 10) msg.innerText = "Exceptional! You've mastered simple machines. You're ready for advanced engineering.";
+        else if(score >= 7) msg.innerText = "Great job! You have a solid grasp of how machines make work easier.";
+        else msg.innerText = "Keep investigating! Experiment with different machines to see how they reduce effort.";
     }
 </script>
 </body>
