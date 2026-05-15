@@ -42,22 +42,37 @@
             border-top: 8px solid var(--primary-blue);
         }
 
-        /* --- SPLASH SCREEN (AS BEFORE) --- */
+        /* --- LOGO SPLASH SCREEN --- */
         #splash-screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: #ffffff;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
         }
 
-        .logo-only {
-            width: 250px;
+        .logo-main {
+            width: 280px;
             height: auto;
             max-width: 85%;
-            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-blue);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* --- UI ELEMENTS --- */
@@ -68,24 +83,22 @@
         .timer-track { width: 100%; height: 10px; background: #edf2f4; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
         #timer-bar { height: 100%; width: 100%; background: var(--primary-blue); transition: width 1s linear; }
 
-        .question-text { font-size: 1.15rem; font-weight: 600; line-height: 1.5; margin-bottom: 15px; color: var(--text-dark); }
+        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 15px; color: var(--text-dark); }
         
         .img-container { width: 100%; margin-bottom: 15px; text-align: center; border: 1px solid #dee2e6; border-radius: 12px; overflow: hidden; }
         .q-img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
 
-        .options-grid { display: grid; gap: 12px; }
+        .options-grid { display: grid; gap: 10px; }
         .opt-btn {
-            background: #fff; border: 2px solid #edf2f4; padding: 16px;
-            border-radius: 14px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
+            background: #fff; border: 2px solid #edf2f4; padding: 14px;
+            border-radius: 12px; text-align: left; font-size: 0.95rem; cursor: pointer; transition: 0.2s;
             color: var(--text-dark); font-weight: 500;
         }
         
-        .opt-btn:active { background: #f0f0f0; }
         .opt-btn.correct { background: var(--success-green) !important; color: white; border-color: var(--success-green); }
         .opt-btn.wrong { background: var(--error-red) !important; color: white; border-color: var(--error-red); }
 
-        .feedback { margin-top: 20px; padding: 15px; border-radius: 12px; display: none; line-height: 1.5; font-size: 0.95rem; }
-        .hint-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; }
+        .feedback { margin-top: 15px; padding: 15px; border-radius: 12px; display: none; line-height: 1.4; font-size: 0.9rem; }
         .expl-box { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
 
         #action-btn { 
@@ -102,22 +115,23 @@
 
 <div id="app-container">
     <div id="splash-screen">
-        <img src="assets/logo.png" class="logo-only" alt="Innovine Logo">
+        <img src="assets/logo.png" class="logo-main" alt="Innovine Solutions">
+        <div class="loader"></div>
     </div>
 
     <div id="intro-view" class="hidden" style="text-align: center;">
-        <h1 style="color: var(--primary-blue); margin-bottom: 10px;">Spark City</h1>
-        <p style="color: #6c757d; font-size: 1.1rem;">Electrical Inspector Training</p>
-        <div style="background: #e9ecef; padding: 20px; border-radius: 15px; margin: 20px 0; text-align: left;">
-            Welcome, Young Scientist! Use your knowledge of circuits and safety to solve real-world problems.
+        <h1 style="color: var(--primary-blue); margin-top: 0;">Spark City</h1>
+        <p style="color: #6c757d; font-size: 1rem;">Electrical Inspector Mission</p>
+        <div style="background: #f1f3f5; padding: 20px; border-radius: 15px; margin: 25px 0; text-align: left; font-size: 0.95rem;">
+            Welcome, Young Scientist! Today you are an electrical inspector. Use your knowledge of circuits and safety to solve problems in Spark City.
         </div>
-        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">START INSPECTION</button>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">BEGIN INSPECTION</button>
     </div>
 
     <div id="quiz-view" class="hidden">
         <div class="header">
             <div class="case-label">CASE <span id="q-num">1</span></div>
-            <div class="score-display">XP: <span id="score-val">0</span></div>
+            <div class="score-display">POINTS: <span id="score-val">0</span></div>
         </div>
         
         <div class="timer-track"><div id="timer-bar"></div></div>
@@ -131,24 +145,24 @@
 
     <div id="result-view" class="hidden" style="text-align:center;">
         <h2 style="color: var(--primary-blue);">Mission Report</h2>
-        <div style="font-size: 4.5rem; font-weight: 900; color: var(--text-dark); margin: 20px 0;"><span id="final-pts">0</span>/10</div>
-        <p id="result-msg" style="color:#6c757d; margin-bottom:30px; padding: 0 10px;"></p>
+        <div style="font-size: 4rem; font-weight: 900; color: var(--text-dark); margin: 20px 0;"><span id="final-pts">0</span>/10</div>
+        <p id="result-msg" style="color:#6c757d; margin-bottom:30px;"></p>
         <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:14px; font-weight:700; cursor:pointer;">RESTART MISSION</button>
     </div>
 </div>
 
 <script>
     const questions = [
-        { q: "Riya's clock won't move. She put the flat end (negative) against the spring where the metal cap (positive) should be. Why?", opts: ["The cell is fused", "Chemicals can't react upside down", "Terminals are reversed, blocking correct flow", "Dry cells only work in torches"], ans: 2, hint: "A circuit needs current to flow in a specific direction.", expl: "Terminals must be aligned correctly for the current to flow correctly through the clock's circuit." },
-        { q: "A Dry Cell contains Ammonium Chloride paste. If a manufacturer left the cell empty, what would happen?", img: "q2.png", opts: ["Produces more power", "Chemical reaction would not take place", "Rod turns to metal", "Zinc container melts"], ans: 1, hint: "Chemicals are the 'fuel' for the battery.", expl: "Electricity is produced by chemical reactions. No chemicals means no energy can be generated." },
-        { q: "Arjun connects both wires from the positive terminal to a bulb. Why does it NOT glow?", opts: ["Copper wires don't conduct", "Path is not complete (must use both terminals)", "It will explode without a switch", "Needs plastic wires"], ans: 1, hint: "A circuit needs a start and an end point on the cell.", expl: "To form a complete circuit, wires must connect to both the positive and negative terminals." },
-        { q: "Which is LEAST safe to use as a protective barrier when touching a live wire?", opts: ["Dry rubber gloves", "Thick plastic sheet", "A metal ruler held with a cloth", "A dry wooden plank"], ans: 2, hint: "One of these materials allows electricity to pass through it.", expl: "Metal is a conductor. Even if held with a cloth, the current can travel through the ruler to your hand." },
-        { q: "A 'fused' bulb has a broken tungsten filament. Why does it stay dark in a closed circuit?", opts: ["Glass blocks the electricity", "The broken filament creates a 'gap' in the circuit", "Battery is too strong", "Only works with secondary cells"], ans: 1, hint: "Electricity needs a continuous bridge to travel.", expl: "A broken filament acts like an open switch, creating a gap that stops the flow of electricity." },
-        { q: "Data: Steel glows, Rubber doesn't, Graphite glows. Which material should cover an electric plug?", opts: ["Steel key material", "Rubber eraser material", "Graphite material", "Any of these"], ans: 1, hint: "You need an insulator to stop the current.", expl: "Rubber is an insulator. It stops electricity from reaching your hand, keeping you safe." },
-        { q: "Assertion: Never touch a switch with wet hands. Reason: Pure water is a perfect insulator.", opts: ["Both are true", "Assertion is true, Reason is false (ordinary water conducts)", "Assertion is false, Reason is true", "Both are false"], ans: 1, hint: "Tap water isn't 100% pure.", expl: "While pure water is an insulator, the water from taps contains minerals that make it conduct electricity." },
-        { q: "Why is it dangerous to pull a kite from power lines with a metallic rod?", opts: ["Kite might tear", "Metal conducts current to your body", "Rod is too heavy", "Electricity stays in wires"], ans: 1, hint: "Metal is a conductor.", expl: "High-voltage electricity will travel down the metal rod through your body to reach the ground." },
-        { q: "To turn a light ON using a safety-pin switch, what must the pin do?", img: "q9.png", opts: ["Be removed completely", "Touch both drawing pins to complete the path", "Be covered with tape", "Touch the battery"], ans: 1, hint: "A switch 'closes' the gap.", expl: "Touching both drawing pins creates a complete path for the electricity to flow." },
-        { q: "A farmer wants sustainable sun energy for a field bulb. What is the best choice?", opts: ["Primary Dry Cell", "Solar Cell", "Button Cell", "Secondary Cell"], ans: 1, hint: "Which cell turns light into power?", expl: "Solar cells convert sunlight directly into electrical energy." }
+        { q: "Riya's clock stopped. She put the negative (flat) end against the spring where the positive (cap) used to be. Why won't it work?", opts: ["The cell is fused", "Chemicals can't react upside down", "Terminals are reversed, blocking current flow", "Dry cells only work in torches"], ans: 2, expl: "Terminals must be aligned correctly for the current to flow correctly through the clock's circuit." },
+        { q: "What happens if a Dry Cell is missing its Ammonium Chloride paste?", img: "q2.png", opts: ["Produces more power", "The chemical reaction would not take place", "Rod turns to metal", "Zinc container melts"], ans: 1, expl: "Electricity is produced by chemical reactions. No chemicals means no energy can be generated." },
+        { q: "Arjun connects both wires from the same positive terminal to a bulb. Why does it NOT glow?", opts: ["Copper wires don't conduct", "Path is not complete (must use both terminals)", "It will explode without a switch", "Needs plastic wires"], ans: 1, expl: "To form a complete circuit, wires must connect to both the positive and negative terminals." },
+        { q: "Which is LEAST safe to use as a barrier when touching a live wire?", opts: ["Dry rubber gloves", "Thick plastic sheet", "A metal ruler held with a cloth", "A dry wooden plank"], ans: 2, expl: "Metal is a conductor. Even if held with a cloth, the current can travel through the ruler to your hand." },
+        { q: "A 'fused' bulb has a broken tungsten filament. Why does it stay dark?", opts: ["Glass blocks the electricity", "The broken filament creates a 'break' in the circuit", "Battery is too strong", "Only works with secondary cells"], ans: 1, expl: "A broken filament acts like an open switch, creating a gap that stops the flow of electricity." },
+        { q: "Data: Steel glows, Rubber doesn't, Graphite glows. Which material should cover an electric plug?", opts: ["Steel key material", "Rubber eraser material", "Graphite material", "Any of these"], ans: 1, expl: "Rubber is an insulator. It stops electricity from reaching your hand, keeping you safe." },
+        { q: "Statement: Never touch a switch with wet hands. Reason: Pure water is a perfect insulator.", opts: ["Both are true", "Statement is true, Reason is false (tap water conducts)", "Statement is false, Reason is true", "Both are false"], ans: 1, expl: "While pure water is an insulator, the water from taps contains minerals that make it conduct electricity." },
+        { q: "Why is it dangerous to pull a kite from power lines with a metallic rod?", opts: ["Kite might tear", "Metal conducts current to your body", "Rod is too heavy", "Electricity stays in wires"], ans: 1, expl: "High-voltage electricity will travel down the metal rod through your body to reach the ground." },
+        { q: "To turn a light ON using a safety-pin switch, what must the pin do?", img: "q9.png", opts: ["Be removed completely", "Touch both drawing pins to complete the path", "Be covered with tape", "Touch the battery"], ans: 1, expl: "Touching both drawing pins creates a complete path for the electricity to flow." },
+        { q: "What is the most sustainable choice for a field bulb using sun energy?", opts: ["Primary Dry Cell", "Solar Cell", "Button Cell", "Secondary Cell"], ans: 1, expl: "Solar cells convert sunlight directly into electrical energy." }
     ];
 
     let current = 0, score = 0, timer, timeLeft = 45;
@@ -175,7 +189,7 @@
         document.getElementById('q-text').innerText = q.q;
         
         const imgArea = document.getElementById('image-area');
-        imgArea.innerHTML = q.img ? `<div class="img-container"><img src="assets/${q.img}" class="q-img" alt="Illustration"></div>` : "";
+        imgArea.innerHTML = q.img ? `<div class="img-container"><img src="assets/${q.img}" class="q-img"></div>` : "";
         
         const area = document.getElementById('options-area');
         area.innerHTML = "";
@@ -194,7 +208,7 @@
         timer = setInterval(() => {
             timeLeft--;
             document.getElementById('timer-bar').style.width = (timeLeft/45*100) + "%";
-            if(timeLeft <= 0) { clearInterval(timer); endTurn(); }
+            if(timeLeft <= 0) { clearInterval(timer); showFeedback(); }
         }, 1000);
     }
 
@@ -209,14 +223,14 @@
             b.classList.add('wrong');
             document.querySelectorAll('.opt-btn')[correct].classList.add('correct');
         }
-        endTurn();
+        showFeedback();
     }
 
-    function endTurn() {
+    function showFeedback() {
         document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
         const f = document.getElementById('feedback-box');
         f.className = 'feedback expl-box';
-        f.innerHTML = "<b>Inspection Note:</b> " + questions[current].expl;
+        f.innerHTML = "<b>Inspector Finding:</b> " + questions[current].expl;
         f.style.display = 'block';
         document.getElementById('action-btn').classList.remove('hidden');
     }
@@ -228,8 +242,7 @@
             document.getElementById('quiz-view').classList.add('hidden');
             document.getElementById('result-view').classList.remove('hidden');
             document.getElementById('final-pts').innerText = score;
-            const msg = score >= 8 ? "Excellent! You are a Master Electrical Inspector." : "Good effort! Keep studying to earn your full license.";
-            document.getElementById('result-msg').innerText = msg;
+            document.getElementById('result-msg').innerText = score >= 7 ? "Excellent job, Inspector!" : "Keep practicing your skills!";
         }
     };
 </script>
