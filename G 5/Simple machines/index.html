@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Arctic Rescue: Magnetism Lab</title>
+    <style>
+        :root {
+            --arctic-blue: #1a73e8;
+            --snow-white: #ffffff;
+            --gear-gold: #f9ab00;
+            --success: #1e8e3e;
+            --danger: #d93025;
+            --text-dark: #3c4043;
+            --bg-light: #f1f3f4;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--snow-white);
+            border-radius: 24px;
+            padding: 25px;
+            margin: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            min-height: 580px;
+            border-top: 8px solid var(--arctic-blue);
+        }
+
+        /* --- LOGO SPLASH SCREEN --- */
+        #splash-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .logo-main { width: 280px; height: auto; max-width: 85%; margin-bottom: 30px; }
+        
+        .loading-bar {
+            width: 180px; height: 4px; background: #e8eaed;
+            border-radius: 2px; overflow: hidden;
+        }
+        .loading-fill {
+            width: 0%; height: 100%; background: var(--arctic-blue);
+            animation: load 5s linear forwards;
+        }
+        @keyframes load { to { width: 100%; } }
+
+        /* --- MISSION UI --- */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .rank-tag { background: var(--arctic-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; }
+        .score-val { font-weight: 800; color: var(--arctic-blue); }
+
+        .timer-track { width: 100%; height: 6px; background: #e8eaed; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        #timer-bar { height: 100%; width: 100%; background: var(--arctic-blue); transition: width 1s linear; }
+
+        .question-text { font-size: 1.15rem; font-weight: 600; line-height: 1.4; margin-bottom: 20px; }
+        
+        .options-grid { display: grid; gap: 12px; }
+        .opt-btn {
+            background: #fff; border: 2px solid #dadce0; padding: 16px;
+            border-radius: 14px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
+            color: var(--text-dark); font-weight: 500;
+        }
+        
+        .opt-btn.correct { background: var(--success) !important; color: white; border-color: var(--success); }
+        .opt-btn.wrong { background: var(--danger) !important; color: white; border-color: var(--danger); opacity: 0.7; }
+
+        .feedback { margin-top: 15px; padding: 15px; border-radius: 14px; display: none; line-height: 1.4; font-size: 0.95rem; animation: slideIn 0.3s ease; }
+        .hint-box { background: #fff9e6; border-left: 5px solid var(--gear-gold); color: #856404; }
+        .expl-box { background: #e8f0fe; border-left: 5px solid var(--arctic-blue); color: #1967d2; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #action-btn { 
+            width: 100%; margin-top: 20px; padding: 18px; 
+            background: var(--arctic-blue); color: white; 
+            border: none; border-radius: 16px; font-weight: 700; 
+            font-size: 1.1rem; cursor: pointer;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div id="splash-screen">
+        <img src="assets/logo.png" class="logo-main" alt="Innovine Logo">
+        <div class="loading-bar"><div class="loading-fill"></div></div>
+    </div>
+
+    <div id="intro-view" class="hidden" style="text-align: center;">
+        <div style="font-size: 4rem; margin-bottom: 10px;">❄️</div>
+        <h1 style="color: var(--arctic-blue); margin: 0;">Arctic Rescue Team</h1>
+        <p style="color: #5f6368; margin-top: 10px;">Magnetism Specialist: Grade 5</p>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dadce0;">
+            Welcome, Explorer! Use your knowledge of magnetism to navigate and sort materials in the frozen north. [cite: 3] 
+            You have <b>2 attempts</b> per rescue mission.
+        </div>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--arctic-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">BEGIN MISSION</button>
+    </div>
+
+    <div id="quiz-view" class="hidden">
+        <div class="header">
+            <div class="rank-tag">RESCUE LOG #<span id="q-num">1</span></div>
+            <div class="score-val">XP: <span id="score-val-text">0</span></div>
+        </div>
+        <div class="timer-track"><div id="timer-bar"></div></div>
+        <div id="q-text" class="question-text"></div>
+        <div id="options-area" class="options-grid"></div>
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="hidden">NEXT LOG →</button>
+    </div>
+
+    <div id="result-view" class="hidden" style="text-align:center;">
+        <div id="res-icon" style="font-size: 4.5rem; margin-bottom: 10px;">🏆</div>
+        <h2 style="color: var(--arctic-blue);">Mission Complete!</h2>
+        <div style="font-size: 4.5rem; font-weight: 900; color: #202124; margin: 10px 0;"><span id="final-score">0</span>/10</div>
+        <p id="result-msg" style="color:#5f6368; margin-bottom:30px; line-height: 1.5;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--arctic-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">NEW MISSION</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { 
+            q: "A rescue worker drops steel nails and brass screws into deep snow. Which will they recover with a bar magnet? [cite: 5, 6]", 
+            opts: ["Both items", "Only steel nails", "Only brass screws", "Neither, magnets fail in cold"], 
+            ans: 1, hint: "Check which metal is actually attracted to magnets.", 
+            expl: "Steel is a magnetic material (iron alloy), while brass is non-magnetic. [cite: 8]" 
+        },
+        { 
+            q: "A sailor's compass points toward 'Geographic North.' Which magnetic pole is it attracted to? [cite: 14]", 
+            opts: ["Magnetic North Pole", "Magnetic South Pole", "Earth's Equator", "Sun's magnetic field"], 
+            ans: 1, hint: "Opposite poles attract. If the needle is a North pole...", 
+            expl: "The North pole of a compass needle is attracted to Earth's Magnetic South Pole. [cite: 23]" 
+        },
+        { 
+            q: "Bar 1 attracts iron; Bar 3 attracts Bar 1 at one end but pushes it away at the other. Which is a magnet? [cite: 25-29]", 
+            opts: ["Bar 2", "Bar 1 only", "Bar 3 only", "Both Bar 1 and Bar 3"], 
+            ans: 3, hint: "Magnets attract iron AND show repulsion with other magnets.", 
+            expl: "Bar 1 attracts iron, and Bar 3 shows repulsion—the only sure test of a magnet. [cite: 34]" 
+        },
+        { 
+            q: "How does a 'Maglev' train use magnets to float above the tracks? [cite: 36, 37]", 
+            opts: ["Unlike poles attracting", "Like poles repelling", "Turning into insulators", "Attracting iron wheels"], 
+            ans: 1, hint: "To stay up, the magnets must push away from the track.", 
+            expl: "Maglev stands for magnetic levitation; like poles repel to create a gap. [cite: 42]" 
+        },
+        { 
+            q: "Statement: Never store magnets near TVs or computers. Reason: Fields interfere with electronics. [cite: 44, 45]", 
+            opts: ["Both true & R explains A", "A true, R false", "Statement is false", "Both are false"], 
+            ans: 0, hint: "Think about how data is stored on hard drives.", 
+            expl: "Strong magnetic fields can scramble data and damage electronic components. [cite: 50]" 
+        },
+        { 
+            q: "Amit stroked an iron nail back and forth 50 times, but it didn't become a magnet. Why? [cite: 52-54]", 
+            opts: ["Not enough strokes", "Used iron instead of plastic", "Did not stroke in one direction only", "Magnet was too strong"], 
+            ans: 2, hint: "Magnetic domains must be aligned in a single direction.", 
+            expl: "Stroking back and forth scrambles the domains; you must stroke in one direction. [cite: 59]" 
+        },
+        { 
+            q: "Which of these will NOT cause a magnet to lose its magnetism? [cite: 60-64]", 
+            opts: ["Hammering it", "Dropping it", "Storing it with a wooden keeper", "Heating it in a flame"], 
+            ans: 2, hint: "Keepers actually help preserve magnetism.", 
+            expl: "Hammering, heating, and dropping scramble domains, but keepers protect them. [cite: 65]" 
+        },
+        { 
+            q: "A recycling crane turns off electricity to drop scrap metal. What kind of magnet is it? [cite: 67-69]", 
+            opts: ["Permanent bar magnet", "Natural magnetite", "An electromagnet", "Horseshoe magnet"], 
+            ans: 2, hint: "Which magnet can be 'switched off' by cutting power?", 
+            expl: "Electromagnets only work when electricity flows through them. [cite: 74]" 
+        },
+        { 
+            q: "If you cut a bar magnet exactly in half across the middle, what will you have? [cite: 76]", 
+            opts: ["One North and one South piece", "Two smaller, complete magnets", "Two non-magnetic pieces", "One strong and one weak magnet"], 
+            ans: 1, hint: "Can a magnet ever have only one pole?", 
+            expl: "Magnets always exist as dipoles; cutting one creates two new pairs of poles. [cite: 85]" 
+        },
+        { 
+            q: "Raveena wants to separate iron filings from sand quickly. What is the best way? [cite: 87, 88]", 
+            opts: ["Use a sieve", "Use a magnet", "Add water to float them", "Pick them by hand"], 
+            ans: 1, hint: "Only one of these materials is magnetic.", 
+            expl: "A magnet will instantly pull the magnetic iron filings away from the sand. [cite: 93]" 
+        }
+    ];
+
+    let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
+
+    window.onload = () => {
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.display = 'none';
+            document.getElementById('intro-view').classList.remove('hidden');
+        }, 5000);
+    };
+
+    document.getElementById('start-btn').onclick = () => {
+        document.getElementById('intro-view').classList.add('hidden');
+        document.getElementById('quiz-view').classList.remove('hidden');
+        loadQuestion();
+    };
+
+    function loadQuestion() {
+        attempts = 0; timeLeft = 45;
+        const q = questions[current];
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').classList.add('hidden');
+        document.getElementById('q-num').innerText = current + 1;
+        document.getElementById('q-text').innerText = q.q;
+        
+        const area = document.getElementById('options-area');
+        area.innerHTML = "";
+        q.opts.forEach((o, i) => {
+            const b = document.createElement('button');
+            b.className = 'opt-btn';
+            b.innerText = o;
+            b.onclick = () => handleChoice(i, b);
+            area.appendChild(b);
+        });
+        startTimer();
+    }
+
+    function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer-bar').style.width = (timeLeft/45*100) + "%";
+            if(timeLeft <= 0) { clearInterval(timer); endTurn(); }
+        }, 1000);
+    }
+
+    function handleChoice(i, b) {
+        if(i === questions[current].ans) {
+            clearInterval(timer);
+            b.classList.add('correct');
+            score++;
+            document.getElementById('score-val-text').innerText = score * 100;
+            endTurn();
+        } else {
+            attempts++;
+            b.classList.add('wrong');
+            b.disabled = true;
+            if(attempts === 1) {
+                const f = document.getElementById('feedback-box');
+                f.className = 'feedback hint-box';
+                f.innerHTML = "📡 <b>RESCUE HINT:</b> " + questions[current].hint;
+                f.style.display = 'block';
+            } else {
+                clearInterval(timer);
+                endTurn();
+            }
+        }
+    }
+
+    function endTurn() {
+        document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
+        document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
+        const f = document.getElementById('feedback-box');
+        f.className = 'feedback expl-box';
+        f.innerHTML = "❄️ <b>MISSION LOG:</b> " + questions[current].expl;
+        f.style.display = 'block';
+        document.getElementById('action-btn').classList.remove('hidden');
+    }
+
+    document.getElementById('action-btn').onclick = () => {
+        current++;
+        if(current < questions.length) loadQuestion();
+        else showResults();
+    };
+
+    function showResults() {
+        document.getElementById('quiz-view').classList.add('hidden');
+        document.getElementById('result-view').classList.remove('hidden');
+        document.getElementById('final-score').innerText = score;
+        const msg = document.getElementById('result-msg');
+        const icon = document.getElementById('res-icon');
+        if(score >= 9) {
+            msg.innerText = "Exceptional work, Commander! You are a master of magnetic forces.";
+            icon.innerText = "💎";
+        } else if(score >= 7) {
+            msg.innerText = "Great job, Explorer! You've successfully navigated the Arctic lab.";
+            icon.innerText = "🌟";
+        } else {
+            msg.innerText = "The cold was tough today. Review your mission logs and try the rescue again!";
+            icon.innerText = "🏔️";
+        }
+    }
+</script>
+</body>
+</html>
