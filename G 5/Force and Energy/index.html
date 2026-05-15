@@ -40,7 +40,7 @@
             border-top: 8px solid var(--lab-blue);
         }
 
-        /* --- LOGO SPLASH SCREEN (PERFECTLY VISIBLE) --- */
+        /* --- LOGO SPLASH SCREEN --- */
         #splash-screen {
             position: absolute;
             top: 0; left: 0; 
@@ -82,7 +82,6 @@
 
         .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.4; margin-bottom: 15px; }
 
-        /* DATA TABLES - STYLED FROM DOCUMENT */
         .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.9rem; background: #fff; }
         .data-table th, .data-table td { border: 1px solid #dadce0; padding: 12px; text-align: left; }
         .data-table th { background: #f1f3f4; color: #202124; font-weight: 700; }
@@ -115,7 +114,7 @@
 
 <div id="app-container">
     <div id="splash-screen">
-        <img src="assets/logo.png" class="logo-main" alt="Innovine Logo">
+        <img src="assets/logo.png" class="logo-main" onerror="this.src='https://via.placeholder.com/280x100?text=INNOVINE'" alt="Logo">
         <div class="loading-ring"></div>
     </div>
 
@@ -152,6 +151,13 @@
 </div>
 
 <script>
+    // --- SOUND SETTINGS ---
+    const sfx = {
+        correct: new Audio('assets/correct.mp3'),
+        wrong: new Audio('assets/wrong.mp3'),
+        victory: new Audio('assets/freesound_community-claps-44774.mp3')
+    };
+
     const questions = [
         { 
             q: "Investigation: Three students pushed identical boxes. Based on the table, why did Student A need the least effort?", 
@@ -263,12 +269,14 @@
     function handleChoice(i, b) {
         if(i === questions[current].ans) {
             clearInterval(timer);
+            sfx.correct.play().catch(e => {}); 
             b.classList.add('correct');
             score++;
             document.getElementById('score-val').innerText = score * 100;
             endTurn();
         } else {
             attempts++;
+            sfx.wrong.play().catch(e => {});
             b.classList.add('wrong');
             b.disabled = true;
             if(attempts === 1) {
@@ -296,7 +304,10 @@
     document.getElementById('action-btn').onclick = () => {
         current++;
         if(current < questions.length) loadQuestion();
-        else showResults();
+        else {
+            sfx.victory.play().catch(e => {});
+            showResults();
+        }
     };
 
     function showResults() {
