@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>G5 Science Lab: Measurement</title>
+    <style>
+        :root {
+            --lab-blue: #1a73e8;
+            --lab-gold: #f9ab00;
+            --lab-success: #1e8e3e;
+            --lab-danger: #d93025;
+            --bg-shade: #f1f3f4;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-shade);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 500px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 25px;
+            margin: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            min-height: 600px;
+            border-top: 8px solid var(--lab-blue);
+        }
+
+        /* SPLASH SCREEN */
+        #splash-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .logo-img { width: 280px; height: auto; max-width: 85%; margin-bottom: 30px; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--lab-blue); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* HEADER */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .q-badge { background: var(--lab-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; }
+        .score-txt { font-weight: 800; color: var(--lab-blue); }
+
+        .timer-track { width: 100%; height: 8px; background: #e8eaed; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        #timer-bar { height: 100%; width: 100%; background: var(--lab-blue); transition: width 1s linear; }
+
+        /* CONTENT */
+        .img-box { width: 100%; text-align: center; margin-bottom: 15px; background: #f8f9fa; border-radius: 12px; padding: 10px; }
+        .q-img { max-width: 100%; max-height: 160px; object-fit: contain; border-radius: 8px; }
+        .q-text { font-size: 1.1rem; font-weight: 600; line-height: 1.4; margin-bottom: 20px; color: #202124; }
+        
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .data-table td { border: 1px solid #dadce0; padding: 12px; text-align: left; font-size: 0.95rem; }
+
+        .options-stack { display: grid; gap: 12px; }
+        .opt-btn {
+            background: #fff; border: 2px solid #dadce0; padding: 16px;
+            border-radius: 14px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
+            font-weight: 500; color: #3c4043;
+        }
+        .opt-btn.correct { background: var(--lab-success) !important; color: white; border-color: var(--lab-success); }
+        .opt-btn.wrong { background: var(--lab-danger) !important; color: white; border-color: var(--lab-danger); opacity: 0.7; }
+
+        .feedback { margin-top: 15px; padding: 15px; border-radius: 14px; display: none; line-height: 1.5; font-size: 0.95rem; animation: slideUp 0.3s ease; }
+        .hint { background: #fff7e0; border-left: 5px solid var(--lab-gold); color: #856404; }
+        .expl { background: #e8f0fe; border-left: 5px solid var(--lab-blue); color: #1967d2; }
+        @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        #next-btn { width: 100%; margin-top: 20px; padding: 18px; background: var(--lab-blue); color: white; border: none; border-radius: 16px; font-weight: 700; font-size: 1rem; cursor: pointer; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div id="splash-screen">
+        <img src="assets/image_1876d9.png" class="logo-img" alt="Innovine">
+        <div class="loader"></div>
+    </div>
+
+    <div id="intro-view" class="hidden" style="text-align: center;">
+        <div style="font-size: 4rem; margin-bottom: 15px;">📏</div>
+        <h1 style="color: var(--lab-blue); margin: 0;">Measurement Lab</h1>
+        <p style="color: #5f6368; margin-top: 10px;">G5 Competency-Based Challenge</p>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dadce0; line-height: 1.5;">
+            Welcome, Scientist! Accuracy is the key to discovery. Solve the measurement tasks to earn points. You have <b>2 attempts</b> per question.
+        </div>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--lab-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">START LAB</button>
+    </div>
+
+    <div id="quiz-view" class="hidden">
+        <div class="header">
+            <div class="q-badge" id="q-label">Q1</div>
+            <div class="score-txt">XP: <span id="score-val">0</span></div>
+        </div>
+        <div class="timer-track"><div id="timer-bar"></div></div>
+        
+        <div id="img-area" class="img-box hidden"></div>
+        <div id="q-text" class="q-text"></div>
+        <div id="table-area"></div>
+        
+        <div id="options-area" class="options-stack"></div>
+        <div id="feedback-box" class="feedback"></div>
+        <button id="next-btn" class="hidden">CONTINUE →</button>
+    </div>
+
+    <div id="result-view" class="hidden" style="text-align:center;">
+        <div style="font-size: 4.5rem; margin-bottom: 10px;">🔬</div>
+        <h2 style="color: var(--lab-blue);">Lab Analysis Complete</h2>
+        <div style="font-size: 4.5rem; font-weight: 900; color: #202124; margin: 10px 0;"><span id="final-score">0</span>/13</div>
+        <p id="result-msg" style="color:#5f6368; margin-bottom:30px;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--lab-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">NEW SESSION</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { 
+            id: "Q1",
+            q: "Two groups measured the same table. One group used hand spans while another used a measuring tape. Both groups got different answers. Why did this happen?", 
+            img: "q1_measuring_table.png",
+            opts: ["The table changed its size", "Hand spans are non-standard units", "Measuring tape gives incorrect readings", "Gravity affects measurement"], 
+            ans: 1, hint: "Does everyone have the same sized hand?", expl: "Hand spans vary between people, making them non-standard and unreliable for consistent measurement." 
+        },
+        { 
+            id: "Q2",
+            q: "Assertion (A): Standard units are important in measurement. \nReason (R): Standard units help people compare measurements accurately.", 
+            opts: ["Both A and R are true, and R correctly explains A", "Both A and R are true, but R does not explain A", "A is true, but R is false", "A is false, but R is true"], 
+            ans: 0, hint: "Think about why a 'meter' is the same length everywhere in the world.", expl: "Standard units provide a uniform scale that ensures everyone's measurements are consistent." 
+        },
+        { 
+            id: "Q3",
+            q: "Observe the table carefully and determine what can be concluded:", 
+            table: "<tr><td>Time</td><td>Temperature</td></tr><tr><td>Morning</td><td>37°C</td></tr><tr><td>Evening</td><td>38°C</td></tr>",
+            opts: ["Body temperature decreased", "Body temperature increased", "Temperature remained constant", "Thermometer stopped working"], 
+            ans: 1, hint: "Compare 37°C and 38°C. Which one is higher?", expl: "The data shows a rise from 37 to 38, indicating an increase in temperature." 
+        },
+        { 
+            id: "Q4",
+            q: "A doctor checks a patient’s temperature using a thermometer instead of touching the forehead. Why is this method scientifically better?", 
+            img: "q4_thermometer.png",
+            opts: ["Thermometers reduce fever", "Thermometers give accurate measurement using standard units", "Touch increases temperature", "Thermometers measure body weight"], 
+            ans: 1, hint: "Can you tell the exact degree of fever just by touching someone?", expl: "Clinical thermometers provide a precise numerical value using standard scales (Celsius or Fahrenheit)." 
+        },
+        { 
+            id: "Q5",
+            q: "Milk is usually sold in litres instead of kilograms because litres measure:", 
+            img: "q5_milk_carton.png",
+            opts: ["force", "liquid capacity", "temperature", "distance"], 
+            ans: 1, hint: "What property of a liquid do we measure when we fill a bottle?", expl: "Litres and Millilitres are standard units for measuring the volume or capacity of liquids." 
+        },
+        { 
+            id: "Q6",
+            q: "A student wrote: “The classroom is 700 grams long.” Identify the error.", 
+            opts: ["Wrong standard unit used", "Wrong classroom measured", "Length cannot be measured", "Grams measure distance correctly"], 
+            ans: 0, hint: "Are grams used for length or for how heavy something is?", expl: "Grams measure mass/weight. Length should be measured in meters or centimeters." 
+        },
+        { 
+            id: "Q7",
+            q: "Why are distances between cities usually measured in kilometres instead of metres?", 
+            img: "q7_road_sign.png",
+            opts: ["Kilometres are suitable for measuring long distances", "Metres are incorrect units", "Kilometres reduce the actual distance", "Metres increase speed"], 
+            ans: 0, hint: "Which unit is more practical for a very long road trip?", expl: "Kilometres are a larger unit of length, making them better for expressing large geographical distances." 
+        },
+        { 
+            id: "Q8",
+            q: "A student measures race timing using a stopwatch instead of counting numbers aloud. What is the BEST scientific reason?", 
+            img: "q8_stopwatch.png",
+            opts: ["Stopwatch reduces time", "Standard instruments increase accuracy", "Counting increases gravity", "Stopwatch measures speed directly"], 
+            ans: 1, hint: "Is counting 'one, two, three' as precise as a digital timer?", expl: "Stopwatches are standard scientific instruments designed to measure time intervals with high precision." 
+        },
+        { 
+            id: "Q9",
+            q: "Which of the following is different from the others?", 
+            opts: ["Metre", "Kilometre", "Centimetre", "Litre"], 
+            ans: 3, hint: "Three of these measure length. What does the other one measure?", expl: "Metre, Kilometre, and Centimetre are units of length; Litre is a unit of volume." 
+        },
+        { 
+            id: "Q10",
+            q: "Why do scientists prefer using a measuring cylinder instead of a normal glass in experiments?", 
+            img: "q10_cylinder.png",
+            opts: ["It changes the colour of liquids", "It provides precise liquid volume measurement", "It reduces the quantity of liquid", "It increases liquid temperature"], 
+            ans: 1, hint: "A measuring cylinder has markings (graduations). Does a normal drinking glass?", expl: "Measuring cylinders have precise markings called graduations for exact volume measurement." 
+        },
+        { 
+            id: "Q11",
+            q: "Why did students get different measurements using hand spans in the Science Fair case study?", 
+            opts: ["Desk changed size", "Hand spans are non-standard units", "Ruler gives incorrect readings", "Gravity changed"], 
+            ans: 1, hint: "Compare a teacher's hand span to a student's hand span.", expl: "Because hand sizes differ between individuals, hand spans are considered non-standard units." 
+        },
+        { 
+            id: "Q12",
+            q: "According to the Science Fair study, a measuring cylinder is mainly used to measure:", 
+            opts: ["mass", "temperature", "liquid volume", "force"], 
+            ans: 2, hint: "What did the students measure after the desk?", expl: "Measuring cylinders are specifically designed to measure the volume of liquids in science labs." 
+        },
+        { 
+            id: "Q13",
+            q: "Why are standard measuring instruments important in science?", 
+            opts: ["They reduce gravity", "They provide accurate and uniform measurements", "They increase speed of objects", "They remove errors completely"], 
+            ans: 1, hint: "What happens if every scientist used their own different units?", expl: "Standard instruments ensure that measurements are uniform and can be understood by everyone." 
+        }
+    ];
+
+    let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
+
+    window.onload = () => {
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.display = 'none';
+            document.getElementById('intro-view').classList.remove('hidden');
+        }, 5000);
+    };
+
+    document.getElementById('start-btn').onclick = () => {
+        document.getElementById('intro-view').classList.add('hidden');
+        document.getElementById('quiz-view').classList.remove('hidden');
+        loadQuestion();
+    };
+
+    function loadQuestion() {
+        attempts = 0; timeLeft = 45;
+        const q = questions[current];
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('next-btn').classList.add('hidden');
+        document.getElementById('q-label').innerText = q.id;
+        document.getElementById('q-text').innerText = q.q;
+        
+        const imgArea = document.getElementById('img-area');
+        if(q.img) {
+            imgArea.innerHTML = `<img src="assets/${q.img}" class="q-img" alt="Measurement Tool">`;
+            imgArea.classList.remove('hidden');
+        } else {
+            imgArea.classList.add('hidden');
+        }
+
+        const tableArea = document.getElementById('table-area');
+        tableArea.innerHTML = q.table ? `<table class="data-table">${q.table}</table>` : "";
+        
+        const area = document.getElementById('options-area');
+        area.innerHTML = "";
+        q.opts.forEach((o, i) => {
+            const b = document.createElement('button');
+            b.className = 'opt-btn';
+            b.innerText = o;
+            b.onclick = () => handleChoice(i, b);
+            area.appendChild(b);
+        });
+        startTimer();
+    }
+
+    function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer-bar').style.width = (timeLeft/45*100) + "%";
+            if(timeLeft <= 0) { clearInterval(timer); endTurn(); }
+        }, 1000);
+    }
+
+    function handleChoice(i, b) {
+        if(i === questions[current].ans) {
+            clearInterval(timer);
+            b.classList.add('correct');
+            score++;
+            document.getElementById('score-val').innerText = score * 100;
+            endTurn();
+        } else {
+            attempts++;
+            b.classList.add('wrong');
+            b.disabled = true;
+            if(attempts === 1) {
+                const f = document.getElementById('feedback-box');
+                f.className = 'feedback hint';
+                f.innerHTML = "💡 <b>LAB HINT:</b> " + questions[current].hint;
+                f.style.display = 'block';
+            } else {
+                clearInterval(timer);
+                endTurn();
+            }
+        }
+    }
+
+    function endTurn() {
+        document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
+        document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
+        const f = document.getElementById('feedback-box');
+        f.className = 'feedback expl';
+        f.innerHTML = "📝 <b>SCIENTIFIC LOG:</b> " + questions[current].expl;
+        f.style.display = 'block';
+        document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    document.getElementById('next-btn').onclick = () => {
+        current++;
+        if(current < questions.length) loadQuestion();
+        else showResults();
+    };
+
+    function showResults() {
+        document.getElementById('quiz-view').classList.add('hidden');
+        document.getElementById('result-view').classList.remove('hidden');
+        document.getElementById('final-score').innerText = score;
+        const msg = document.getElementById('result-msg');
+        if(score >= 11) msg.innerText = "Lead Scientist! Your measurement accuracy is flawless.";
+        else if(score >= 8) msg.innerText = "Great job! You've successfully calibrated the lab instruments.";
+        else msg.innerText = "Precision takes practice. Review the standard units and try the lab again!";
+    }
+</script>
+</body>
+</html>
