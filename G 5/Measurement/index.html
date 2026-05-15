@@ -35,7 +35,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             position: relative;
             overflow: hidden;
-            min-height: 600px;
+            min-height: 550px;
             border-top: 8px solid var(--lab-blue);
         }
 
@@ -63,8 +63,6 @@
         #timer-bar { height: 100%; width: 100%; background: var(--lab-blue); transition: width 1s linear; }
 
         /* CONTENT */
-        .img-box { width: 100%; text-align: center; margin-bottom: 15px; background: #f8f9fa; border-radius: 12px; padding: 10px; }
-        .q-img { max-width: 100%; max-height: 160px; object-fit: contain; border-radius: 8px; }
         .q-text { font-size: 1.1rem; font-weight: 600; line-height: 1.4; margin-bottom: 20px; color: #202124; }
         
         .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
@@ -92,7 +90,7 @@
 
 <div id="app-container">
     <div id="splash-screen">
-        <img src="assets/logo.png" class="logo-img" alt="Innovine">
+        <img src="assets/image_1876d9.png" class="logo-img" alt="Innovine">
         <div class="loader"></div>
     </div>
 
@@ -100,10 +98,7 @@
         <div style="font-size: 4rem; margin-bottom: 15px;">📏</div>
         <h1 style="color: var(--lab-blue); margin: 0;">Measurement Lab</h1>
         <p style="color: #5f6368; margin-top: 10px;">G5 Competency-Based Challenge</p>
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dadce0; line-height: 1.5;">
-            Welcome, Scientist! Accuracy is the key to discovery. Solve the measurement tasks to earn points. You have <b>2 attempts</b> per question.
-        </div>
-        <button id="start-btn" style="width:100%; padding:20px; background:var(--lab-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">START LAB</button>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--lab-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer; margin-top: 20px;">START LAB</button>
     </div>
 
     <div id="quiz-view" class="hidden">
@@ -113,7 +108,6 @@
         </div>
         <div class="timer-track"><div id="timer-bar"></div></div>
         
-        <div id="img-area" class="img-box hidden"></div>
         <div id="q-text" class="q-text"></div>
         <div id="table-area"></div>
         
@@ -136,7 +130,6 @@
         { 
             id: "Q1",
             q: "Two groups measured the same table. One group used hand spans while another used a measuring tape. Both groups got different answers. Why did this happen?", 
-            img: "q1_measuring_table.png",
             opts: ["The table changed its size", "Hand spans are non-standard units", "Measuring tape gives incorrect readings", "Gravity affects measurement"], 
             ans: 1, hint: "Does everyone have the same sized hand?", expl: "Hand spans vary between people, making them non-standard and unreliable for consistent measurement." 
         },
@@ -156,14 +149,12 @@
         { 
             id: "Q4",
             q: "A doctor checks a patient’s temperature using a thermometer instead of touching the forehead. Why is this method scientifically better?", 
-            img: "q4_thermometer.png",
             opts: ["Thermometers reduce fever", "Thermometers give accurate measurement using standard units", "Touch increases temperature", "Thermometers measure body weight"], 
             ans: 1, hint: "Can you tell the exact degree of fever just by touching someone?", expl: "Clinical thermometers provide a precise numerical value using standard scales (Celsius or Fahrenheit)." 
         },
         { 
             id: "Q5",
             q: "Milk is usually sold in litres instead of kilograms because litres measure:", 
-            img: "q5_milk_carton.png",
             opts: ["force", "liquid capacity", "temperature", "distance"], 
             ans: 1, hint: "What property of a liquid do we measure when we fill a bottle?", expl: "Litres and Millilitres are standard units for measuring the volume or capacity of liquids." 
         },
@@ -176,14 +167,12 @@
         { 
             id: "Q7",
             q: "Why are distances between cities usually measured in kilometres instead of metres?", 
-            img: "q7_road_sign.png",
             opts: ["Kilometres are suitable for measuring long distances", "Metres are incorrect units", "Kilometres reduce the actual distance", "Metres increase speed"], 
             ans: 0, hint: "Which unit is more practical for a very long road trip?", expl: "Kilometres are a larger unit of length, making them better for expressing large geographical distances." 
         },
         { 
             id: "Q8",
             q: "A student measures race timing using a stopwatch instead of counting numbers aloud. What is the BEST scientific reason?", 
-            img: "q8_stopwatch.png",
             opts: ["Stopwatch reduces time", "Standard instruments increase accuracy", "Counting increases gravity", "Stopwatch measures speed directly"], 
             ans: 1, hint: "Is counting 'one, two, three' as precise as a digital timer?", expl: "Stopwatches are standard scientific instruments designed to measure time intervals with high precision." 
         },
@@ -196,9 +185,8 @@
         { 
             id: "Q10",
             q: "Why do scientists prefer using a measuring cylinder instead of a normal glass in experiments?", 
-            img: "q10_cylinder.png",
             opts: ["It changes the colour of liquids", "It provides precise liquid volume measurement", "It reduces the quantity of liquid", "It increases liquid temperature"], 
-            ans: 1, hint: "A measuring cylinder has markings (graduations). Does a normal drinking glass?", expl: "Measuring cylinders have precise markings called graduations for exact volume measurement." 
+            ans: 1, hint: "A measuring cylinder has markings. Does a normal glass?", expl: "Measuring cylinders have precise markings called graduations for exact volume measurement." 
         },
         { 
             id: "Q11",
@@ -243,14 +231,6 @@
         document.getElementById('q-label').innerText = q.id;
         document.getElementById('q-text').innerText = q.q;
         
-        const imgArea = document.getElementById('img-area');
-        if(q.img) {
-            imgArea.innerHTML = `<img src="assets/${q.img}" class="q-img" alt="Measurement Tool">`;
-            imgArea.classList.remove('hidden');
-        } else {
-            imgArea.classList.add('hidden');
-        }
-
         const tableArea = document.getElementById('table-area');
         tableArea.innerHTML = q.table ? `<table class="data-table">${q.table}</table>` : "";
         
@@ -321,7 +301,7 @@
         const msg = document.getElementById('result-msg');
         if(score >= 11) msg.innerText = "Lead Scientist! Your measurement accuracy is flawless.";
         else if(score >= 8) msg.innerText = "Great job! You've successfully calibrated the lab instruments.";
-        else msg.innerText = "Precision takes practice. Review the standard units and try the lab again!";
+        else msg.innerText = "Precision takes practice. Review standard units and try again!";
     }
 </script>
 </body>
