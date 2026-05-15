@@ -36,13 +36,15 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             position: relative;
             overflow: hidden;
+            min-height: 550px;
             border-top: 8px solid var(--lab-blue);
         }
 
-        /* --- SPLASH SCREEN --- */
+        /* --- LOGO SPLASH SCREEN (PERFECTLY VISIBLE) --- */
         #splash-screen {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; left: 0; 
+            width: 100%; height: 100%;
             background: #ffffff;
             display: flex;
             flex-direction: column;
@@ -51,8 +53,23 @@
             z-index: 9999;
         }
 
-        .logo-main { width: 280px; height: auto; max-width: 85%; margin-bottom: 20px; }
-        .loading-ring { border: 4px solid #f3f3f3; border-top: 4px solid var(--lab-blue); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        .logo-main { 
+            width: 280px; 
+            height: auto; 
+            max-width: 85%; 
+            margin-bottom: 30px;
+            display: block;
+        }
+
+        .loading-ring { 
+            border: 4px solid #f3f3f3; 
+            border-top: 4px solid var(--lab-blue); 
+            border-radius: 50%; 
+            width: 40px; 
+            height: 40px; 
+            animation: spin 1s linear infinite; 
+        }
+
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- GAME UI --- */
@@ -65,10 +82,10 @@
 
         .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.4; margin-bottom: 15px; }
 
-        /* DATA TABLES */
-        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.9rem; }
-        .data-table th, .data-table td { border: 1px solid #dadce0; padding: 10px; text-align: left; }
-        .data-table th { background: #f8f9fa; color: #5f6368; }
+        /* DATA TABLES - STYLED FROM DOCUMENT */
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.9rem; background: #fff; }
+        .data-table th, .data-table td { border: 1px solid #dadce0; padding: 12px; text-align: left; }
+        .data-table th { background: #f1f3f4; color: #202124; font-weight: 700; }
 
         .options-grid { display: grid; gap: 10px; }
         .opt-btn {
@@ -81,7 +98,7 @@
         .opt-btn.wrong { background: var(--error-red) !important; color: white; border-color: var(--error-red); opacity: 0.7; }
 
         .feedback { margin-top: 15px; padding: 15px; border-radius: 14px; display: none; line-height: 1.4; font-size: 0.9rem; }
-        .hint-box { background: #fef7e0; border-left: 5px solid var(--science-yellow); color: #b06000; }
+        .hint-box { background: #fff7e0; border-left: 5px solid var(--science-yellow); color: #b06000; }
         .expl-box { background: #e8f0fe; border-left: 5px solid var(--lab-blue); color: #1967d2; }
 
         #action-btn { 
@@ -98,23 +115,23 @@
 
 <div id="app-container">
     <div id="splash-screen">
-        <img src="assets/logo.png" class="logo-main" alt="Innovine Solutions">
+        <img src="assets/logo.png" class="logo-main" alt="Innovine Logo">
         <div class="loading-ring"></div>
     </div>
 
     <div id="intro-view" class="hidden" style="text-align: center;">
-        <div style="font-size: 3rem; margin-bottom: 10px;">🧪</div>
-        <h1 style="color: var(--lab-blue); margin: 0;">Science Lab</h1>
-        <p style="color: #5f6368; margin-top: 10px;">Mission: Force & Friction Specialist</p>
+        <div style="font-size: 3.5rem; margin-bottom: 15px;">🧪</div>
+        <h1 style="color: var(--lab-blue); margin: 0;">Force & Friction Lab</h1>
+        <p style="color: #5f6368; margin-top: 10px;">Grade 5 Science Challenge</p>
         <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dadce0;">
-            Welcome, Researcher! Analyze experimental data and solve real-world safety problems. You have <b>2 attempts</b> per investigation.
+            Welcome, Researcher! Analyze experimental data and identify forces. You have <b>2 attempts</b> per question.
         </div>
-        <button id="start-btn" style="width:100%; padding:20px; background:var(--lab-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">START LAB</button>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--lab-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">START RESEARCH</button>
     </div>
 
     <div id="quiz-view" class="hidden">
         <div class="header">
-            <div class="lab-badge">INVESTIGATION #<span id="q-num">1</span></div>
+            <div class="lab-badge">LOG #<span id="q-num">1</span></div>
             <div class="score-box">XP: <span id="score-val">0</span></div>
         </div>
         <div class="timer-track"><div id="timer-bar"></div></div>
@@ -122,22 +139,22 @@
         <div id="table-area"></div>
         <div id="options-area" class="options-grid"></div>
         <div id="feedback-box" class="feedback"></div>
-        <button id="action-btn" class="hidden">NEXT EXPERIMENT →</button>
+        <button id="action-btn" class="hidden">NEXT LOG →</button>
     </div>
 
     <div id="result-view" class="hidden" style="text-align:center;">
-        <div style="font-size: 4rem; margin-bottom: 10px;">🏆</div>
-        <h2 style="color: var(--lab-blue);">Lab Results</h2>
+        <div style="font-size: 4rem; margin-bottom: 10px;">🏅</div>
+        <h2 style="color: var(--lab-blue);">Lab Evaluation</h2>
         <div style="font-size: 4.5rem; font-weight: 900; color: #3c4043; margin: 10px 0;"><span id="final-pts">0</span>/10</div>
         <p id="result-msg" style="color:#5f6368; margin-bottom:30px;"></p>
-        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--lab-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">RESTART LAB</button>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--lab-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">RESTART RESEARCH</button>
     </div>
 </div>
 
 <script>
     const questions = [
         { 
-            q: "Playground Investigation: Three students pushed identical boxes. Why did Student A need the least effort?", 
+            q: "Investigation: Three students pushed identical boxes. Based on the table, why did Student A need the least effort?", 
             table: `<tr><th>Student</th><th>Surface</th><th>Result</th></tr>
                     <tr><td>A</td><td>Marble floor</td><td>Box moved easily</td></tr>
                     <tr><td>B</td><td>Grass</td><td>Box moved slowly</td></tr>
@@ -146,53 +163,53 @@
             ans: 1, hint: "Smoother surfaces allow objects to slide more easily.", expl: "Marble is a smooth surface that offers very little resistance (friction) compared to grass or sand." 
         },
         { 
-            q: "After rain, the school corridor became slippery. Which scientific reason explains why the principal asked students to walk carefully?", 
+            q: "After rain, the corridor became slippery. Why did the principal ask students to walk carefully?", 
             opts: ["Water increases muscular force", "Friction between shoes and floor decreases", "Gravity becomes stronger", "Air resistance increases"], 
-            ans: 1, hint: "Slippery surfaces make it harder for your shoes to 'grip' the ground.", expl: "Water acts as a lubricant on the floor, reducing the friction that helps you keep your balance while walking." 
+            ans: 1, hint: "Slippery surfaces mean your shoes can't 'grip' the floor.", expl: "Water acts as a lubricant, reducing friction and making it easier to slip." 
         },
         { 
-            q: "Rohan is designing shoes for mountain climbing. Which design should he select for the best safety?", 
+            q: "Design Challenge: Rohan is designing shoes for mountain climbing. Which sole should he select for safety?", 
             opts: ["Smooth plastic sole", "Metal sole", "Rough rubber sole", "Glass surface sole"], 
-            ans: 2, hint: "Climbers need a 'grippy' sole that won't slip on rocks.", expl: "Rough surfaces like rubber increase friction, providing the grip necessary to prevent slipping on steep terrain." 
+            ans: 2, hint: "Climbers need 'grippy' soles to stay on rocks.", expl: "Rough surfaces increase friction, providing the grip needed for climbing." 
         },
         { 
-            q: "Floating Objects Investigation: Students placed different objects in water. Which conclusion is correct based on their observations?", 
+            q: "Data Interpretation: Students placed objects in water. What scientific conclusion is correct?", 
             table: `<tr><th>Object</th><th>Observation</th></tr>
                     <tr><td>Stone</td><td>Sank</td></tr>
                     <tr><td>Plastic ball</td><td>Floated</td></tr>
                     <tr><td>Wooden block</td><td>Floated</td></tr>`,
-            opts: ["Water pushes objects upward", "Floating depends only on size", "Gravity stops working in water", "Floating objects have no weight"], 
-            ans: 0, hint: "Why do some objects stay on top of the water instead of falling to the bottom?", expl: "Water exerts an upward force (buoyancy) that pushes against the weight of the object." 
+            opts: ["Water pushes objects upward", "Floating depends only on size", "Gravity stops in water", "Floating objects have no weight"], 
+            ans: 0, hint: "Why do some objects stay on top of the water?", expl: "Water exerts an upward force (buoyancy) that supports floating objects." 
         },
         { 
-            q: "Riya pushes an empty trolley and it moves fast. When loaded with books, it moves slowly. Why?", 
+            q: "Riya pushes an empty trolley (fast) vs a loaded trolley (slow). Why the difference?", 
             opts: ["Force decreased", "Mass increased needing more force", "Gravity stopped working", "Speed controls force"], 
-            ans: 1, hint: "Think about which trolley is heavier to move.", expl: "Adding books increases the mass of the trolley; larger mass requires more force to reach the same speed." 
+            ans: 1, hint: "Heavier things are harder to speed up.", expl: "Increasing mass means you need more force to achieve the same movement." 
         },
         { 
             q: "Assertion: A stationary ball moves when kicked. Reason: Force can change state of motion.", 
             opts: ["Both are true and R explains A", "Both true but not explanation", "A true, R false", "A false, R true"], 
-            ans: 0, hint: "Does kicking provide a force? Does that force cause the ball to move?", expl: "Force is required to change an object from being at rest to being in motion." 
+            ans: 0, hint: "Does a kick count as a force? Does it make the ball move?", expl: "Force is required to change an object's state from rest to motion." 
         },
         { 
-            q: "A student says: 'Force is needed only to start motion, not to stop motion.' Identify the error in this statement.", 
+            q: "Error Detection: A student says: 'Force is ONLY needed to start motion, not to stop it.' Find the error.", 
             opts: ["Force is also needed to stop motion", "Motion stops automatically", "Gravity stops objects", "Air stops objects"], 
-            ans: 0, hint: "If a ball is rolling toward you, how do you make it stay still?", expl: "Stopping an object is a change in its state of motion, which always requires force." 
+            ans: 0, hint: "How do you catch and stop a moving ball?", expl: "To stop or slow down a moving object, an opposite force must be applied." 
         },
         { 
-            q: "Why do buses take longer to stop than bicycles when moving at the same speed?", 
+            q: "Why do heavy buses take longer to stop than bicycles at the same speed?", 
             opts: ["Larger mass requires more stopping force", "Less friction", "More gravity", "Less speed"], 
-            ans: 0, hint: "Which vehicle is much heavier and harder to slow down?", expl: "Objects with greater mass have more inertia, meaning they require more force to change their motion." 
+            ans: 0, hint: "Which one is much heavier and harder to slow down?", expl: "Greater mass means greater inertia, requiring more force to stop." 
         },
         { 
-            q: "Investigation: Why does a rolling suitcase move much easier than dragging a heavy bag?", 
+            q: "Concept Investigation: Why is a rolling suitcase easier to move than a dragging bag?", 
             opts: ["Rolling friction < sliding friction", "Gravity reduced", "Mass decreased", "Air resistance increased"], 
-            ans: 0, hint: "Wheels are designed to overcome a specific type of resistance.", expl: "Rolling friction is significantly weaker than sliding friction, making wheels highly efficient for transport." 
+            ans: 0, hint: "Think about why we use wheels.", expl: "Rolling friction is much weaker than sliding friction, allowing easier movement." 
         },
         { 
-            q: "Friction is often described as a 'necessary evil.' Why is it useful to us?", 
-            opts: ["It stops all motion", "It helps with movement control", "It reduces force completely", "It removes gravity"], 
-            ans: 1, hint: "Think about trying to walk on perfectly smooth ice.", expl: "Without friction, we wouldn't be able to walk, write, or stop a car safely." 
+            q: "Why is friction called a 'necessary evil'?", 
+            opts: ["It stops all motion", "It allows us to control movement", "It reduces force completely", "It removes gravity"], 
+            ans: 1, hint: "Try to imagine walking on perfectly smooth oil.", expl: "We need friction to walk, write, and safely control vehicles." 
         }
     ];
 
@@ -271,7 +288,7 @@
         document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
         const f = document.getElementById('feedback-box');
         f.className = 'feedback expl-box';
-        f.innerHTML = "📝 <b>FINDING:</b> " + questions[current].expl;
+        f.innerHTML = "📝 <b>RESEARCH LOG:</b> " + questions[current].expl;
         f.style.display = 'block';
         document.getElementById('action-btn').classList.remove('hidden');
     }
@@ -287,9 +304,9 @@
         document.getElementById('result-view').classList.remove('hidden');
         document.getElementById('final-pts').innerText = score;
         const msg = document.getElementById('result-msg');
-        if(score >= 9) msg.innerText = "Excellent! You are a Master Lab Researcher.";
-        else if(score >= 7) msg.innerText = "Great work! You have passed the Force & Friction certification.";
-        else msg.innerText = "Keep practicing your experiments to improve your lab skills!";
+        if(score >= 9) msg.innerText = "Excellent! You are a Certified Lab Lead.";
+        else if(score >= 7) msg.innerText = "Good job! You've passed the safety inspection.";
+        else msg.innerText = "Keep researching! Your science skills are growing.";
     }
 </script>
 </body>
