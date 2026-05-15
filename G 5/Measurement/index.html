@@ -5,115 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>G5 Measurement Lab</title>
     <style>
-        :root {
-            --lab-blue: #1a73e8;
-            --lab-gold: #f9ab00;
-            --lab-success: #1e8e3e;
-            --lab-danger: #d93025;
-            --bg-shade: #f1f3f4;
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-shade);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        #app-container {
-            width: 100%;
-            max-width: 500px;
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 25px;
-            margin: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
-            min-height: 550px;
-            border-top: 8px solid var(--lab-blue);
-        }
-
-        /* SPLASH SCREEN */
-        #splash-screen {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #ffffff;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        .logo-img { width: 280px; height: auto; max-width: 85%; margin-bottom: 30px; }
+        :root { --lab-blue: #1a73e8; --lab-success: #1e8e3e; --lab-danger: #d93025; --bg-shade: #f1f3f4; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-shade); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        #app-container { width: 95%; max-width: 500px; background: white; border-radius: 24px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; min-height: 550px; border-top: 8px solid var(--lab-blue); }
+        
+        /* Splash Screen Fix */
+        #splash-screen { position: absolute; top:0; left:0; width:100%; height:100%; background:white; z-index:999; display:flex; flex-direction:column; justify-content:center; align-items:center; transition: opacity 0.5s; }
+        .logo-img { width: 250px; margin-bottom: 20px; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--lab-blue); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* UI ELEMENTS */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .q-badge { background: var(--lab-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; }
-        .score-txt { font-weight: 800; color: var(--lab-blue); }
-
-        .timer-track { width: 100%; height: 8px; background: #e8eaed; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
-        #timer-bar { height: 100%; width: 100%; background: var(--lab-blue); transition: width 1s linear; }
-
-        .q-text { font-size: 1.1rem; font-weight: 600; line-height: 1.4; margin-bottom: 20px; color: #202124; }
-        
-        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .data-table td { border: 1px solid #dadce0; padding: 12px; text-align: left; font-size: 0.95rem; }
-
-        .options-stack { display: grid; gap: 12px; }
-        .opt-btn {
-            background: #fff; border: 2px solid #dadce0; padding: 16px;
-            border-radius: 14px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
-            font-weight: 500; color: #3c4043;
-        }
-        .opt-btn.correct { background: var(--lab-success) !important; color: white; border-color: var(--lab-success); }
-        .opt-btn.wrong { background: var(--lab-danger) !important; color: white; border-color: var(--lab-danger); opacity: 0.7; }
-
-        .feedback { margin-top: 15px; padding: 15px; border-radius: 14px; display: none; line-height: 1.5; font-size: 0.95rem; }
-        .hint { background: #fff7e0; border-left: 5px solid var(--lab-gold); color: #856404; }
-        .expl { background: #e8f0fe; border-left: 5px solid var(--lab-blue); color: #1967d2; }
-
-        #next-btn { width: 100%; margin-top: 20px; padding: 18px; background: var(--lab-blue); color: white; border: none; border-radius: 16px; font-weight: 700; font-size: 1rem; cursor: pointer; }
         .hidden { display: none !important; }
+        .opt-btn { width: 100%; padding: 18px; margin: 8px 0; border: 2px solid #dadce0; border-radius: 14px; background: white; cursor: pointer; text-align: left; font-size: 1rem; font-weight: 500; transition: 0.2s; }
+        .correct { background: var(--lab-success) !important; color: white; border-color: var(--lab-success); }
+        .wrong { background: var(--lab-danger) !important; color: white; border-color: var(--lab-danger); }
+        #next-btn { width: 100%; padding: 20px; background: var(--lab-blue); color: white; border: none; border-radius: 15px; margin-top: 20px; font-weight: bold; cursor: pointer; }
+        .feedback { padding: 15px; border-radius: 12px; margin-top: 15px; background: #e8f0fe; font-size: 0.95rem; border-left: 5px solid var(--lab-blue); }
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .data-table td { border: 1px solid #ddd; padding: 10px; text-align: center; }
     </style>
 </head>
 <body>
 
 <div id="app-container">
     <div id="splash-screen">
-        <img src="assets/logo.png" class="logo-img" alt="Innovine">
+        <img src="assets/logo.png" class="logo-img" onerror="this.src='https://via.placeholder.com/250x100?text=INNOVINE'" alt="Logo">
         <div class="loader"></div>
+        <p style="color:#666; margin-top:15px;">Initializing Lab...</p>
     </div>
 
-    <div id="intro-view" class="hidden" style="text-align: center;">
-        <div style="font-size: 4rem; margin-bottom: 15px;">📏</div>
-        <h1 style="color: var(--lab-blue); margin: 0;">Measurement Lab</h1>
-        <p style="color: #5f6368; margin-top: 10px;">Scientific Accuracy Challenge</p>
-        <button id="start-btn" style="width:100%; padding:20px; background:var(--lab-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer; margin-top: 20px;">INITIALIZE MISSION</button>
-    </div>
-
-    <div id="quiz-view" class="hidden">
-        <div class="header">
-            <div class="q-badge" id="q-label">Q1</div>
-            <div class="score-txt">XP: <span id="score-val">0</span></div>
+    <div id="quiz-area" class="hidden">
+        <div style="display:flex; justify-content: space-between; align-items:center;">
+            <span id="q-num" style="background:var(--lab-blue); color:white; padding:5px 12px; border-radius:15px; font-size:0.8rem;">Q1</span>
+            <span style="font-weight:bold; color:var(--lab-blue);">Score: <span id="score-val">0</span></span>
         </div>
-        <div class="timer-track"><div id="timer-bar"></div></div>
-        
-        <div id="q-text" class="q-text"></div>
+        <p id="q-text" style="font-size: 1.15rem; font-weight: 600; margin: 20px 0; color:#202124; line-height:1.4;"></p>
         <div id="table-area"></div>
-        
-        <div id="options-area" class="options-stack"></div>
-        <div id="feedback-box" class="feedback"></div>
+        <div id="options"></div>
+        <div id="feedback" class="feedback hidden"></div>
         <button id="next-btn" class="hidden">CONTINUE →</button>
     </div>
 
-    <div id="result-view" class="hidden" style="text-align:center;">
-        <div style="font-size: 4.5rem; margin-bottom: 10px;">🔬</div>
-        <h2 style="color: var(--lab-blue);">Lab Mission Accomplished</h2>
+    <div id="result-screen" class="hidden" style="text-align:center;">
+        <h1 style="color:var(--lab-blue);">Lab Complete!</h1>
+        <div style="font-size: 4rem; margin: 20px 0;">🔬</div>
+        <p style="font-size: 1.5rem; font-weight:bold;">Final Score: <span id="final-score">0</span> / 13</p>
+        <button onclick="location.reload()" style="padding: 15px 40px; background: var(--lab-blue); color: white; border: none; border-radius: 10px; cursor:pointer;">RESTART LAB</button>
+    </div>
+</div>
+
+<script>
+    // --- Questions from Measurement_CBQs.docx ---
+    const questions = [
+        { q: "Two groups measured the same table. One group used hand spans while another used a measuring tape. Why did this happen?", opts: ["Table changed size", "Hand spans are non-standard units", "Measuring tape is incorrect", "Gravity affects it"], ans: 1, expl: "Hand spans vary between people, making them non-standard units[cite: 168]." },
+        { q: "Assertion (A): Standard units are important. Reason (R): They help people compare measurements accurately.", opts: ["Both A & R true, R explains A", "Both true, R doesn't explain A", "A is true, R is false", "A is false, R is true"], ans: 0, expl: "Standard units provide a uniform scale for accuracy[cite: 172]." },
+        { q: "Observe the table: Morning: 37°C | Evening: 38°C. What can be concluded?", opts: ["Temp decreased", "Temp increased", "Temp constant", "Broken thermometer"], ans: 1, expl: "The data shows a rise in temperature[cite: 177]." },
+        { q: "Why is a thermometer better than touching the forehead to check temperature?", opts: ["Reduces fever", "Provides accurate standard units", "Touch increases heat", "Measures weight"], ans: 1, expl: "Thermometers give precise numerical values[cite: 180]." },
+        { q: "Milk is sold in litres because litres measure:", opts: ["Force", "Liquid capacity", "Temperature", "Distance"], ans: 1, expl: "Litres are standard units for liquid volume[cite: 182]." },
+        { q: "Error check: 'The classroom is 700 grams long.' What is wrong?", opts: ["Wrong unit used", "Wrong room", "Cannot measure length", "Grams are for distance"], ans: 0, expl: "Grams measure mass; length requires meters[cite: 185]." },
+        { q: "Why are city distances measured in kilometres instead of metres?", opts: ["Km is for long distances", "Metres are incorrect", "Km reduces distance", "Metres increase speed"], ans: 0, expl: "Kilometres are appropriate for large geographical spans[cite: 188]." },
+        { q: "What is the best reason to use a stopwatch for a race?", opts: ["Reduces time", "Increases accuracy", "Counting is heavy", "Measures speed"], ans: 1, expl: "Stopwatches are designed for high precision[cite: 191]." },
+        { q: "Odd One Out:", opts: ["Metre", "Kilometre", "Centimetre", "Litre"], ans: 3, expl: "Litre measures volume; the others measure length[cite: 193]." },
+        { q: "Why use a measuring cylinder instead of a normal glass in experiments?", opts: ["Changes color", "Precise volume measurement", "Reduces liquid", "Increases heat"], ans: 1, expl: "Cylinders have graduations for exact volume[cite: 197]." },
+        { q: "Why did hand spans give different results in the Science Fair?", opts: ["Desk grew", "Non-standard units", "Ruler error", "Gravity change"], ans: 1, expl: "Hand sizes differ between individuals[cite: 202]." },
+        { q: "A measuring cylinder is mainly used to measure:", opts: ["Mass", "Temperature", "Liquid volume", "Force"], ans: 2, expl: "It is a standard tool for liquid volume[cite: 203]." },
+        { q: "Why are standard measuring instruments important in science?", opts: ["Reduce gravity", "Accurate and uniform data", "Increase speed", "Remove all errors"], ans: 1, expl: "They ensure consistent results globally[cite: 206]." }
+    ];
+
+    let current = 0, score = 0;
+    const sfxCorrect = new Audio('assets/correct.mp3');
+    const sfxWrong = new Audio('assets/wrong.mp3');
+
+    // --- FORCE START LOGIC ---
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.classList.add('hidden');
+                document.getElementById('quiz-area').classList.remove('hidden');
+                loadQuestion();
+            }, 500);
+        }, 3000); // Game starts after 3 seconds regardless of assets
+    });
+
+    function loadQuestion() {
+        const q = questions[current];
+        document.getElementById('q-num').innerText = "QUESTION " + (current + 1);
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('feedback').classList.add('hidden');
+        document.getElementById('next-btn').classList.add('hidden');
+        
+        // Handle Table for Q3
+        const tableArea = document.getElementById('table-area');
+        tableArea.innerHTML = (current === 2) ? 
+            `<table class="data-table"><tr><td>Morning</td><td>37°C</td></tr><tr><td>Evening</td><td>38°C</td></tr></table>` : "";
+
+        const optContainer = document.getElementById('options');
+        optContainer.innerHTML = '';
+        q.opts.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'opt-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAns(i, btn);
+            optContainer.appendChild(btn);
+        });
+    }
+
+    function checkAns(idx, btn) {
+        const correct = questions[current].ans;
+        const allBtns = document.querySelectorAll('.opt-btn');
+        allBtns.forEach(b => b.disabled = true);
+
+        if(idx === correct) {
+            btn.classList.add('correct');
+            score++;
+            document.getElementById('score-val').innerText = score * 100;
+            sfxCorrect.play().catch(()=>{});
+        } else {
+            btn.classList.add('wrong');
+            allBtns[correct].classList.add('correct');
+            sfxWrong.play().catch(()=>{});
+        }
+        
+        const fb = document.getElementById('feedback');
+        fb.innerHTML = "<b>Lab Analysis:</b> " + questions[current].expl;
+        fb.classList.remove('hidden');
+        document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    document.getElementById('next-btn').onclick = () => {
+        current++;
+        if(current < questions.length) loadQuestion();
+        else {
+            document.getElementById('quiz-area').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+        }
+    };
+</script>
+</body>
+</html>
