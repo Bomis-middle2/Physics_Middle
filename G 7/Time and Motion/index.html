@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Innovine: Time and Motion Control</title>
+    <style>
+        :root {
+            --primary-blue: #4361ee;
+            --electric-yellow: #ffd60a;
+            --success-green: #2ec4b6;
+            --error-red: #e71d36;
+            --light-bg: #f0f2f5;
+            --text-dark: #2b2d42;
+            --panel-white: #ffffff;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--panel-white);
+            border-radius: 28px;
+            padding: 25px;
+            margin: 10px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            min-height: 550px;
+            border-top: 10px solid var(--primary-blue);
+        }
+
+        /* --- SPLASH SCREEN (Blinks Once) --- */
+        #splash-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: blinkOnce 2s ease-in-out forwards;
+        }
+
+        .splash-logo {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: contain;
+        }
+
+        @keyframes blinkOnce {
+            0% { opacity: 0; }
+            25% { opacity: 1; }
+            75% { opacity: 1; }
+            100% { opacity: 0; pointer-events: none; }
+        }
+
+        /* --- GAME UI --- */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .case-badge { background: var(--primary-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; letter-spacing: 1px; }
+        .score-box { font-weight: 800; color: var(--primary-blue); }
+
+        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 20px; }
+        
+        .image-container { 
+            width: 100%; margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 2px solid #f1f3f5;
+            display: flex; justify-content: center; background: #fff; padding: 10px;
+        }
+        .q-img { max-height: 160px; object-fit: contain; display: block; }
+
+        .options-grid { display: grid; gap: 12px; }
+        .opt-btn {
+            background: #fff; border: 2px solid #edf2f4; padding: 16px;
+            border-radius: 15px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
+            color: var(--text-dark); font-weight: 500; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .opt-btn:hover { border-color: var(--primary-blue); }
+        
+        .opt-btn.correct { background: var(--success-green) !important; color: white; border-color: var(--success-green); transform: scale(1.02); }
+        .opt-btn.wrong { background: var(--error-red) !important; color: white; border-color: var(--error-red); opacity: 0.7; }
+
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 15px; display: none; line-height: 1.5; margin-bottom: 10px; animation: slideUp 0.4s ease; }
+        .hint-mode { background: #fff3cd; border-left: 5px solid var(--electric-yellow); color: #856404; }
+        .expl-mode { background: #d1ecf1; border-left: 5px solid var(--primary-blue); color: #0c5460; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #action-btn { 
+            width: 100%; margin-top: 20px; padding: 18px; 
+            background: var(--primary-blue); color: white; 
+            border: none; border-radius: 16px; font-weight: 800; 
+            font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div id="splash-screen">
+        <img src="assets/logo.png" alt="Innovine Logo" class="splash-logo">
+    </div>
+
+    <div id="intro-view" class="hidden" style="text-align: center;">
+        <div style="margin-bottom: 15px;">
+            <img src="assets/logo.png" alt="Innovine Logo" style="max-height: 60px; object-fit: contain;">
+        </div>
+        <h1 style="color: var(--primary-blue); margin: 0; font-weight: 800;">Time & Motion</h1>
+        <p style="color: #6c757d; margin-top: 5px; margin-bottom: 20px;">The Physics of Speed</p>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dee2e6;">
+            Welcome to Mission Control. Ready to calibrate time meters and map motion tracking? You have <b>2 attempts</b> per structural checkpoint node.
+        </div>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">ENGAGE SYSTEM</button>
+    </div>
+
+    <div id="quiz-view" class="hidden">
+        <div class="header">
+            <div class="case-badge">NODE #<span id="q-num">1</span></div>
+            <div class="score-box">SPEED: <span id="score-val">0</span> pts</div>
+        </div>
+        <div id="q-text" class="question-text"></div>
+        <div id="image-area"></div>
+        <div id="options-area" class="options-grid"></div>
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="hidden">CONTINUE →</button>
+    </div>
+
+    <div id="result-view" class="hidden" style="text-align:center;">
+        <div id="result-icon" style="font-size: 4rem; margin-bottom: 10px;">🏆</div>
+        <h2 style="color: var(--primary-blue);">Mission Report</h2>
+        <div style="font-size: 4.5rem; font-weight: 900; color: var(--text-dark); margin: 10px 0;"><span id="final-pts">0</span>/1000</div>
+        <p id="result-msg" style="color:#6c757d; margin-bottom:30px; line-height: 1.4;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">REBOOT SYSTEM</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { q: "A bus covers 100 km in 2 hours, and a car covers 60 km in 1 hour. Which is moving faster?", opts: ["The bus.", "The car.", "Both are equal.", "Cannot be determined."], ans: 1, hint: "Calculate speed using the formula: Speed = Distance / Time.", expl: "Car speed = 60 km/h, while Bus speed = 100 km / 2 h = 50 km/h. Therefore, the car is faster." },
+        { q: "The time taken for the bob to move from A to B and back to A is called:", img: "assets/q2.png", opts: ["Amplitude", "Frequency", "Time Period", "Motion"], ans: 2, hint: "Think of the total duration taken to finish one complete loop cycle.", expl: "The time taken to finish one complete oscillation back and forth to its starting structural arrangement is defined as its Time Period." },
+        { q: "A cyclist moves at a constant speed of 5 m/s for 10 seconds. How much distance is covered?", opts: ["2 meters", "15 meters", "50 meters", "0.5 meters"], ans: 2, hint: "Use the relation: Distance = Speed × Time.", expl: "Distance equals velocity magnitude scaled by total active window duration. 5 m/s × 10 s = 50 meters." },
+        { q: "A student says, 'The speedometer of a car measures the total distance travelled.' What is the error?", opts: ["There is no error.", "The speedometer measures speed; the odometer measures distance.", "The speedometer measures time.", "The speedometer measures fuel."], ans: 1, hint: "Which on-board instrument calculates instantaneous rate of travel, and which acts as an odometer track tracker?", expl: "Speedometers measure instantaneous tracking speeds, whereas standard structural odometers track aggregate milestone distances traveled." },
+        { q: "Why did people in ancient times use sundials only during the day?", opts: ["They were sleepy at night.", "Sundials require sunlight to cast a shadow to tell time.", "Sundials break at night.", "The moon doesn't cast shadows."], ans: 1, hint: "Consider the core physical source required to produce directional cast markers on a sundial base plate.", expl: "Sundials function fundamentally on shadows thrown across metric boundaries. Without explicit sunlight positioning, shadow casting parameters are impossible." },
+        { q: "Which of these shows 'Periodic Motion'?", opts: ["A car turning a corner.", "The swinging of a pendulum.", "A ball rolling on the ground.", "An apple falling from a tree."], ans: 1, hint: "Look for structural actions that continuously repeat over exact intervals.", expl: "Periodic configurations imply continuous repetition over systematic, predictable structural tracking timelines, like a swinging pendulum." },
+        { q: "What does this graph represent?", img: "assets/q7.png", opts: ["Uniform Motion", "Non-uniform Motion", "Object at rest", "Decreasing speed"], ans: 0, hint: "Analyze a linear, uniform constant upward trending plot profile line.", expl: "A straight linear progression line plotted over equal spatial coordinate segments highlights Uniform Motion parameters." },
+        { q: "A pilot needs to calculate how long a flight will take. He knows the distance is 2000 km and the speed is 500 km/h. What is the time?", opts: ["10 hours", "4 hours", "2500 hours", "0.25 hours"], ans: 1, hint: "Rearrange the components to find: Time = Distance / Speed.", expl: "Time duration equals aggregate tracking distance partitioned by velocity threshold. 2000 km / 500 km/h = 4 hours." },
+        { q: "Identify the modern time-keeping device from the following choices:", opts: ["Hourglass", "Sundial", "Water Clock", "Quartz Watch"], ans: 3, hint: "Which option relies on modern electronic mineral crystal frequencies?", expl: "Hourglasses, water vessels, and sundials reflect ancient operational designs. Quartz crystal oscillations represent advanced modern configurations." },
+        { q: "If a pendulum's length is increased, what happens to its time period?", opts: ["It increases.", "It decreases.", "It stays the same.", "The pendulum stops."], ans: 0, hint: "Think about how a longer structural suspension arm affects the sweep distance.", expl: "Elongating the structural arm axis increases structural travel range. This automatically prolongs the system's baseline time period." }
+    ];
+
+    let current = 0, score = 0, attempts = 0;
+    
+    // --- AUDIO INSTANCES ---
+    const sndC = new Audio('assets/correct.mp3');
+    const sndW = new Audio('assets/wrong.mp3');
+    const sndF = new Audio('assets/freesound_community-claps-44774.mp3');
+
+    window.onload = () => {
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.display = 'none';
+            document.getElementById('intro-view').classList.remove('hidden');
+        }, 2000);
+    };
+
+    document.getElementById('start-btn').onclick = () => {
+        document.getElementById('intro-view').classList.add('hidden');
+        document.getElementById('quiz-view').classList.remove('hidden');
+        loadQuestion();
+    };
+
+    function loadQuestion() {
+        attempts = 0;
+        const q = questions[current];
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').classList.add('hidden');
+        document.getElementById('q-num').innerText = current + 1;
+        document.getElementById('q-text').innerText = q.q;
+        
+        const imgArea = document.getElementById('image-area');
+        imgArea.innerHTML = q.img ? `<div class="image-container"><img src="${q.img}" class="q-img"></div>` : "";
+        
+        const area = document.getElementById('options-area');
+        area.innerHTML = "";
+        q.opts.forEach((o, i) => {
+            const b = document.createElement('button');
+            b.className = 'opt-btn';
+            b.innerText = o;
+            b.onclick = () => handleChoice(i, b);
+            area.appendChild(b);
+        });
+    }
+
+    function handleChoice(i, b) {
+        if(i === questions[current].ans) {
+            b.classList.add('correct');
+            score += 100;
+            document.getElementById('score-val').innerText = score;
+            sndC.play().catch(e => console.log("Audio waiting for interaction"));
+            endTurn();
+        } else {
+            attempts++;
+            b.classList.add('wrong');
+            b.disabled = true;
+            sndW.play().catch(e => console.log("Audio waiting for interaction"));
+            if(attempts === 1) {
+                const f = document.getElementById('feedback-box');
+                f.className = 'feedback hint-mode';
+                f.innerHTML = "🔍 <b>DIAGNOSTIC HINT:</b> " + questions[current].hint;
+                f.style.display = 'block';
+            } else {
+                endTurn();
+            }
+        }
+    }
+
+    function endTurn() {
+        document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
+        document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
+        const f = document.getElementById('feedback-box');
+        f.className = 'feedback expl-mode';
+        f.innerHTML = "📋 <b>LEARNING HUB:</b> " + questions[current].expl;
+        f.style.display = 'block';
+        document.getElementById('action-btn').classList.remove('hidden');
+    }
+
+    document.getElementById('action-btn').onclick = () => {
+        current++;
+        if(current < questions.length) loadQuestion();
+        else showResults();
+    };
+
+    function showResults() {
+        document.getElementById('quiz-view').classList.add('hidden');
+        document.getElementById('result-view').classList.remove('hidden');
+        document.getElementById('final-pts').innerText = score;
+        
+        sndF.play().catch(e => console.log("Audio playback blocked"));
+        
+        const msg = document.getElementById('result-msg');
+        if(score >= 900) msg.innerText = "Exceptional velocity! Your mathematical calculations and motion tracks are perfectly aligned.";
+        else if(score >= 700) msg.innerText = "Cruising calibration complete. The metrics are uniform and steady.";
+        else msg.innerText = "Non-uniform performance detected. Re-verify systemic motion laws and recalibrate.";
+    }
+</script>
+</body>
+</html>
