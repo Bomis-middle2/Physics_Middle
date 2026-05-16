@@ -6,20 +6,21 @@
     <title>Electro-Guard: Mission Control</title>
     <style>
         :root {
-            --neon-blue: #00d4ff;
-            --neon-yellow: #f9d423;
-            --neon-red: #ff4d4d;
-            --neon-green: #39ff14;
-            --dark-panel: #1a1a2e;
-            --circuit-bg: #0f3460;
+            --primary-blue: #4361ee;
+            --electric-yellow: #ffd60a;
+            --success-green: #2ec4b6;
+            --error-red: #e71d36;
+            --light-bg: #f0f2f5;
+            --text-dark: #2b2d42;
+            --panel-white: #ffffff;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Courier New', monospace;
-            background-color: #050505;
-            color: #e0e0e0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
             margin: 0;
             display: flex;
             justify-content: center;
@@ -30,70 +31,89 @@
         #app-container {
             width: 100%;
             max-width: 480px;
-            background: var(--dark-panel);
-            border: 3px solid var(--neon-blue);
-            border-radius: 15px;
-            padding: 20px;
+            background: var(--panel-white);
+            border-radius: 28px;
+            padding: 25px;
+            margin: 10px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
             position: relative;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
             overflow: hidden;
+            min-height: 550px;
+            border-top: 10px solid var(--primary-blue);
         }
 
-        /* --- SCREENS --- */
+        /* --- SPLASH SCREEN (Blinks Once) --- */
         #splash-screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
+            background: #ffffff;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 100;
+            z-index: 9999;
+            animation: blinkOnce 2s ease-in-out forwards;
         }
 
-        .header { display: flex; justify-content: space-between; border-bottom: 2px solid var(--neon-blue); padding-bottom: 10px; margin-bottom: 20px; }
-        .voltage-display { color: var(--neon-yellow); font-weight: bold; }
+        .logo-box {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, var(--primary-blue), #3a0ca3);
+            color: white;
+            border-radius: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-weight: 800;
+            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4);
+        }
 
-        /* --- GAMEPLAY --- */
-        .question-box { font-size: 1.1rem; line-height: 1.4; margin-bottom: 20px; color: #fff; }
+        .logo-icon { font-size: 4rem; margin-bottom: 5px; }
+
+        @keyframes blinkOnce {
+            0% { opacity: 0; }
+            25% { opacity: 1; }
+            75% { opacity: 1; }
+            100% { opacity: 0; pointer-events: none; }
+        }
+
+        /* --- GAME UI --- */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .case-badge { background: var(--primary-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; letter-spacing: 1px; }
+        .score-box { font-weight: 800; color: var(--primary-blue); }
+
+        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 20px; }
         
         .image-container { 
-            background: #fff; border-radius: 8px; padding: 10px; margin-bottom: 15px; 
-            display: flex; justify-content: center;
+            width: 100%; margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 2px solid #f1f3f5;
+            display: flex; justify-content: center; background: #fff; padding: 10px;
         }
-        .q-img { max-width: 100%; height: auto; border-radius: 4px; }
+        .q-img { max-height: 160px; object-fit: contain; display: block; }
 
-        .options-grid { display: grid; gap: 10px; }
+        .options-grid { display: grid; gap: 12px; }
         .opt-btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--neon-blue);
-            color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: left;
-            transition: 0.3s;
+            background: #fff; border: 2px solid #edf2f4; padding: 16px;
+            border-radius: 15px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
+            color: var(--text-dark); font-weight: 500; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
-        .opt-btn:hover { background: rgba(0, 212, 255, 0.1); }
-        .opt-btn.correct { background: var(--neon-green) !important; color: #000; font-weight: bold; }
-        .opt-btn.wrong { background: var(--neon-red) !important; color: #fff; }
+        .opt-btn:hover { border-color: var(--primary-blue); }
+        
+        .opt-btn.correct { background: var(--success-green) !important; color: white; border-color: var(--success-green); transform: scale(1.02); }
+        .opt-btn.wrong { background: var(--error-red) !important; color: white; border-color: var(--error-red); opacity: 0.7; }
 
-        .feedback {
-            margin-top: 15px; padding: 12px; border-radius: 8px; display: none;
-            font-size: 0.9rem; border-left: 4px solid #fff;
-        }
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 15px; display: none; line-height: 1.5; margin-bottom: 10px; animation: slideUp 0.4s ease; }
+        .hint-mode { background: #fff3cd; border-left: 5px solid var(--electric-yellow); color: #856404; }
+        .expl-mode { background: #d1ecf1; border-left: 5px solid var(--primary-blue); color: #0c5460; }
 
-        #action-btn {
-            width: 100%; margin-top: 20px; padding: 15px;
-            background: var(--neon-blue); border: none; font-weight: bold;
-            color: #000; border-radius: 5px; cursor: pointer;
-        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- ANIMATIONS --- */
-        @keyframes spark {
-            0% { opacity: 0; } 50% { opacity: 1; box-shadow: 0 0 15px var(--neon-red); } 100% { opacity: 0; }
+        #action-btn { 
+            width: 100%; margin-top: 20px; padding: 18px; 
+            background: var(--primary-blue); color: white; 
+            border: none; border-radius: 16px; font-weight: 800; 
+            font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
         }
-        .spark-fail { animation: spark 0.2s 3; border: 2px solid var(--neon-red); }
 
         .hidden { display: none !important; }
     </style>
@@ -102,63 +122,70 @@
 
 <div id="app-container">
     <div id="splash-screen">
-        <h1 style="color: var(--neon-blue); text-align: center;">ELECTRO-GUARD<br>V.1.0</h1>
-        <div style="font-size: 4rem;">⚡</div>
-        <p style="color: var(--neon-yellow);">INITIALIZING CIRCUITS...</p>
+        <div class="logo-box">
+            <div class="logo-icon">⚡</div>
+            <div style="font-size: 1.1rem; letter-spacing: 2px;">ELECTRO</div>
+            <div style="font-size: 0.8rem; opacity: 0.8;">GUARD</div>
+        </div>
     </div>
 
     <div id="intro-view" class="hidden" style="text-align: center;">
-        <h2 style="color: var(--neon-blue);">MISSION BRIEFING</h2>
-        <p>The city's power grid is failing. Answer the technical questions to repair the connections.</p>
-        <div style="background: #000; padding: 15px; border: 1px dashed var(--neon-yellow); margin: 20px 0;">
-            WARNING: 2 Failed attempts causes a Short Circuit!
+        <div style="font-size: 3rem; margin-bottom: 10px;">🛡️</div>
+        <h1 style="color: var(--primary-blue); margin: 0;">Electro-Guard</h1>
+        <p style="color: #6c757d; margin-top: 10px;">Electrical Safety Mission Control</p>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dee2e6;">
+            The city's power systems need urgent inspection. You have <b>2 attempts</b> per critical node. Can you stabilize the network?
         </div>
-        <button id="start-btn" style="width:100%; padding:15px; background:var(--neon-green); color:#000; border:none; font-weight:bold; cursor:pointer;">ENGAGE SYSTEM</button>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">ENGAGE SYSTEM</button>
     </div>
 
     <div id="quiz-view" class="hidden">
         <div class="header">
-            <span>NODE: <span id="q-num">1</span>/10</span>
-            <span class="voltage-display">VOLTS: <span id="score-val">0</span>V</span>
+            <div class="case-badge">NODE #<span id="q-num">1</span></div>
+            <div class="score-box">VOLTS: <span id="score-val">0</span>V</div>
         </div>
-        <div id="q-text" class="question-text question-box"></div>
+        <div id="q-text" class="question-text"></div>
         <div id="image-area"></div>
         <div id="options-area" class="options-grid"></div>
         <div id="feedback-box" class="feedback"></div>
-        <button id="action-btn" class="hidden">NEXT CONNECTION →</button>
+        <button id="action-btn" class="hidden">CONTINUE →</button>
     </div>
 
     <div id="result-view" class="hidden" style="text-align:center;">
-        <h2 id="final-status">GRID RESTORED</h2>
-        <div style="font-size: 3rem; margin: 15px 0;"><span id="final-pts">0</span> / 1000V</div>
-        <p id="result-msg"></p>
-        <button onclick="location.reload()" style="width:100%; padding:15px; background:var(--neon-blue); border:none; color:#000; font-weight:bold; cursor:pointer;">REBOOT SYSTEM</button>
+        <div id="result-icon" style="font-size: 4rem; margin-bottom: 10px;">🏆</div>
+        <h2 style="color: var(--primary-blue);">Mission Report</h2>
+        <div style="font-size: 4.5rem; font-weight: 900; color: var(--text-dark); margin: 10px 0;"><span id="final-pts">0</span>/1000</div>
+        <p id="result-msg" style="color:#6c757d; margin-bottom:30px; line-height: 1.4;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">REBOOT SYSTEM</button>
     </div>
 </div>
 
 <script>
     const questions = [
-        { q: "An electrician notices a broken heater element. Why can't he just replace it with a regular copper wire?", opts: ["Copper is too expensive", "Copper doesn't conduct electricity", "Copper has low resistance and won't glow red-hot", "Copper will melt the heater's body"], ans: 2, expl: "Heating elements need high resistance (like Nichrome) to generate heat. Copper's low resistance makes it a great conductor but a poor heater!" },
-        { q: "SERIES CIRCUIT: If Bulb A fuses (breaks) in this chain, what happens to Bulb B?", img: "https://cdn-icons-png.flaticon.com/512/2983/2983792.png", opts: ["It glows brighter", "It stops glowing (circuit opens)", "It stays the same", "It flickers"], ans: 1, expl: "In a series circuit, there is only one path. If one bulb breaks, the path is cut and all lights go out." },
-        { q: "DATA: A fuse wire is labelled '5A'. If a current of 8A flows through, what happens?", opts: ["Appliance works faster", "Wire turns green", "Wire melts to break the circuit", "Nothing happens"], ans: 2, expl: "Fuses are safety guards. When the current exceeds the limit, the wire melts to prevent a fire." },
-        { q: "ELECTROMAGNETISM: How can you make an electromagnet stronger to lift heavier scrap?", opts: ["Use a plastic core", "Decrease the number of coils", "Increase the number of turns in the coil", "Use a thinner wire"], ans: 2, expl: "More turns of wire around the iron core create a stronger magnetic field." },
-        { q: "ERROR DETECTED: Sneha connects cells 'positive-to-positive'. Why won't the bulb glow?", opts: ["Cells are too old", "Cells must be positive-to-negative for flow", "Bulbs are afraid", "High voltage is produced"], ans: 1, expl: "Current flows from positive to negative. Connecting like-terminals blocks the flow of electrons." },
-        { q: "APPLICATION: Which appliance does NOT work on the 'Heating Effect'?", opts: ["Electric Iron", "Geyser", "Electric Bell", "Toaster"], ans: 2, expl: "An Electric Bell uses the Magnetic Effect to pull a hammer, not heat!" },
-        { q: "REASONING: Why is a fuse officially called a 'Safety Device'?", opts: ["Provides extra electricity", "Breaks circuit during short-circuits", "Makes bulbs brighter", "Saves money on bills"], ans: 1, expl: "It protects your home by automatically cutting power if the wires get dangerously hot." },
-        { q: "ELECTRIC BELL: What happens to the iron strip when the switch is pressed?", img: "https://img.freepik.com/premium-vector/vector-illustration-electric-bell-physics-science_605943-412.jpg", opts: ["It gets attracted to the electromagnet", "It repels the electromagnet", "It turns into a battery", "It melts"], ans: 0, expl: "The electromagnet turns on, pulls the iron strip, and causes the hammer to hit the gong!" },
-        { q: "ODD ONE OUT: Identify the device using a different effect: Heater, Fuse, Kettle, Fan.", opts: ["Electric Heater", "Electric Fuse", "Electric Kettle", "Electric Fan"], ans: 3, expl: "Heater, Fuse, and Kettle use the Heating Effect. The Fan uses the Magnetic Effect to turn a motor." },
-        { q: "CASE STUDY: A technician uses an MCB instead of a wire fuse. What is the advantage?", opts: ["It is cheaper", "It can be reset easily without replacement", "It produces light", "Works without electricity"], ans: 1, expl: "Unlike a fuse which must be replaced once blown, an MCB just 'trips' and can be switched back on." }
+        { q: "An electrician is repairing a room heater. He notices the 'element' is broken. Why can't he just replace it with a regular copper wire?", opts: ["Copper is too expensive.", "Copper doesn't conduct electricity.", "Copper has low resistance and won't glow red-hot like the element.", "Copper will melt the heater's plastic body."], ans: 2, hint: "Consider the property needed to generate high amounts of heat energy.", expl: "Heating elements need high resistance to generate heat. Copper has low resistance, making it an excellent path for current, but it won't glow red-hot." },
+        { q: "If Bulb A fuses (breaks), what happens to Bulb B?", img: "https://cdn-icons-png.flaticon.com/512/2983/2983792.png", opts: ["It glows brighter.", "It stops glowing because the circuit is now open.", "It stays the same.", "It flickers."], ans: 1, hint: "Look at whether electricity has a secondary path to loop through.", expl: "In a series circuit configuration, there is only one complete continuous loop. If one component breaks, the line opens and all flow terminates." },
+        { q: "A fuse wire is labelled '5A'. If a current of 8A flows through the circuit, what will happen?", opts: ["The appliance will work faster.", "The wire will turn green.", "The wire will melt and break the circuit to prevent a fire.", "Nothing will happen."], ans: 2, hint: "A fuse acts as an intentional structural weak point.", expl: "Fuses are protective safety barriers. Exceeding their current load threshold heats up and melts the structural wire link to block hazards." },
+        { q: "You want to make an electromagnet stronger to lift heavier iron scrap. Which action helps?", opts: ["Using a plastic core instead of iron.", "Decreasing the number of coils.", "Increasing the number of turns in the coil.", "Using a thinner wire."], ans: 2, hint: "Think about wrapping more fields around the core material.", expl: "The magnetic field strength is directly proportional to loop density. Increasing coil wraps intensifies the structural magnetic pull." },
+        { q: "Sneha connects a battery where the positive terminal of one cell touches the positive terminal of the next. Why won't the bulb glow?", opts: ["The cells are too old.", "The cells must be connected positive-to-negative to allow current flow.", "The bulbs are afraid of the battery.", "High voltage is produced."], ans: 1, hint: "Examine how polarity orientation directs structural movement.", expl: "Chemical energy cells require matching chain orientations (+ to -) to generate standard forward loop currents." },
+        { q: "Which of these appliances does NOT work on the heating effect of electric current?", opts: ["Electric Iron", "Geyser", "Electric Bell", "Toaster"], ans: 2, hint: "One of these options turns electrical energy into structural movement sound waves.", expl: "Electric irons, geysers, and toasters generate explicit thermal properties. Electric bells function fundamentally on magnetic properties." },
+        { q: "Why is a fuse called a 'safety device'?", opts: ["It provides extra electricity.", "It breaks the circuit during short-circuits to prevent damage.", "It makes the bulb glow brighter.", "It saves money on bills."], ans: 1, hint: "What protection does it trigger when a circuit fails?", expl: "Fuses isolate system overloads. They stop short circuits from over-heating local infrastructure." },
+        { q: "What happens to the iron strip when the switch is pressed?", img: "https://img.freepik.com/premium-vector/vector-illustration-electric-bell-physics-science_605943-412.jpg", opts: ["It gets attracted to the electromagnet.", "It repels the electromagnet.", "It turns into a battery.", "It melts."], ans: 0, hint: "An iron piece reacts to the presence of structural fields.", expl: "Pressing the switch turns on the magnetic field, drawing the structural strip forward to ring the bell." },
+        { q: "Identify the odd one out based on the effect used: Electric Heater, Electric Fuse, Electric Kettle, Electric Fan.", opts: ["Electric Heater", "Electric Fuse", "Electric Kettle", "Electric Fan"], ans: 3, hint: "Which system yields mechanical movement over raw heat generation?", expl: "Heaters, fuses, and kettles use the heating effect. The fan uses magnetic forces to turn its internal motor mechanism." },
+        { q: "A technician uses an MCB (Miniature Circuit Breaker) instead of a wire fuse. What is the main advantage?", opts: ["It is cheaper.", "It can be reset easily without replacing a wire.", "It produces light.", "It works without electricity."], ans: 1, hint: "What physical work must you perform when it triggers?", expl: "An MCB utilizes a mechanical toggle switch that trips open. It can be easily flicked back into service without replacing parts." }
     ];
 
     let current = 0, score = 0, attempts = 0;
-    const sndC = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
-    const sndW = new Audio('https://actions.google.com/sounds/v1/electrical/zap.ogg');
+    
+    // --- AUDIO INSTANCES ---
+    const sndC = new Audio('assets/correct.mp3');
+    const sndW = new Audio('assets/wrong.mp3');
+    const sndF = new Audio('assets/freesound_community-claps-44774.mp3');
 
     window.onload = () => {
         setTimeout(() => {
             document.getElementById('splash-screen').style.display = 'none';
             document.getElementById('intro-view').classList.remove('hidden');
-        }, 2500);
+        }, 2000);
     };
 
     document.getElementById('start-btn').onclick = () => {
@@ -170,9 +197,6 @@
     function loadQuestion() {
         attempts = 0;
         const q = questions[current];
-        const container = document.getElementById('app-container');
-        container.classList.remove('spark-fail');
-        
         document.getElementById('feedback-box').style.display = 'none';
         document.getElementById('action-btn').classList.add('hidden');
         document.getElementById('q-num').innerText = current + 1;
@@ -187,33 +211,30 @@
             const b = document.createElement('button');
             b.className = 'opt-btn';
             b.innerText = o;
-            b.onclick = () => check(i, b);
+            b.onclick = () => handleChoice(i, b);
             area.appendChild(b);
         });
     }
 
-    function check(i, b) {
+    function handleChoice(i, b) {
         if(i === questions[current].ans) {
             b.classList.add('correct');
             score += 100;
             document.getElementById('score-val').innerText = score;
-            sndC.play().catch(e=>{});
+            sndC.play().catch(e => console.log("Audio waiting for interaction"));
             endTurn();
         } else {
             attempts++;
             b.classList.add('wrong');
             b.disabled = true;
-            sndW.play().catch(e=>{});
-            document.getElementById('app-container').classList.add('spark-fail');
-            setTimeout(() => document.getElementById('app-container').classList.remove('spark-fail'), 600);
-            
-            if(attempts >= 2) {
-                endTurn();
-            } else {
+            sndW.play().catch(e => console.log("Audio waiting for interaction"));
+            if(attempts === 1) {
                 const f = document.getElementById('feedback-box');
+                f.className = 'feedback hint-mode';
+                f.innerHTML = "🔍 <b>DIAGNOSTIC HINT:</b> " + questions[current].hint;
                 f.style.display = 'block';
-                f.style.borderColor = 'var(--neon-yellow)';
-                f.innerText = "HINT: Think about the " + (questions[current].ans === 2 ? "Resistance" : "Circuit Path") + " involved.";
+            } else {
+                endTurn();
             }
         }
     }
@@ -222,9 +243,9 @@
         document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
         document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
         const f = document.getElementById('feedback-box');
+        f.className = 'feedback expl-mode';
+        f.innerHTML = "📋 <b>ENGINEER NOTE:</b> " + questions[current].expl;
         f.style.display = 'block';
-        f.style.borderColor = 'var(--neon-blue)';
-        f.innerHTML = "<strong>SYSTEM NOTE:</strong> " + questions[current].expl;
         document.getElementById('action-btn').classList.remove('hidden');
     }
 
@@ -239,22 +260,12 @@
         document.getElementById('result-view').classList.remove('hidden');
         document.getElementById('final-pts').innerText = score;
         
-        const msg = document.getElementById('result-msg');
-        const status = document.getElementById('final-status');
+        sndF.play().catch(e => console.log("Audio playback blocked"));
         
-        if(score >= 800) {
-            status.innerText = "MASTER ENGINEER";
-            status.style.color = "var(--neon-green)";
-            msg.innerText = "Grid stability at 100%. The city is safe thanks to your expertise!";
-        } else if(score >= 500) {
-            status.innerText = "TECHNICIAN CERTIFIED";
-            status.style.color = "var(--neon-blue)";
-            msg.innerText = "Power is mostly restored. Minor flickering reported.";
-        } else {
-            status.innerText = "BLACKOUT DETECTED";
-            status.style.color = "var(--neon-red)";
-            msg.innerText = "Critical failure. Please review your circuit diagrams and try again.";
-        }
+        const msg = document.getElementById('result-msg');
+        if(score >= 900) msg.innerText = "Exceptional! The grid is fully operational. Grid security level is optimal.";
+        else if(score >= 700) msg.innerText = "System stabilized. Normal operations successfully resumed.";
+        else msg.innerText = "Suboptimal performance. Review standard schematics to handle high power lines.";
     }
 </script>
 </body>
