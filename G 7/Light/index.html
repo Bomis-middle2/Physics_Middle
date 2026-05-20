@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Innovine: Optical Science Mission Control</title>
+    <style>
+        :root {
+            --primary-blue: #4361ee;
+            --electric-yellow: #ffd60a;
+            --success-green: #2ec4b6;
+            --error-red: #e71d36;
+            --light-bg: #f0f2f5;
+            --text-dark: #2b2d42;
+            --panel-white: #ffffff;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--panel-white);
+            border-radius: 28px;
+            padding: 25px;
+            margin: 10px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            min-height: 550px;
+            border-top: 10px solid var(--primary-blue);
+        }
+
+        /* --- SPLASH SCREEN (Blinks Once) --- */
+        #splash-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: blinkOnce 2s ease-in-out forwards;
+        }
+
+        .splash-logo {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: contain;
+        }
+
+        @keyframes blinkOnce {
+            0% { opacity: 0; }
+            25% { opacity: 1; }
+            75% { opacity: 1; }
+            100% { opacity: 0; pointer-events: none; }
+        }
+
+        /* --- GAME UI --- */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .case-badge { background: var(--primary-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; letter-spacing: 1px; }
+        .score-box { font-weight: 800; color: var(--primary-blue); }
+
+        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 20px; }
+        
+        .image-container { 
+            width: 100%; margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 2px solid #f1f3f5;
+            display: flex; justify-content: center; background: #fff; padding: 10px;
+        }
+        .q-img { max-height: 160px; object-fit: contain; display: block; }
+
+        .options-grid { display: grid; gap: 12px; }
+        .opt-btn {
+            background: #fff; border: 2px solid #edf2f4; padding: 16px;
+            border-radius: 15px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
+            color: var(--text-dark); font-weight: 500; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .opt-btn:hover { border-color: var(--primary-blue); }
+        
+        .opt-btn.correct { background: var(--success-green) !important; color: white; border-color: var(--success-green); transform: scale(1.02); }
+        .opt-btn.wrong { background: var(--error-red) !important; color: white; border-color: var(--error-red); opacity: 0.7; }
+
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 15px; display: none; line-height: 1.5; margin-bottom: 10px; animation: slideUp 0.4s ease; }
+        .hint-mode { background: #fff3cd; border-left: 5px solid var(--electric-yellow); color: #856404; }
+        .expl-mode { background: #d1ecf1; border-left: 5px solid var(--primary-blue); color: #0c5460; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #action-btn { 
+            width: 100%; margin-top: 20px; padding: 18px; 
+            background: var(--primary-blue); color: white; 
+            border: none; border-radius: 16px; font-weight: 800; 
+            font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div id="splash-screen">
+        <img src="assets/logo.png" alt="Innovine Logo" class="splash-logo">
+    </div>
+
+    <div id="intro-view" class="hidden" style="text-align: center;">
+        <div style="margin-bottom: 15px;">
+            <img src="assets/logo.png" alt="Innovine Logo" style="max-height: 60px; object-fit: contain;">
+        </div>
+        <h1 style="color: var(--primary-blue); margin: 0; font-weight: 800;">Optical Science</h1>
+        <p style="color: #6c757d; margin-top: 5px; margin-bottom: 20px;">The Physics of Light</p>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dee2e6;">
+            Welcome to Optical Mission Control. Ready to track mirror reflections and chart light paths? You have <b>2 attempts</b> per structural network node.
+        </div>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">ENGAGE SYSTEM</button>
+    </div>
+
+    <div id="quiz-view" class="hidden">
+        <div class="header">
+            <div class="case-badge">NODE #<span id="q-num">1</span></div>
+            <div class="score-box">LUMENS: <span id="score-val">0</span> lm</div>
+        </div>
+        <div id="q-text" class="question-text"></div>
+        <div id="image-area"></div>
+        <div id="options-area" class="options-grid"></div>
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="hidden">CONTINUE →</button>
+    </div>
+
+    <div id="result-view" class="hidden" style="text-align:center;">
+        <div id="result-icon" style="font-size: 4rem; margin-bottom: 10px;">🏆</div>
+        <h2 style="color: var(--primary-blue);">Mission Report</h2>
+        <div style="font-size: 4.5rem; font-weight: 900; color: var(--text-dark); margin: 10px 0;"><span id="final-pts">0</span>/1000</div>
+        <p id="result-msg" style="color:#6c757d; margin-bottom:30px; line-height: 1.4;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">REBOOT SYSTEM</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { q: "You are standing in front of a mirror and raise your left hand. The image raises its right hand. This is called:", opts: ["Reflection", "Refraction", "Lateral Inversion", "Shadow formation"], ans: 2, hint: "Think about how a plane mirror swaps horizontal directions sideways.", expl: "This horizontal reversal effect is called lateral inversion, where the left side of the object appears as the right side of its reflection." },
+        { q: "Why can't you see the candle flame through the bent tube?", img: "assets/q2.png", opts: ["Light is blocked by air.", "Light travels in a straight line (Rectilinear Propagation).", "The tube is too dark.", "Light reflects off the bend."], ans: 1, hint: "Recall how light propagates through a structural medium without mirrors.", expl: "Light exhibits rectilinear propagation, meaning it travels exclusively in straight lines. It cannot naturally turn or bend around the tube walls." },
+        { q: "An object is placed 2 meters in front of a plane mirror. How far is the image from the object?", opts: ["2 meters", "4 meters", "0 meters", "1 meter"], ans: 1, hint: "Add the object-to-mirror distance to the mirror-to-image distance.", expl: "In a plane mirror, the image forms the exact same distance behind the mirror surface as the object is in front of it: 2m + 2m = 4 meters." },
+        { q: "To see your full vertical height clearly in a flat plane mirror, the mirror must be at least:", opts: ["Your full height.", "Half your height.", "Double your height.", "1 foot tall."], ans: 1, hint: "Consider the angle geometry of reflections traveling from your head and feet to your eyes.", expl: "By applying the geometry of regular reflections, a mirror needs to span only half your structural height to project your complete vertical frame." },
+        { q: "A student claims: 'A shadow is always the same color as the object.' Correct this misconception.", opts: ["A shadow is the color of light.", "A shadow is always dark/black regardless of the object's color.", "A shadow has no color.", "The statement is correct."], ans: 1, hint: "What does an opaque barrier do to light rays trying to reach a target screen?", expl: "Shadows simply mark empty areas where light rays have been completely blocked out. Because there is an absence of light, they remain dark/black regardless of the object's color." },
+        { q: "Why is the identifier word 'AMBULANCE' printed in reverse on the front of emergency vehicles?", opts: ["It is a design style.", "So, drivers ahead can read it correctly in their rearview mirrors.", "To save paint.", "By mistake."], ans: 1, hint: "Think about the lateral inversion property of the flat mirrors inside cars ahead.", expl: "Rearview mirrors laterally invert reflection imagery. Printing the text in reverse ensures drivers ahead see it normally in their mirrors." },
+        { q: "Why is it impossible to locate or cast any visible shadows in a completely dark room?", opts: ["There is no object.", "A shadow requires a source of light and a screen.", "Shadows only exist in the sun.", "The shadow is hidden by the dark."], ans: 1, hint: "What essential energy source must be blocked to form a shadow region?", expl: "Shadows require a structural light source to be blocked, an obstruction object, and a screen to receive the final light boundary projection." },
+        { q: "During a lunar eclipse event, which celestial alignment body occupies the middle position?", img: "assets/q8.png", opts: ["The Moon", "The Earth", "The Sun", "A Star"], ans: 1, hint: "Which planet must cast its structural shadow onto the lunar surface?", expl: "A lunar eclipse occurs when the Earth aligns directly between the Sun and the Moon, blocking sunlight from reaching the moon's surface." },
+        { q: "Identify the option that does NOT belong to the group of translucent materials listed below:", opts: ["Frosted glass", "Clear water", "Oiled paper", "Tissue paper"], ans: 1, hint: "Which choice allows light to pass through perfectly cleanly without any scattering?", expl: "Frosted glass, oiled paper, and tissue paper scatter light rays (translucent). Clear water allows clean, clear vision, making it transparent." },
+        { q: "A driver utilizes a convex mirror as their side rearview mirror. What is the main structural advantage?", opts: ["It provides a wider field of view.", "It makes images look larger.", "It changes the color of cars.", "It works better at night."], ans: 0, hint: "Think about the curved shape of the glass and how it curves outward.", expl: "Convex mirrors bulge outwards, reflecting light from a much wider angle to give the operator an expanded structural field of view." }
+    ];
+
+    let current = 0, score = 0, attempts = 0;
+    
+    // --- AUDIO INSTANCES ---
+    const sndC = new Audio('assets/correct.mp3');
+    const sndW = new Audio('assets/wrong.mp3');
+    const sndF = new Audio('assets/freesound_community-claps-44774.mp3');
+
+    window.onload = () => {
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.display = 'none';
+            document.getElementById('intro-view').classList.remove('hidden');
+        }, 2000);
+    };
+
+    document.getElementById('start-btn').onclick = () => {
+        document.getElementById('intro-view').classList.add('hidden');
+        document.getElementById('quiz-view').classList.remove('hidden');
+        loadQuestion();
+    };
+
+    function loadQuestion() {
+        attempts = 0;
+        const q = questions[current];
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').classList.add('hidden');
+        document.getElementById('q-num').innerText = current + 1;
+        document.getElementById('q-text').innerText = q.q;
+        
+        const imgArea = document.getElementById('image-area');
+        imgArea.innerHTML = q.img ? `<div class="image-container"><img src="${q.img}" class="q-img"></div>` : "";
+        
+        const area = document.getElementById('options-area');
+        area.innerHTML = "";
+        q.opts.forEach((o, i) => {
+            const b = document.createElement('button');
+            b.className = 'opt-btn';
+            b.innerText = o;
+            b.onclick = () => handleChoice(i, b);
+            area.appendChild(b);
+        });
+    }
+
+    function handleChoice(i, b) {
+        if(i === questions[current].ans) {
+            b.classList.add('correct');
+            score += 100;
+            document.getElementById('score-val').innerText = score;
+            sndC.play().catch(e => console.log("Audio playing..."));
+            endTurn();
+        } else {
+            attempts++;
+            b.classList.add('wrong');
+            b.disabled = true;
+            sndW.play().catch(e => console.log("Audio playing..."));
+            if(attempts === 1) {
+                const f = document.getElementById('feedback-box');
+                f.className = 'feedback hint-mode';
+                f.innerHTML = "🔍 <b>DIAGNOSTIC HINT:</b> " + questions[current].hint;
+                f.style.display = 'block';
+            } else {
+                endTurn();
+            }
+        }
+    }
+
+    function endTurn() {
+        document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
+        document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
+        const f = document.getElementById('feedback-box');
+        f.className = 'feedback expl-mode';
+        f.innerHTML = "📋 <b>LEARNING HUB:</b> " + questions[current].expl;
+        f.style.display = 'block';
+        document.getElementById('action-btn').classList.remove('hidden');
+    }
+
+    document.getElementById('action-btn').onclick = () => {
+        current++;
+        if(current < questions.length) loadQuestion();
+        else showResults();
+    };
+
+    function showResults() {
+        document.getElementById('quiz-view').classList.add('hidden');
+        document.getElementById('result-view').classList.remove('hidden');
+        document.getElementById('final-pts').innerText = score;
+        
+        sndF.play().catch(e => console.log("Audio playback blocked"));
+        
+        const msg = document.getElementById('result-msg');
+        if(score >= 900) msg.innerText = "Highly luminous! Your optical tracking rays and inversion mechanics are beautifully calibrated.";
+        else if(score >= 700) msg.innerText = "Propagation stable. System mirrors have successfully completed focal verification.";
+        else msg.innerText = "Suboptimal luminosity readings. Review geometric propagation and mirror matrix guidelines.";
+    }
+</script>
+</body>
+</html>
