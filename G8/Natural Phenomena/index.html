@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Innovine: Natural Phenomena Station</title>
+    <style>
+        :root {
+            --primary-blue: #4361ee;
+            --electric-yellow: #ffd60a;
+            --success-green: #2ec4b6;
+            --error-red: #e71d36;
+            --light-bg: #f0f2f5;
+            --text-dark: #2b2d42;
+            --panel-white: #ffffff;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--panel-white);
+            border-radius: 28px;
+            padding: 25px;
+            margin: 10px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            min-height: 550px;
+            border-top: 10px solid var(--primary-blue);
+        }
+
+        /* --- SPLASH SCREEN (Blinks Once) --- */
+        #splash-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: blinkOnce 2s ease-in-out forwards;
+        }
+
+        .splash-logo {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: contain;
+        }
+
+        @keyframes blinkOnce {
+            0% { opacity: 0; }
+            25% { opacity: 1; }
+            75% { opacity: 1; }
+            100% { opacity: 0; pointer-events: none; }
+        }
+
+        /* --- GAME UI --- */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .case-badge { background: var(--primary-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; letter-spacing: 1px; }
+        .score-box { font-weight: 800; color: var(--primary-blue); }
+
+        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 20px; }
+        
+        /* OPTIMIZED ENLARGED IMAGE BOX CONTAINER */
+        .image-container { 
+            width: 100%; 
+            margin-bottom: 20px; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            border: 2px solid #f1f3f5;
+            display: flex; 
+            justify-content: center; 
+            background: #fff; 
+            padding: 5px;
+        }
+        .q-img { 
+            width: 100%;
+            max-height: 240px; 
+            object-fit: contain; 
+            display: block; 
+        }
+
+        .options-grid { display: grid; gap: 12px; }
+        .opt-btn {
+            background: #fff; border: 2px solid #edf2f4; padding: 16px;
+            border-radius: 15px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
+            color: var(--text-dark); font-weight: 500; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .opt-btn:hover { border-color: var(--primary-blue); }
+        
+        .opt-btn.correct { background: var(--success-green) !important; color: white; border-color: var(--success-green); transform: scale(1.02); }
+        .opt-btn.wrong { background: var(--error-red) !important; color: white; border-color: var(--error-red); opacity: 0.7; }
+
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 15px; display: none; line-height: 1.5; margin-bottom: 10px; animation: slideUp 0.4s ease; }
+        .hint-mode { background: #fff3cd; border-left: 5px solid var(--electric-yellow); color: #856404; }
+        .expl-mode { background: #d1ecf1; border-left: 5px solid var(--primary-blue); color: #0c5460; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #action-btn { 
+            width: 100%; margin-top: 20px; padding: 18px; 
+            background: var(--primary-blue); color: white; 
+            border: none; border-radius: 16px; font-weight: 800; 
+            font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div id="splash-screen">
+        <img src="assets/logo.png" alt="Innovine Logo" class="splash-logo">
+    </div>
+
+    <div id="intro-view" class="hidden" style="text-align: center;">
+        <div style="margin-bottom: 15px;">
+            <img src="assets/logo.png" alt="Innovine Logo" style="max-height: 60px; object-fit: contain;">
+        </div>
+        <h1 style="color: var(--primary-blue); margin: 0; font-weight: 800;">Earth & Atmosphere</h1>
+        <p style="color: #6c757d; margin-top: 5px; margin-bottom: 20px;">Natural Phenomena (Grade 8)</p>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dee2e6;">
+            Welcome to the Environmental Dynamics Station. Ready to measure tectonic scale factors and chart atmospheric charges? You have <b>2 attempts</b> per tracking terminal node.
+        </div>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">ENGAGE SYSTEM</button>
+    </div>
+
+    <div id="quiz-view" class="hidden">
+        <div class="header">
+            <div class="case-badge">NODE #<span id="q-num">1</span></div>
+            <div class="score-box">ENERGY: <span id="score-val">0</span> J</div>
+        </div>
+        <div id="q-text" class="question-text"></div>
+        <div id="image-area"></div>
+        <div id="options-area" class="options-grid"></div>
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="hidden">CONTINUE →</button>
+    </div>
+
+    <div id="result-view" class="hidden" style="text-align:center;">
+        <div id="result-icon" style="font-size: 4rem; margin-bottom: 10px;">🏆</div>
+        <h2 style="color: var(--primary-blue);">Mission Report</h2>
+        <div style="font-size: 4.5rem; font-weight: 900; color: var(--text-dark); margin: 10px 0;"><span id="final-pts">0</span>/1000</div>
+        <p id="result-msg" style="color:#6c757d; margin-bottom:30px; line-height: 1.4;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">REBOOT SYSTEM</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { q: "During a thunderstorm, why should you avoid taking shelter under a tall, isolated tree?", opts: ["The tree might fall on you.", "Tall objects are more likely to be struck by lightning.", "The leaves will get you wet.", "Trees attract rain."], ans: 1, hint: "Think about which paths offer the shortest vertical distance for an atmospheric electrical discharge to reach the ground.", expl: "Lightning tends to strike the tallest structures in an area because they provide the shortest resistance path for the accumulated cloud charges to hit the earth." },
+        { q: "Analyze the device shown here. What is the primary operational use of this mechanism?", img: "assets/q2.png", opts: ["To measure temperature fluctuations.", "To detect and test the presence of electric charge on a body.", "To produce gold elements.", "To measure absolute physical weight."], ans: 1, hint: "Look at the metal rod extending down to two delicate metallic leaves inside a protective glass jar.", expl: "This device is a gold-leaf electroscope. When a charged object touches the top plate, the charge transfers down to the leaves, forcing them to repel each other and proving charge presence." },
+        { q: "On the Richter scale, how much more powerful is an earthquake of magnitude 6 compared to magnitude 4?", opts: ["2 times more powerful.", "20 times more powerful.", "100 times more powerful (Logarithmic scale).", "10 times more powerful."], ans: 2, hint: "The Richter scale is logarithmic. Each whole number increase represents a 10-fold increase in structural wave amplitude.", expl: "Because the scale is logarithmic, an increase of 2 full points means the ground vibration amplitude increases by a power of 10 times 10, which equals 100 times more power." },
+        { q: "What is the baseline structural cause behind the violent shaking of the crust during an earthquake?", opts: ["Large storm waves crashing in the ocean.", "Heavy torrential rainfall eroding foundation columns.", "Movement or collision of tectonic plates in the Earth's crust.", "Movement of high-speed cyclic hurricane winds."], ans: 2, hint: "Think about deep geological boundaries sliding past each other and releasing stored elastic strain energy.", expl: "The Earth's crust is fragmented into massive tectonic plates. When these plates jam at their boundaries and suddenly slip or collide, they release massive energy waves that cause structural ground shaking." },
+        { q: "An individual notes: 'Lightning is a flow of magnetic energy surging from the ground up to the sky.' Identify the flaw.", opts: ["Lightning is made of pure thermodynamic fire.", "Lightning is a massive electric discharge between clouds or clouds and the ground.", "Lightning only happens during freezing winter intervals.", "Clouds act as pure conductors."], ans: 1, hint: "What kind of energy is created when massive numbers of positive and negative static ions break through air insulation?", expl: "Lightning is not a magnetic anomaly; it is a giant static electric discharge. It happens when accumulated positive and negative charges build up enough voltage to crack open the air insulation barrier." },
+        { q: "What is the operational purpose of a 'Lightning Conductor' installed along the exterior of high-rise structures?", opts: ["To make the building look modern.", "To provide a safe path for lightning to travel into the ground.", "To stop the rain.", "To store electricity for the building."], ans: 1, hint: "Think about intercepting a dangerous high-voltage strike and bleeding it safely down to a zero-potential earth terminal.", expl: "A lightning conductor uses an elevated metal spike connected to thick copper bands that run down to the earth, giving the giant electrical current a safe, low-resistance route away from the building's structural frame." },
+        { q: "Why does a plastic comb easily attract small pieces of paper after being rubbed vigorously through dry hair?", opts: ["The comb becomes a permanent ferrous magnet.", "The comb acquires an electrostatic charge through friction.", "The paper features sticky surface elements.", "Local gravity pull increases uniquely."], ans: 1, hint: "Consider what happens to stationary electrons when two different materials rub against each other.", expl: "Frictional rubbing transfers electrons between your hair and the plastic comb. The comb accumulates static electric charge, which can attract lightweight, uncharged objects like paper pieces through induction." },
+        { q: "What do the complex 'zig-zag' tracking lines printed onto a seismograph readout represent?", img: "assets/q8.png", opts: ["Atmospheric wind speed variations.", "Seismic waves (Earthquake vibrations).", "Ambient temperature change factors.", "Mean sea level deviations."], ans: 1, hint: "What kind of mechanical waves travel outward from the epicenter point of a crustal rupture?", expl: "The zig-zag lines are records of seismic waves (vibrations) moving through the Earth. A heavy pendulum system stays still due to inertia while the vibrating ground moves the paper roll underneath." },
+        { q: "Identify the safety measure from this list that does NOT belong to standard Earthquake response protocol:", opts: ["Hide safely under a sturdy table structure.", "Stay completely away from tall high-rise buildings.", "Go to an open, low-lying area.", "Avoid standing next to wide glass window panes."], ans: 2, hint: "One of these ideas is a dangerous place to be if heavy objects fall, but is a safe strategy during severe lightning storms.", expl: "Hiding under tables, moving away from high-rises, and avoiding glass protect you from falling debris during an earthquake. Moving to a low-lying open area is a lightning safety rule, not an earthquake one." },
+        { q: "Two dynamic cloud formations have built up a massive difference in net electric charge polarity. What happens next?", opts: ["Rain begins to fall.", "A colorful rainbow forms.", "An electric lightning discharge arc flashes.", "An earthquake fault ruptures."], ans: 2, hint: "Think about what occurs when an extreme voltage potential difference completely overwhelms the air insulating barrier.", expl: "When the potential voltage difference between separate cloud masses becomes high enough, it breaches the resistance of the intervening air, causing a massive lightning discharge flash." }
+    ];
+
+    let current = 0, score = 0, attempts = 0;
+    
+    // --- AUDIO INSTANCES ---
+    const sndC = new Audio('assets/correct.mp3');
+    const sndW = new Audio('assets/wrong.mp3');
+    const sndF = new Audio('assets/freesound_community-claps-44774.mp3');
+
+    window.onload = () => {
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.display = 'none';
+            document.getElementById('intro-view').classList.remove('hidden');
+        }, 2000);
+    };
+
+    document.getElementById('start-btn').onclick = () => {
+        document.getElementById('intro-view').classList.add('hidden');
+        document.getElementById('quiz-view').classList.remove('hidden');
+        loadQuestion();
+    };
+
+    function loadQuestion() {
+        attempts = 0;
+        const q = questions[current];
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').classList.add('hidden');
+        document.getElementById('q-num').innerText = current + 1;
+        document.getElementById('q-text').innerText = q.q;
+        
+        const imgArea = document.getElementById('image-area');
+        imgArea.innerHTML = q.img ? `<div class="image-container"><img src="${q.img}" class="q-img"></div>` : "";
+        
+        const area = document.getElementById('options-area');
+        area.innerHTML = "";
+        q.opts.forEach((o, i) => {
+            const b = document.createElement('button');
+            b.className = 'opt-btn';
+            b.innerText = o;
+            b.onclick = () => handleChoice(i, b);
+            area.appendChild(b);
+        });
+    }
+
+    function handleChoice(i, b) {
+        if(i === questions[current].ans) {
+            b.classList.add('correct');
+            score += 100;
+            document.getElementById('score-val').innerText = score;
+            sndC.play().catch(e => console.log("Audio waiting..."));
+            endTurn();
+        } else {
+            attempts++;
+            b.classList.add('wrong');
+            b.disabled = true;
+            sndW.play().catch(e => console.log("Audio waiting..."));
+            if(attempts === 1) {
+                const f = document.getElementById('feedback-box');
+                f.className = 'feedback hint-mode';
+                f.innerHTML = "🔍 <b>DIAGNOSTIC HINT:</b> " + questions[current].hint;
+                f.style.display = 'block';
+            } else {
+                endTurn();
+            }
+        }
+    }
+
+    function endTurn() {
+        document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
+        document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
+        const f = document.getElementById('feedback-box');
+        f.className = 'feedback expl-mode';
+        f.innerHTML = "📋 <b>LEARNING HUB:</b> " + questions[current].expl;
+        f.style.display = 'block';
+        document.getElementById('action-btn').classList.remove('hidden');
+    }
+
+    document.getElementById('action-btn').onclick = () => {
+        current++;
+        if(current < questions.length) loadQuestion();
+        else showResults();
+    };
+
+    function showResults() {
+        document.getElementById('quiz-view').classList.add('hidden');
+        document.getElementById('result-view').classList.remove('hidden');
+        document.getElementById('final-pts').innerText = score;
+        
+        sndF.play().catch(e => console.log("Audio playback waiting"));
+        
+        const msg = document.getElementById('result-msg');
+        if(score >= 900) msg.innerText = "Exceptional discharge capacity! Your geological tracking vectors and electrostatic mappings are perfectly grounded.";
+        else if(score >= 700) msg.innerText = "System stable. Atmospheric static indices successfully parsed inside acceptable variances.";
+        else msg.innerText = "Unstable energy readings. Re-evaluate friction field equations and fault line stress values.";
+    }
+</script>
+</body>
+</html>
