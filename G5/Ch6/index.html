@@ -2,23 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Science Lab: Force & Friction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innovine Science Lab - Measurement & Motion</title>
     <style>
         :root {
-            --lab-blue: #1a73e8;
-            --science-yellow: #f9ab00;
-            --success-green: #1e8e3e;
-            --error-red: #d93025;
-            --panel-bg: #ffffff;
-            --body-bg: #f1f3f4;
+            --primary: #2980b9;
+            --accent: #3498db;
+            --success: #27ae60;
+            --danger: #c0392b;
+            --bg: #f4f7f6;
+            --card-shadow: 0 8px 30px rgba(0,0,0,0.15);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--body-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
             margin: 0;
             display: flex;
             justify-content: center;
@@ -26,299 +24,345 @@
             min-height: 100vh;
         }
 
-        #app-container {
-            width: 100%;
-            max-width: 500px;
-            background: var(--panel-bg);
-            border-radius: 24px;
-            padding: 25px;
-            margin: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
-            min-height: 550px;
-            border-top: 8px solid var(--lab-blue);
-        }
-
-        /* --- LOGO SPLASH SCREEN --- */
-        #splash-screen {
-            position: absolute;
-            top: 0; left: 0; 
-            width: 100%; height: 100%;
-            background: #ffffff;
+        /* Initializing Screen */
+        #brand-screen {
+            position: fixed;
+            inset: 0;
+            background: white;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
+            z-index: 1000;
         }
-
-        .logo-main { 
-            width: 280px; 
-            height: auto; 
-            max-width: 85%; 
-            margin-bottom: 30px;
-            display: block;
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border-left-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
         }
-
-        .loading-ring { 
-            border: 4px solid #f3f3f3; 
-            border-top: 4px solid var(--lab-blue); 
-            border-radius: 50%; 
-            width: 40px; 
-            height: 40px; 
-            animation: spin 1s linear infinite; 
-        }
-
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- GAME UI --- */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .lab-badge { background: var(--lab-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; }
-        .score-box { font-weight: 800; color: var(--lab-blue); }
-
-        .timer-track { width: 100%; height: 8px; background: #e8eaed; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
-        #timer-bar { height: 100%; width: 100%; background: var(--lab-blue); transition: width 1s linear; }
-
-        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.4; margin-bottom: 15px; }
-
-        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.9rem; background: #fff; }
-        .data-table th, .data-table td { border: 1px solid #dadce0; padding: 12px; text-align: left; }
-        .data-table th { background: #f1f3f4; color: #202124; font-weight: 700; }
-
-        .options-grid { display: grid; gap: 10px; }
-        .opt-btn {
-            background: #fff; border: 2px solid #dadce0; padding: 16px;
-            border-radius: 14px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
-            color: #3c4043; font-weight: 500;
-        }
-        
-        .opt-btn.correct { background: var(--success-green) !important; color: white; border-color: var(--success-green); }
-        .opt-btn.wrong { background: var(--error-red) !important; color: white; border-color: var(--error-red); opacity: 0.7; }
-
-        .feedback { margin-top: 15px; padding: 15px; border-radius: 14px; display: none; line-height: 1.4; font-size: 0.9rem; }
-        .hint-box { background: #fff7e0; border-left: 5px solid var(--science-yellow); color: #b06000; }
-        .expl-box { background: #e8f0fe; border-left: 5px solid var(--lab-blue); color: #1967d2; }
-
-        #action-btn { 
-            width: 100%; margin-top: 20px; padding: 18px; 
-            background: var(--lab-blue); color: white; 
-            border: none; border-radius: 16px; font-weight: 700; 
-            font-size: 1rem; cursor: pointer;
+        /* Main Container */
+        .game-card {
+            width: 90%;
+            max-width: 700px;
+            background: white;
+            padding: 35px;
+            border-radius: 25px;
+            box-shadow: var(--card-shadow);
+            border: 4px solid var(--primary);
+            position: relative;
         }
 
         .hidden { display: none !important; }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .branding-title { font-size: 1.5rem; font-weight: bold; color: var(--primary); margin: 0; }
+
+        .hud { font-weight: bold; color: #2c3e50; display: flex; gap: 20px; }
+
+        .progress-container { height: 12px; background: #eee; border-radius: 10px; margin: 15px 0; overflow: hidden; }
+        #progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s; }
+
+        .question-text { font-size: 1.2rem; color: #2c3e50; line-height: 1.6; margin-bottom: 20px; font-weight: 500; }
+
+        .options-grid { display: grid; gap: 12px; }
+        .option-btn {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: left;
+            transition: all 0.2s;
+            color: #34495e;
+        }
+        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #f0f7fc; }
+        .correct { background: var(--success) !important; color: white; border-color: #1e8449 !important; font-weight: bold; }
+        .wrong { background: var(--danger) !important; color: white; border-color: #922b21 !important; animation: shake 0.4s; }
+
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+
+        .feedback-box { margin-top: 20px; padding: 15px; border-radius: 12px; background: #ebf5fb; border-left: 5px solid var(--primary); color: #2c3e50; line-height: 1.5; }
+
+        .btn-next {
+            margin-top: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            float: right;
+            box-shadow: 0 4px 0 #1b4f72;
+            transition: background 0.2s;
+        }
+        .btn-next:hover { background: var(--accent); }
+        .btn-next:active { transform: translateY(2px); box-shadow: 0 2px 0 #1b4f72; }
     </style>
 </head>
 <body>
 
-<div id="app-container">
-    <div id="splash-screen">
-        <img src="assets/logo.png" class="logo-main" onerror="this.src='https://via.placeholder.com/280x100?text=INNOVINE'" alt="Logo">
-        <div class="loading-ring"></div>
-    </div>
+<div id="brand-screen">
+    <div class="spinner"></div>
+    <h2 style="color: #2c3e50; font-family: sans-serif; margin: 0;">Innovine Science Lab</h2>
+    <p style="color: #7f8c8d; margin-top: 5px;">Loading Measurement & Motion Experiments...</p>
+</div>
 
-    <div id="intro-view" class="hidden" style="text-align: center;">
-        <div style="font-size: 3.5rem; margin-bottom: 15px;">🧪</div>
-        <h1 style="color: var(--lab-blue); margin: 0;">Force & Friction Lab</h1>
-        <p style="color: #5f6368; margin-top: 10px;">Grade 5 Science Challenge</p>
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dadce0;">
-            Welcome, Researcher! Analyze experimental data and identify forces. You have <b>2 attempts</b> per question.
+<div class="game-card hidden" id="game-card">
+    <div class="header">
+        <div class="branding-title">Innovine Lab</div>
+        <div class="hud">
+            <span>Challenge: <span id="q-num">1</span>/12</span>
+            <span>Stars: ⭐ <span id="score">0</span></span>
         </div>
-        <button id="start-btn" style="width:100%; padding:20px; background:var(--lab-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">START RESEARCH</button>
     </div>
 
-    <div id="quiz-view" class="hidden">
-        <div class="header">
-            <div class="lab-badge">LOG #<span id="q-num">1</span></div>
-            <div class="score-box">XP: <span id="score-val">0</span></div>
+    <div class="progress-container"><div id="progress-bar"></div></div>
+
+    <div id="quiz-content">
+        <div class="question-text" id="q-text"></div>
+        <div class="options-grid" id="options-box"></div>
+        <div id="feedback-area" class="feedback-box hidden"></div>
+        <div style="height: 60px;">
+            <button id="next-btn" class="btn-next hidden" onclick="handleNext()">Next Challenge ➡️</button>
         </div>
-        <div class="timer-track"><div id="timer-bar"></div></div>
-        <div id="q-text" class="question-text"></div>
-        <div id="table-area"></div>
-        <div id="options-area" class="options-grid"></div>
-        <div id="feedback-box" class="feedback"></div>
-        <button id="action-btn" class="hidden">NEXT LOG →</button>
     </div>
 
-    <div id="result-view" class="hidden" style="text-align:center;">
-        <div style="font-size: 4rem; margin-bottom: 10px;">🏅</div>
-        <h2 style="color: var(--lab-blue);">Lab Evaluation</h2>
-        <div style="font-size: 4.5rem; font-weight: 900; color: #3c4043; margin: 10px 0;"><span id="final-pts">0</span>/10</div>
-        <p id="result-msg" style="color:#5f6368; margin-bottom:30px;"></p>
-        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--lab-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">RESTART RESEARCH</button>
+    <div id="result-screen" class="hidden" style="text-align: center;">
+        <h1 style="color: var(--primary);">Lab Assessment Complete!</h1>
+        <h2 id="final-score" style="font-size: 3rem; margin: 10px 0; color: #2c3e50;">0/12</h2>
+        <p id="result-msg" style="font-size: 1.2rem; color: #7f8c8d; margin-bottom: 25px;"></p>
+        <button class="btn-next" style="float: none;" onclick="location.reload()">Restart Lab</button>
     </div>
 </div>
 
 <script>
-    // --- SOUND SYSTEM ---
-    const sfx = {
-        correct: new Audio('assets/correct.mp3'),
-        wrong: new Audio('assets/wrong.mp3'),
-        victory: new Audio('assets/freesound_community-claps-44774.mp3')
-    };
-
+    // 12 Full Grade 6 Physics Questions compiled directly from curriculum requirements
     const questions = [
-        { 
-            q: "Investigation: Three students pushed identical boxes. Based on the table, why did Student A need the least effort?", 
-            table: `<tr><th>Student</th><th>Surface</th><th>Result</th></tr>
-                    <tr><td>A</td><td>Marble floor</td><td>Box moved easily</td></tr>
-                    <tr><td>B</td><td>Grass</td><td>Box moved slowly</td></tr>
-                    <tr><td>C</td><td>Sand</td><td>Box hardly moved</td></tr>`,
-            opts: ["Marble increases gravity", "Marble has less friction", "Sand reduces force", "Grass increases mass"], 
-            ans: 1, hint: "Smoother surfaces allow objects to slide more easily.", expl: "Marble is a smooth surface that offers very little resistance (friction) compared to grass or sand." 
+        {
+            q: "Riya measures a classroom using her footsteps. Her friend measures the same classroom and gets a different answer. Why are their measurements different?",
+            options: [
+                "The classroom changed its size during the measurements.",
+                "Their footsteps are of different lengths.",
+                "One student counted incorrectly.",
+                "The floor of the classroom is uneven."
+            ],
+            ans: 1,
+            explain: "Footsteps, hand spans, and paces are non-standard units of length. They vary from person to person because people have different body sizes."
         },
-        { 
-            q: "After rain, the corridor became slippery. Why did the principal ask students to walk carefully?", 
-            opts: ["Water increases muscular force", "Friction between shoes and floor decreases", "Gravity becomes stronger", "Air resistance increases"], 
-            ans: 1, hint: "Slippery surfaces mean your shoes can't 'grip' the floor.", expl: "Water acts as a lubricant, reducing friction and making it easier to slip." 
+        {
+            q: "A tailor always measures cloth using a standard metal measuring tape or meter rod instead of hand span. What is the main advantage of doing this?",
+            options: [
+                "It makes the measurement process much faster.",
+                "It makes the cloth look longer to the customer.",
+                "It provides a uniform, reliable, and accurate measurement.",
+                "It makes the cloth much easier to fold after cutting."
+            ],
+            ans: 2,
+            explain: "Standard units of measurement ensure consistency across the world so that everyone records and understands the exact same quantity."
         },
-        { 
-            q: "Design Challenge: Rohan is designing shoes for mountain climbing. Which sole should he select for safety?", 
-            opts: ["Smooth plastic sole", "Metal sole", "Rough rubber sole", "Glass surface sole"], 
-            ans: 2, hint: "Climbers need 'grippy' soles to stay on rocks.", expl: "Rough surfaces increase friction, providing the grip needed for climbing." 
+        {
+            q: "A student wants to measure the thickness of a small coin. Which standard unit of length is most suitable for this task?",
+            options: [
+                "Kilometer",
+                "Meter",
+                "Centimeter",
+                "Millimeter"
+            ],
+            ans: 3,
+            explain: "The millimeter (mm) is the smallest common graduation on standard school rulers and is perfect for tiny dimensions like the thickness of a wire or coin."
         },
-        { 
-            q: "Data Interpretation: Students placed objects in water. What scientific conclusion is correct?", 
-            table: `<tr><th>Object</th><th>Observation</th></tr>
-                    <tr><td>Stone</td><td>Sank</td></tr>
-                    <tr><td>Plastic ball</td><td>Floated</td></tr>
-                    <tr><td>Wooden block</td><td>Floated</td></tr>`,
-            opts: ["Water pushes objects upward", "Floating depends only on size", "Gravity stops in water", "Floating objects have no weight"], 
-            ans: 0, hint: "Why do some objects stay on top of the water?", expl: "Water exerts an upward force (buoyancy) that supports floating objects." 
+        {
+            q: "Four students recorded the distance they travel to reach school: Aman travels 500 m, Neha travels 2 km, Kabir travels 800 m, and Sara travels 1 km. Who travels the longest distance?",
+            options: [
+                "Aman",
+                "Neha",
+                "Kabir",
+                "Sara"
+            ],
+            ans: 1,
+            explain: "Converting all measurements to meters: Aman = 500 m, Kabir = 800 m, Sara = 1000 m (1 km), and Neha = 2000 m (2 km). Therefore, Neha travels the furthest."
         },
-        { 
-            q: "Riya pushes an empty trolley (fast) vs a loaded trolley (slow). Why the difference?", 
-            opts: ["Force decreased", "Mass increased needing more force", "Gravity stopped working", "Speed controls force"], 
-            ans: 1, hint: "Heavier things are harder to speed up.", expl: "Increasing mass means you need more force to achieve the same movement." 
+        {
+            q: "A student measures a pencil using a broken ruler. They align one end with the 1 cm mark instead of zero and read 15 cm at the tip. What should the true length be?",
+            options: [
+                "Accept 15 cm as the actual reading.",
+                "Add 1 cm to the final reading (16 cm).",
+                "Subtract the starting reading from the final reading (14 cm).",
+                "Discard the value and guess the size."
+            ],
+            ans: 2,
+            explain: "When a ruler has a broken or worn-out zero end, you can measure from any clear mark and subtract that initial value from your final reading (15 cm - 1 cm = 14 cm)."
         },
-        { 
-            q: "Assertion: A stationary ball moves when kicked. Reason: Force can change state of motion.", 
-            opts: ["Both are true and R explains A", "Both true but not explanation", "A true, R false", "A false, R true"], 
-            ans: 0, hint: "Does a kick count as a force? Does it make the ball move?", expl: "Force is required to change an object's state from rest to motion." 
+        {
+            q: "Rohan wants to find the precise length of a curved pathway winding through a garden. Which method will give him the most accurate result?",
+            options: [
+                "Lay a rigid wooden ruler flat along the bends.",
+                "Trace along the curve with a piece of flexible string, then measure the straight string with a ruler.",
+                "Estimate the measurement by looking at it closely.",
+                "Pace out the distance using standard footsteps."
+            ],
+            ans: 1,
+            explain: "Rigid rulers cannot bend around twists. Tracing a curved boundary with flexible thread and then checking the stretched thread length on a scale is the correct approach."
         },
-        { 
-            q: "Error Detection: A student says: 'Force is ONLY needed to start motion, not to stop it.' Find the error.", 
-            opts: ["Force is also needed to stop motion", "Motion stops automatically", "Gravity stops objects", "Air stops objects"], 
-            ans: 0, hint: "How do you catch and stop a moving ball?", expl: "To stop or slow down a moving object, an opposite force must be applied." 
+        {
+            q: "Assertion: A passenger sitting completely still inside a moving school bus is said to be both at rest and in motion at the same time. Reason: Motion depends on the chosen reference point.",
+            options: [
+                "Both Assertion and Reason are true, and the reason perfectly explains the assertion.",
+                "Both are true, but the reason does NOT explain the assertion.",
+                "The Assertion is correct, but the Reason is completely false.",
+                "The Assertion is false, but the Reason is correct."
+            ],
+            ans: 0,
+            explain: "Motion is relative. Relative to the bus seats, the passenger is at rest; but relative to trees outside on the roadside, they are in rapid motion."
         },
-        { 
-            q: "Why do heavy buses take longer to stop than bicycles at the same speed?", 
-            opts: ["Larger mass requires more stopping force", "Less friction", "More gravity", "Less speed"], 
-            ans: 0, hint: "Which one is much heavier and harder to slow down?", expl: "Greater mass means greater inertia, requiring more force to stop." 
+        {
+            q: "An electric ceiling fan operates continuously in a school room at a steady, fixed speed. What type of motion is the fan blade exhibiting?",
+            options: [
+                "Translatory motion",
+                "Circular motion",
+                "Oscillatory motion",
+                "Rectilinear motion"
+            ],
+            ans: 1,
+            explain: "When an object spins around a fixed point or central axis so that its parts remain a constant distance from that axis, it is undergoing circular motion."
         },
-        { 
-            q: "Concept Investigation: Why is a rolling suitcase easier to move than a dragging bag?", 
-            opts: ["Rolling friction < sliding friction", "Gravity reduced", "Mass decreased", "Air resistance increased"], 
-            ans: 0, hint: "Think about why we use wheels.", expl: "Rolling friction is much weaker than sliding friction, allowing easier movement." 
+        {
+            q: "A car drives slowly through crowded market traffic, stops at red signals, and accelerates quickly on an open highway. This pattern of motion is classified as:",
+            options: [
+                "Uniform motion",
+                "Non-uniform motion",
+                "Circular motion",
+                "Vibratory motion"
+            ],
+            ans: 0,
+            explain: "An object is in non-uniform motion if it travels unequal distances in equal intervals of time due to varying speed."
         },
-        { 
-            q: "Why is friction called a 'necessary evil'?", 
-            opts: ["It stops all motion", "It allows us to control movement", "It reduces force completely", "It removes gravity"], 
-            ans: 1, hint: "Try to imagine walking on perfectly smooth oil.", expl: "We need friction to walk, write, and safely control vehicles." 
+        {
+            q: "Identify the odd one out from the following moving systems based on their structural type of motion.",
+            options: [
+                "A child on a playground swing",
+                "A grandfather clock's swinging pendulum",
+                "A plucked, vibrating guitar string",
+                "A train moving along a straight track"
+            ],
+            ans: 3,
+            explain: "The swing, pendulum, and guitar string all demonstrate periodic/oscillatory patterns (to-and-fro movement). The train shows rectilinear/translatory motion."
+        },
+        {
+            q: "Meera walks a distance of 600 meters to the store in 10 minutes. Her brother covers the identical 600 meters in 6 minutes. Who is moving at a faster speed?",
+            options: [
+                "Meera",
+                "Her brother",
+                "Both are moving at the exact same speed.",
+                "It cannot be determined without a speedometer."
+            ],
+            ans: 1,
+            explain: "Speed is distance divided by time. Because her brother covers the same physical distance in less time, his rate of travel is faster."
+        },
+        {
+            q: "When an inspector tightens a metal screw down into a piece of wood using a screwdriver, which multiple types of motion occur simultaneously?",
+            options: [
+                "Only translatory motion.",
+                "Only circular motion.",
+                "Both circular and translatory motion together.",
+                "Purely oscillatory motion."
+            ],
+            ans: 2,
+            explain: "As the screw turns, it rotates about its center (circular motion) while simultaneously sinking forward deeper into the wooden plank (translatory/rectilinear motion)."
         }
     ];
 
-    let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
+    let currentIdx = 0, score = 0, attempts = 0;
 
-    window.onload = () => {
-        setTimeout(() => {
-            document.getElementById('splash-screen').style.display = 'none';
-            document.getElementById('intro-view').classList.remove('hidden');
-        }, 5000);
-    };
-
-    document.getElementById('start-btn').onclick = () => {
-        document.getElementById('intro-view').classList.add('hidden');
-        document.getElementById('quiz-view').classList.remove('hidden');
+    // Loading screen sequence
+    setTimeout(() => {
+        document.getElementById('brand-screen').style.display = 'none';
+        document.getElementById('game-card').classList.remove('hidden');
         loadQuestion();
-    };
+    }, 2000);
 
     function loadQuestion() {
-        attempts = 0; timeLeft = 45;
-        const q = questions[current];
-        document.getElementById('feedback-box').style.display = 'none';
-        document.getElementById('action-btn').classList.add('hidden');
-        document.getElementById('q-num').innerText = current + 1;
-        document.getElementById('q-text').innerText = q.q;
-        
-        const tableArea = document.getElementById('table-area');
-        tableArea.innerHTML = q.table ? `<table class="data-table">${q.table}</table>` : "";
-        
-        const area = document.getElementById('options-area');
-        area.innerHTML = "";
-        q.opts.forEach((o, i) => {
-            const b = document.createElement('button');
-            b.className = 'opt-btn';
-            b.innerText = o;
-            b.onclick = () => handleChoice(i, b);
-            area.appendChild(b);
+        const data = questions[currentIdx];
+        attempts = 0;
+        document.getElementById('q-num').innerText = currentIdx + 1;
+        document.getElementById('q-text').innerText = data.q;
+        document.getElementById('feedback-area').classList.add('hidden');
+        document.getElementById('next-btn').classList.add('hidden');
+        document.getElementById('progress-bar').style.width = ((currentIdx / questions.length) * 100) + '%';
+
+        const box = document.getElementById('options-box');
+        box.innerHTML = '';
+        data.options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(i, btn);
+            box.appendChild(btn);
         });
-        startTimer();
     }
 
-    function startTimer() {
-        clearInterval(timer);
-        timer = setInterval(() => {
-            timeLeft--;
-            document.getElementById('timer-bar').style.width = (timeLeft/45*100) + "%";
-            if(timeLeft <= 0) { clearInterval(timer); endTurn(); }
-        }, 1000);
-    }
+    function checkAnswer(idx, btn) {
+        const data = questions[currentIdx];
+        const feedback = document.getElementById('feedback-area');
+        const allBtns = document.querySelectorAll('.option-btn');
 
-    function handleChoice(i, b) {
-        if(i === questions[current].ans) {
-            clearInterval(timer);
-            sfx.correct.play().catch(e => {}); // PLAY CORRECT SOUND
-            b.classList.add('correct');
-            score++;
-            document.getElementById('score-val').innerText = score * 100;
-            endTurn();
+        allBtns.forEach(b => b.disabled = true);
+
+        if (idx === data.ans) {
+            btn.classList.add('correct');
+            if (attempts === 0) score++;
+            document.getElementById('score').innerText = score;
+            feedback.innerHTML = `<b>🌟 Correct!</b><br>${data.explain}`;
+            feedback.classList.remove('hidden');
+            document.getElementById('next-btn').classList.remove('hidden');
         } else {
+            btn.classList.add('wrong');
             attempts++;
-            sfx.wrong.play().catch(e => {}); // PLAY WRONG SOUND
-            b.classList.add('wrong');
-            b.disabled = true;
-            if(attempts === 1) {
-                const f = document.getElementById('feedback-box');
-                f.className = 'feedback hint-box';
-                f.innerHTML = "💡 <b>LAB HINT:</b> " + questions[current].hint;
-                f.style.display = 'block';
+            if (attempts < 2) {
+                setTimeout(() => {
+                    allBtns.forEach(b => { if(!b.classList.contains('wrong')) b.disabled = false; });
+                    feedback.innerHTML = `<b>Try again!</b> That choice is incorrect. You have 1 attempt remaining.`;
+                    feedback.classList.remove('hidden');
+                }, 400);
             } else {
-                clearInterval(timer);
-                endTurn();
+                allBtns[data.ans].classList.add('correct');
+                feedback.innerHTML = `<b>Out of attempts!</b> The correct answer was choice ${String.fromCharCode(65 + data.ans)}.<br>${data.explain}`;
+                feedback.classList.remove('hidden');
+                document.getElementById('next-btn').classList.remove('hidden');
             }
         }
     }
 
-    function endTurn() {
-        document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
-        document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
-        const f = document.getElementById('feedback-box');
-        f.className = 'feedback expl-box';
-        f.innerHTML = "📝 <b>RESEARCH LOG:</b> " + questions[current].expl;
-        f.style.display = 'block';
-        document.getElementById('action-btn').classList.remove('hidden');
-    }
-
-    document.getElementById('action-btn').onclick = () => {
-        current++;
-        if(current < questions.length) loadQuestion();
-        else {
-            sfx.victory.play().catch(e => {}); // PLAY VICTORY SOUND
+    function handleNext() {
+        currentIdx++;
+        if (currentIdx < questions.length) {
+            loadQuestion();
+        } else {
             showResults();
         }
-    };
+    }
 
     function showResults() {
-        document.getElementById('quiz-view').classList.add('hidden');
-        document.getElementById('result-view').classList.remove('hidden');
-        document.getElementById('final-pts').innerText = score;
-        const msg = document.getElementById('result-msg');
-        if(score >= 9) msg.innerText = "Excellent! You are a Certified Lab Lead.";
-        else if(score >= 7) msg.innerText = "Good job! You've passed the safety inspection.";
-        else msg.innerText = "Keep researching! Your science skills are growing.";
+        document.getElementById('quiz-content').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+        document.getElementById('progress-bar').style.width = '100%';
+        document.getElementById('final-score').innerText = `${score}/${questions.length}`;
+        
+        let msg = "Keep reviewing your physics labs! Scientific inquiry is a continuous journey.";
+        if (score === questions.length) msg = "Perfect Score! Excellent grasp of standard scales and kinematics! 🏆👨‍🔬";
+        else if (score >= 9) msg = "Great job! You have a highly accurate understanding of measurement techniques.";
+        
+        document.getElementById('result-msg').innerText = msg;
     }
 </script>
+
 </body>
 </html>
