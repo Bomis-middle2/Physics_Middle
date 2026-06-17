@@ -12,6 +12,8 @@
             --danger: #d63031;
             --warning: #fdcb6e;
             --bg: #f0f3f7;
+            --hud-blue: #e3f2fd;
+            --hud-orange: #fff3e0;
         }
 
         * { box-sizing: border-box; font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -58,9 +60,24 @@
 
         .hidden { display: none !important; }
 
-        .hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .badge { background: var(--primary); color: white; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
-        .score-badge { background: var(--warning); color: #2d3436; }
+        /* Multi-pill Horizontal HUD Layout */
+        .hud-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .hud-pill {
+            text-align: center;
+            padding: 12px 8px;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #2d3436;
+            box-shadow: inset 0 -2px 0px rgba(0,0,0,0.05);
+        }
+        .hud-pill.blue { background-color: var(--hud-blue); }
+        .hud-pill.orange { background-color: var(--hud-orange); }
 
         .progress-container { width: 100%; height: 12px; background: #eee; border-radius: 10px; margin-bottom: 10px; border: 2px solid #ddd; overflow: hidden; }
         #progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); transition: width 0.5s ease; }
@@ -111,17 +128,19 @@
 
     <div class="game-card">
         <div id="screen-start" class="text-center">
-            <h1 style="color:var(--primary)">Motion & Measurement</h1>
-            <p><strong>Strict Rule:</strong> Only 2 chances per question! 🧪</p>
-            <p style="font-size: 0.95rem; color:#636e72;">Speed matters! First-time correct answers score points based on remaining time!</p>
+            <h1 style="color:var(--primary); margin-bottom: 10px;">Motion & Measurement</h1>
+            <p style="margin-top: 0; margin-bottom: 25px;"><strong>Strict Rule:</strong> Only 2 chances per question! 🚀</p>
+            <p style="font-size: 0.95rem; color:#636e72; margin-bottom: 30px;">Speed matters! First-time correct answers score points based on remaining time!</p>
             <button class="btn-fancy" onclick="startQuiz()">Start 🚀</button>
         </div>
 
         <div id="screen-quiz" class="hidden">
-            <div class="hud">
-                <span class="badge">Question <span id="q-count">1</span>/12</span>
-                <span class="badge score-badge">⭐ Points: <span id="score">0</span></span>
+            <div class="hud-row">
+                <div class="hud-pill blue">Question <span id="q-count">1</span>/12</div>
+                <div class="hud-pill blue">Score: <span id="score">0</span></div>
+                <div class="hud-pill orange">Time: <span id="timer-text">45s</span></div>
             </div>
+            
             <div class="progress-container"><div id="progress-bar"></div></div>
             <div class="timer-track"><div id="timer-bar"></div></div>
             <h2 id="q-text"></h2>
@@ -193,6 +212,7 @@
             const data = questions[curIdx];
             document.getElementById('q-count').innerText = curIdx + 1;
             document.getElementById('q-text').innerText = data.q;
+            document.getElementById('timer-text').innerText = timeLeft + "s";
             document.getElementById('feedback-box').classList.add('hidden');
             document.getElementById('btn-continue').classList.add('hidden');
             document.getElementById('progress-bar').style.width = (curIdx / questions.length * 100) + '%';
@@ -217,6 +237,7 @@
         function startTimer() {
             timer = setInterval(() => {
                 timeLeft--;
+                document.getElementById('timer-text').innerText = timeLeft + "s";
                 document.getElementById('timer-bar').style.width = (timeLeft / 45 * 100) + '%';
                 if(timeLeft <= 0) { 
                     clearInterval(timer); 
