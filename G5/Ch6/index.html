@@ -2,21 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Innovine Science Lab - Measurement & Motion</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Measurement and Motion</title>
     <style>
         :root {
-            --primary: #2980b9;
-            --accent: #3498db;
-            --success: #27ae60;
-            --danger: #c0392b;
-            --bg: #f4f7f6;
-            --card-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            --primary-blue: #1a73e8;
+            --light-blue-bg: #e8f0fe;
+            --accent-gold: #f9ab00;
+            --light-gold-bg: #fef7e0;
+            --success: #1e8e3e;
+            --danger: #d93025;
+            --light-grey: #f8f9fa;
+            --text-dark: #202124;
         }
 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #eef1f5;
             margin: 0;
             display: flex;
             justify-content: center;
@@ -24,345 +28,405 @@
             min-height: 100vh;
         }
 
-        /* Initializing Screen */
-        #brand-screen {
-            position: fixed;
-            inset: 0;
-            background: white;
+        #app-container {
+            width: 100%;
+            max-width: 500px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 25px;
+            margin: 10px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            min-height: 600px;
+            border-top: 8px solid var(--primary-blue);
+        }
+
+        /* --- SPLASH SCREEN --- */
+        #splash-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 9999;
         }
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border-left-color: var(--primary);
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
+        .logo-main { width: 280px; height: auto; max-width: 85%; margin-bottom: 30px; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary-blue); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Main Container */
-        .game-card {
-            width: 90%;
-            max-width: 700px;
-            background: white;
-            padding: 35px;
-            border-radius: 25px;
-            box-shadow: var(--card-shadow);
-            border: 4px solid var(--primary);
-            position: relative;
+        /* --- TOP DASHBOARD ROW --- */
+        .stats-dashboard {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .stat-card {
+            flex: 1;
+            padding: 12px 5px;
+            border-radius: 16px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #2c3e50;
+        }
+        .stat-card.blue-pill {
+            background-color: var(--light-blue-bg);
+        }
+        .stat-card.gold-pill {
+            background-color: var(--light-gold-bg);
         }
 
-        .hidden { display: none !important; }
+        /* --- UI ELEMENTS --- */
+        .timer-track { width: 100%; height: 8px; background: #e8eaed; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        #timer-bar { height: 100%; width: 100%; background: var(--primary-blue); transition: width 1s linear; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .branding-title { font-size: 1.5rem; font-weight: bold; color: var(--primary); margin: 0; }
-
-        .hud { font-weight: bold; color: #2c3e50; display: flex; gap: 20px; }
-
-        .progress-container { height: 12px; background: #eee; border-radius: 10px; margin: 15px 0; overflow: hidden; }
-        #progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s; }
-
-        .question-text { font-size: 1.2rem; color: #2c3e50; line-height: 1.6; margin-bottom: 20px; font-weight: 500; }
+        .q-title { font-size: 0.9rem; color: #5f6368; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
+        .q-text { font-size: 1.1rem; font-weight: 600; line-height: 1.4; margin-bottom: 20px; color: var(--text-dark); }
 
         .options-grid { display: grid; gap: 12px; }
-        .option-btn {
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            background: #fff;
-            cursor: pointer;
-            font-size: 1rem;
-            text-align: left;
-            transition: all 0.2s;
-            color: #34495e;
+        .opt-btn {
+            background: #fff; border: 2px solid #dadce0; padding: 16px;
+            border-radius: 14px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
+            color: #3c4043; font-weight: 500;
         }
-        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #f0f7fc; }
-        .correct { background: var(--success) !important; color: white; border-color: #1e8449 !important; font-weight: bold; }
-        .wrong { background: var(--danger) !important; color: white; border-color: #922b21 !important; animation: shake 0.4s; }
+        .opt-btn.correct { background: var(--success) !important; color: white; border-color: var(--success); }
+        .opt-btn.wrong { background: var(--danger) !important; color: white; border-color: var(--danger); opacity: 0.7; }
 
-        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+        .feedback { margin-top: 15px; padding: 15px; border-radius: 14px; display: none; line-height: 1.5; font-size: 0.95rem; animation: pop 0.3s ease; }
+        .hint { background: #fff7e0; border-left: 5px solid var(--accent-gold); color: #856404; }
+        .expl { background: #e8f0fe; border-left: 5px solid var(--primary-blue); color: #1967d2; }
+        @keyframes pop { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        .feedback-box { margin-top: 20px; padding: 15px; border-radius: 12px; background: #ebf5fb; border-left: 5px solid var(--primary); color: #2c3e50; line-height: 1.5; }
-
-        .btn-next {
-            margin-top: 20px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 50px;
-            font-weight: bold;
-            cursor: pointer;
-            float: right;
-            box-shadow: 0 4px 0 #1b4f72;
-            transition: background 0.2s;
-        }
-        .btn-next:hover { background: var(--accent); }
-        .btn-next:active { transform: translateY(2px); box-shadow: 0 2px 0 #1b4f72; }
+        #action-btn { width: 100%; margin-top: 20px; padding: 18px; background: var(--primary-blue); color: white; border: none; border-radius: 16px; font-weight: 700; font-size: 1rem; cursor: pointer; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<div id="brand-screen">
-    <div class="spinner"></div>
-    <h2 style="color: #2c3e50; font-family: sans-serif; margin: 0;">Innovine Science Lab</h2>
-    <p style="color: #7f8c8d; margin-top: 5px;">Loading Measurement & Motion Experiments...</p>
-</div>
-
-<div class="game-card hidden" id="game-card">
-    <div class="header">
-        <div class="branding-title">Innovine Lab</div>
-        <div class="hud">
-            <span>Challenge: <span id="q-num">1</span>/12</span>
-            <span>Stars: ⭐ <span id="score">0</span></span>
-        </div>
+<div id="app-container">
+    <div id="splash-screen">
+        <img src="assets/logo.png" class="logo-main" onerror="this.src='https://via.placeholder.com/280x100?text=INNOVINE'" alt="Logo">
+        <div class="loader"></div>
     </div>
 
-    <div class="progress-container"><div id="progress-bar"></div></div>
-
-    <div id="quiz-content">
-        <div class="question-text" id="q-text"></div>
-        <div class="options-grid" id="options-box"></div>
-        <div id="feedback-area" class="feedback-box hidden"></div>
-        <div style="height: 60px;">
-            <button id="next-btn" class="btn-next hidden" onclick="handleNext()">Next Challenge ➡️</button>
+    <div id="intro-view" class="hidden" style="text-align: center;">
+        <div style="font-size: 4rem; margin-bottom: 15px;">📏</div>
+        <h1 style="color: var(--primary-blue); margin: 0;">Measurement and Motion</h1>
+        <p style="color: #5f6368; margin-top: 10px;">Grade 6 Challenge</p>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dadce0; font-size: 0.95rem; line-height: 1.5;">
+            Welcome! Apply your knowledge to solve real-world problems. You have <b>2 attempts</b> per question. 
         </div>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">START CHALLENGE</button>
     </div>
 
-    <div id="result-screen" class="hidden" style="text-align: center;">
-        <h1 style="color: var(--primary);">Lab Assessment Complete!</h1>
-        <h2 id="final-score" style="font-size: 3rem; margin: 10px 0; color: #2c3e50;">0/12</h2>
-        <p id="result-msg" style="font-size: 1.2rem; color: #7f8c8d; margin-bottom: 25px;"></p>
-        <button class="btn-next" style="float: none;" onclick="location.reload()">Restart Lab</button>
+    <div id="quiz-view" class="hidden">
+        <div class="stats-dashboard">
+            <div class="stat-card blue-pill">Question <span id="q-num">1</span>/12</div>
+            <div class="stat-card blue-pill">Score: <span id="score-val">0</span></div>
+            <div class="stat-card gold-pill">Time: <span id="timer-val">45</span>s</div>
+        </div>
+        
+        <div class="timer-track"><div id="timer-bar"></div></div>
+        <div id="q-category" class="q-title"></div>
+        <div id="q-text" class="q-text"></div>
+        <div id="options-area" class="options-grid"></div>
+        <div id="feedback-box" class="feedback"></div>
+        <button id="action-btn" class="hidden">NEXT QUESTION →</button>
+    </div>
+
+    <div id="result-view" class="hidden" style="text-align:center;">
+        <div style="font-size: 4.5rem; margin-bottom: 10px;">🏅</div>
+        <h2 style="color: var(--primary-blue);">Challenge Complete</h2>
+        <div style="font-size: 4.5rem; font-weight: 900; color: #202124; margin: 10px 0;"><span id="final-pts">0</span>/12</div>
+        <p id="result-msg" style="color:#5f6368; margin-bottom:30px;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">RESTART CHALLENGE</button>
     </div>
 </div>
 
 <script>
-    // 12 Full Grade 6 Physics Questions compiled directly from curriculum requirements
+    // --- AUDIO SYSTEM ---
+    const sfx = {
+        correct: new Audio('assets/correct.mp3'),
+        wrong: new Audio('assets/wrong.mp3'),
+        victory: new Audio('assets/freesound_community-claps-44774.mp3')
+    };
+
     const questions = [
         {
+            cat: "Units of Measurement",
             q: "Riya measures a classroom using her footsteps. Her friend measures the same classroom and gets a different answer. Why are their measurements different?",
-            options: [
+            opts: [
                 "The classroom changed its size during the measurements.",
                 "Their footsteps are of different lengths.",
                 "One student counted incorrectly.",
                 "The floor of the classroom is uneven."
             ],
             ans: 1,
-            explain: "Footsteps, hand spans, and paces are non-standard units of length. They vary from person to person because people have different body sizes."
+            hint: "Think about whether everyone's feet are exactly the same size.",
+            expl: "Footsteps, hand spans, and paces are non-standard units of length. They vary from person to person because people have different body sizes."
         },
         {
+            cat: "Standard Scales",
             q: "A tailor always measures cloth using a standard metal measuring tape or meter rod instead of hand span. What is the main advantage of doing this?",
-            options: [
+            opts: [
                 "It makes the measurement process much faster.",
                 "It makes the cloth look longer to the customer.",
                 "It provides a uniform, reliable, and accurate measurement.",
                 "It makes the cloth much easier to fold after cutting."
             ],
             ans: 2,
-            explain: "Standard units of measurement ensure consistency across the world so that everyone records and understands the exact same quantity."
+            hint: "What happens when different people try to trade using matching measurements?",
+            expl: "Standard units of measurement ensure consistency across the world so that everyone records and understands the exact same quantity."
         },
         {
+            cat: "Scale Suitability",
             q: "A student wants to measure the thickness of a small coin. Which standard unit of length is most suitable for this task?",
-            options: [
+            opts: [
                 "Kilometer",
                 "Meter",
                 "Centimeter",
                 "Millimeter"
             ],
             ans: 3,
-            explain: "The millimeter (mm) is the smallest common graduation on standard school rulers and is perfect for tiny dimensions like the thickness of a wire or coin."
+            hint: "You need the absolute smallest graduation marked on a common school ruler.",
+            expl: "The millimeter (mm) is the smallest common graduation on standard school rulers and is perfect for tiny dimensions like the thickness of a wire or coin."
         },
         {
+            cat: "Distance Comparison",
             q: "Four students recorded the distance they travel to reach school: Aman travels 500 m, Neha travels 2 km, Kabir travels 800 m, and Sara travels 1 km. Who travels the longest distance?",
-            options: [
+            opts: [
                 "Aman",
                 "Neha",
                 "Kabir",
                 "Sara"
             ],
             ans: 1,
-            explain: "Converting all measurements to meters: Aman = 500 m, Kabir = 800 m, Sara = 1000 m (1 km), and Neha = 2000 m (2 km). Therefore, Neha travels the furthest."
+            hint: "Convert kilometers into meters first. Remember that 1 km equals 1000 meters.",
+            expl: "Converting all measurements to meters: Aman = 500 m, Kabir = 800 m, Sara = 1000 m (1 km), and Neha = 2000 m (2 km). Therefore, Neha travels the furthest."
         },
         {
+            cat: "Error Prevention",
             q: "A student measures a pencil using a broken ruler. They align one end with the 1 cm mark instead of zero and read 15 cm at the tip. What should the true length be?",
-            options: [
+            opts: [
                 "Accept 15 cm as the actual reading.",
                 "Add 1 cm to the final reading (16 cm).",
                 "Subtract the starting reading from the final reading (14 cm).",
                 "Discard the value and guess the size."
             ],
             ans: 2,
-            explain: "When a ruler has a broken or worn-out zero end, you can measure from any clear mark and subtract that initial value from your final reading (15 cm - 1 cm = 14 cm)."
+            hint: "If you don't start at 0, you must account for the missing space at the beginning.",
+            expl: "When a ruler has a broken or worn-out zero end, you can measure from any clear mark and subtract that initial value from your final reading (15 cm - 1 cm = 14 cm)."
         },
         {
+            cat: "Measurement Techniques",
             q: "Rohan wants to find the precise length of a curved pathway winding through a garden. Which method will give him the most accurate result?",
-            options: [
+            opts: [
                 "Lay a rigid wooden ruler flat along the bends.",
                 "Trace along the curve with a piece of flexible string, then measure the straight string with a ruler.",
                 "Estimate the measurement by looking at it closely.",
                 "Pace out the distance using standard footsteps."
             ],
             ans: 1,
-            explain: "Rigid rulers cannot bend around twists. Tracing a curved boundary with flexible thread and then checking the stretched thread length on a scale is the correct approach."
+            hint: "You need something flexible that can follow curves perfectly before being flattened against a scale.",
+            expl: "Rigid rulers cannot bend around twists. Tracing a curved boundary with flexible thread and then checking the stretched thread length on a scale is the correct approach."
         },
         {
+            cat: "Reference Points",
             q: "Assertion: A passenger sitting completely still inside a moving school bus is said to be both at rest and in motion at the same time. Reason: Motion depends on the chosen reference point.",
-            options: [
+            opts: [
                 "Both Assertion and Reason are true, and the reason perfectly explains the assertion.",
                 "Both are true, but the reason does NOT explain the assertion.",
                 "The Assertion is correct, but the Reason is completely false.",
                 "The Assertion is false, but the Reason is correct."
             ],
             ans: 0,
-            explain: "Motion is relative. Relative to the bus seats, the passenger is at rest; but relative to trees outside on the roadside, they are in rapid motion."
+            hint: "Think about how you look to someone sitting next to you vs someone watching from the street.",
+            expl: "Motion is relative. Relative to the bus seats, the passenger is at rest; but relative to trees outside on the roadside, they are in rapid motion."
         },
         {
+            cat: "Kinematics Classification",
             q: "An electric ceiling fan operates continuously in a school room at a steady, fixed speed. What type of motion is the fan blade exhibiting?",
-            options: [
+            opts: [
                 "Translatory motion",
                 "Circular motion",
                 "Oscillatory motion",
                 "Rectilinear motion"
             ],
             ans: 1,
-            explain: "When an object spins around a fixed point or central axis so that its parts remain a constant distance from that axis, it is undergoing circular motion."
+            hint: "The blades travel in a track around a fixed central point.",
+            expl: "When an object spins around a fixed point or central axis so that its parts remain a constant distance from that axis, it is undergoing circular motion."
         },
         {
+            cat: "Kinematics Variance",
             q: "A car drives slowly through crowded market traffic, stops at red signals, and accelerates quickly on an open highway. This pattern of motion is classified as:",
-            options: [
+            opts: [
                 "Uniform motion",
                 "Non-uniform motion",
                 "Circular motion",
                 "Vibratory motion"
             ],
-            ans: 0,
-            explain: "An object is in non-uniform motion if it travels unequal distances in equal intervals of time due to varying speed."
+            ans: 1,
+            hint: "Does the car stay at one exact speed the entire time?",
+            expl: "An object is in non-uniform motion if it travels unequal distances in equal intervals of time due to varying speed."
         },
         {
+            cat: "Motion Comparison",
             q: "Identify the odd one out from the following moving systems based on their structural type of motion.",
-            options: [
+            opts: [
                 "A child on a playground swing",
                 "A grandfather clock's swinging pendulum",
                 "A plucked, vibrating guitar string",
                 "A train moving along a straight track"
             ],
             ans: 3,
-            explain: "The swing, pendulum, and guitar string all demonstrate periodic/oscillatory patterns (to-and-fro movement). The train shows rectilinear/translatory motion."
+            hint: "Three options show a back-and-forth movement. One moves strictly forward in a straight line.",
+            expl: "The swing, pendulum, and guitar string all demonstrate periodic/oscillatory patterns (to-and-fro movement). The train shows rectilinear/translatory motion."
         },
         {
+            cat: "Speed Assessment",
             q: "Meera walks a distance of 600 meters to the store in 10 minutes. Her brother covers the identical 600 meters in 6 minutes. Who is moving at a faster speed?",
-            options: [
+            opts: [
                 "Meera",
                 "Her brother",
                 "Both are moving at the exact same speed.",
                 "It cannot be determined without a speedometer."
             ],
             ans: 1,
-            explain: "Speed is distance divided by time. Because her brother covers the same physical distance in less time, his rate of travel is faster."
+            hint: "Taking less time to cover the exact same distance means you are moving faster.",
+            expl: "Speed is distance divided by time. Because her brother covers the same physical distance in less time, his rate of travel is faster."
         },
         {
+            cat: "Complex Motion Systems",
             q: "When an inspector tightens a metal screw down into a piece of wood using a screwdriver, which multiple types of motion occur simultaneously?",
-            options: [
+            opts: [
                 "Only translatory motion.",
                 "Only circular motion.",
                 "Both circular and translatory motion together.",
                 "Purely oscillatory motion."
             ],
             ans: 2,
-            explain: "As the screw turns, it rotates about its center (circular motion) while simultaneously sinking forward deeper into the wooden plank (translatory/rectilinear motion)."
+            hint: "The screw turns around in circles while moving downward into the wood.",
+            expl: "As the screw turns, it rotates about its center (circular motion) while simultaneously sinking forward deeper into the wooden plank (translatory/rectilinear motion)."
         }
     ];
 
-    let currentIdx = 0, score = 0, attempts = 0;
+    let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
 
-    // Loading screen sequence
-    setTimeout(() => {
-        document.getElementById('brand-screen').style.display = 'none';
-        document.getElementById('game-card').classList.remove('hidden');
-        loadQuestion();
-    }, 2000);
-
-    function loadQuestion() {
-        const data = questions[currentIdx];
-        attempts = 0;
-        document.getElementById('q-num').innerText = currentIdx + 1;
-        document.getElementById('q-text').innerText = data.q;
-        document.getElementById('feedback-area').classList.add('hidden');
-        document.getElementById('next-btn').classList.add('hidden');
-        document.getElementById('progress-bar').style.width = ((currentIdx / questions.length) * 100) + '%';
-
-        const box = document.getElementById('options-box');
-        box.innerHTML = '';
-        data.options.forEach((opt, i) => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = opt;
-            btn.onclick = () => checkAnswer(i, btn);
-            box.appendChild(btn);
-        });
+    // --- SHUFFLE ENGINE ---
+    function shuffleQuestions(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
     }
 
-    function checkAnswer(idx, btn) {
-        const data = questions[currentIdx];
-        const feedback = document.getElementById('feedback-area');
-        const allBtns = document.querySelectorAll('.option-btn');
+    window.onload = () => {
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.display = 'none';
+            document.getElementById('intro-view').classList.remove('hidden');
+        }, 5000);
+    };
 
-        allBtns.forEach(b => b.disabled = true);
+    function startChallenge() {
+        document.getElementById('intro-view').classList.add('hidden');
+        document.getElementById('quiz-view').classList.remove('hidden');
+        shuffleQuestions(questions);
+        loadQuestion();
+    }
+    document.getElementById('start-btn').onclick = startChallenge;
 
-        if (idx === data.ans) {
-            btn.classList.add('correct');
+    function loadQuestion() {
+        attempts = 0; timeLeft = 45;
+        const q = questions[current];
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('action-btn').classList.add('hidden');
+        document.getElementById('q-num').innerText = current + 1;
+        document.getElementById('timer-val').innerText = timeLeft;
+        document.getElementById('q-category').innerText = q.cat;
+        document.getElementById('q-text').innerText = q.q;
+        
+        const area = document.getElementById('options-area');
+        area.innerHTML = "";
+        q.opts.forEach((o, i) => {
+            const b = document.createElement('button');
+            b.className = 'opt-btn';
+            b.innerText = o;
+            b.onclick = () => handleChoice(i, b);
+            area.appendChild(b);
+        });
+        startTimer();
+    }
+
+    function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer-val').innerText = timeLeft;
+            document.getElementById('timer-bar').style.width = (timeLeft/45*100) + "%";
+            if(timeLeft <= 0) { clearInterval(timer); endTurn(); }
+        }, 1000);
+    }
+
+    function handleChoice(i, b) {
+        const q = questions[current];
+        const allBtns = document.querySelectorAll('.opt-btn');
+
+        if(i === q.ans) {
+            clearInterval(timer);
+            sfx.correct.play().catch(e => {});
+            b.classList.add('correct');
             if (attempts === 0) score++;
-            document.getElementById('score').innerText = score;
-            feedback.innerHTML = `<b>🌟 Correct!</b><br>${data.explain}`;
-            feedback.classList.remove('hidden');
-            document.getElementById('next-btn').classList.remove('hidden');
+            document.getElementById('score-val').innerText = score * 100;
+            endTurn();
         } else {
-            btn.classList.add('wrong');
             attempts++;
-            if (attempts < 2) {
-                setTimeout(() => {
-                    allBtns.forEach(b => { if(!b.classList.contains('wrong')) b.disabled = false; });
-                    feedback.innerHTML = `<b>Try again!</b> That choice is incorrect. You have 1 attempt remaining.`;
-                    feedback.classList.remove('hidden');
-                }, 400);
+            sfx.wrong.play().catch(e => {});
+            b.classList.add('wrong');
+            b.disabled = true;
+            if(attempts === 1) {
+                const f = document.getElementById('feedback-box');
+                f.className = 'feedback hint';
+                f.innerHTML = "💡 <b>HINT:</b> " + q.hint;
+                f.style.display = 'block';
+                allBtns.forEach(btn => { if(!btn.classList.contains('wrong')) btn.disabled = false; });
             } else {
-                allBtns[data.ans].classList.add('correct');
-                feedback.innerHTML = `<b>Out of attempts!</b> The correct answer was choice ${String.fromCharCode(65 + data.ans)}.<br>${data.explain}`;
-                feedback.classList.remove('hidden');
-                document.getElementById('next-btn').classList.remove('hidden');
+                clearInterval(timer);
+                endTurn();
             }
         }
     }
 
-    function handleNext() {
-        currentIdx++;
-        if (currentIdx < questions.length) {
-            loadQuestion();
-        } else {
+    function endTurn() {
+        document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
+        document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
+        const f = document.getElementById('feedback-box');
+        f.className = 'feedback expl';
+        f.innerHTML = "🔍 <b>EXPLANATION:</b> " + questions[current].expl;
+        f.style.display = 'block';
+        document.getElementById('action-btn').classList.remove('hidden');
+    }
+
+    document.getElementById('action-btn').onclick = () => {
+        current++;
+        if(current < questions.length) loadQuestion();
+        else {
+            sfx.victory.play().catch(e => {});
             showResults();
         }
-    }
+    };
 
     function showResults() {
-        document.getElementById('quiz-content').classList.add('hidden');
-        document.getElementById('result-screen').classList.remove('hidden');
-        document.getElementById('progress-bar').style.width = '100%';
-        document.getElementById('final-score').innerText = `${score}/${questions.length}`;
-        
-        let msg = "Keep reviewing your physics labs! Scientific inquiry is a continuous journey.";
-        if (score === questions.length) msg = "Perfect Score! Excellent grasp of standard scales and kinematics! 🏆👨‍🔬";
-        else if (score >= 9) msg = "Great job! You have a highly accurate understanding of measurement techniques.";
-        
-        document.getElementById('result-msg').innerText = msg;
+        document.getElementById('quiz-view').classList.add('hidden');
+        document.getElementById('result-view').classList.remove('hidden');
+        document.getElementById('final-pts').innerText = score;
+        const msg = document.getElementById('result-msg');
+        if(score === questions.length) msg.innerText = "Perfect Score! Excellent grasp of standard scales and kinematics! 🏆";
+        else if(score >= 9) msg.innerText = "Great job! You have a highly accurate understanding of measurement techniques.";
+        else msg.innerText = "Keep testing your knowledge! Practice with different metrics and movement tracks.";
     }
 </script>
-
 </body>
 </html>
