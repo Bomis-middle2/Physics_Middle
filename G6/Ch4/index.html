@@ -92,6 +92,7 @@
             border-radius: 14px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
             color: #3c4043; font-weight: 500;
         }
+        .opt-btn:disabled { color: #5f6368; }
         .opt-btn.correct { background: var(--success) !important; color: white; border-color: var(--success); }
         .opt-btn.wrong { background: var(--danger) !important; color: white; border-color: var(--danger); opacity: 0.7; }
 
@@ -339,12 +340,22 @@
     document.getElementById('start-btn').onclick = startChallenge;
 
     function loadQuestion() {
-        attempts = 0; timeLeft = 45;
+        clearInterval(timer); // Fixed: Reset active intervals safely before structural change
+        attempts = 0; 
+        timeLeft = 45;
+        
         const q = questions[current];
         document.getElementById('feedback-box').style.display = 'none';
         document.getElementById('action-btn').classList.add('hidden');
         document.getElementById('q-num').innerText = current + 1;
         document.getElementById('timer-val').innerText = timeLeft;
+        document.getElementById('timer-bar').style.transition = 'none';
+        document.getElementById('timer-bar').style.width = '100%';
+        
+        // Force style recalculation to reset non-animated width cleanly
+        document.getElementById('timer-bar').offsetHeight; 
+        document.getElementById('timer-bar').style.transition = 'width 1s linear';
+
         document.getElementById('q-category').innerText = q.cat;
         document.getElementById('q-text').innerText = q.q;
         
@@ -361,7 +372,6 @@
     }
 
     function startTimer() {
-        clearInterval(timer);
         timer = setInterval(() => {
             timeLeft--;
             document.getElementById('timer-val').innerText = timeLeft;
@@ -391,6 +401,7 @@
                 f.className = 'feedback hint';
                 f.innerHTML = "💡 <b>HINT:</b> " + q.hint;
                 f.style.display = 'block';
+                // Fixed: Ensure remaining unclicked options do not remain locked
                 allBtns.forEach(btn => { if(!btn.classList.contains('wrong')) btn.disabled = false; });
             } else {
                 clearInterval(timer);
