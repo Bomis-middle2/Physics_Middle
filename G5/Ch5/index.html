@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Simple Machines: Engineering Lab</title>
+    <title>Simple Machines</title>
     <style>
         :root {
             --primary-blue: #1a73e8;
+            --light-blue-bg: #e8f0fe;
             --accent-gold: #f9ab00;
+            --light-gold-bg: #fef7e0;
             --success: #1e8e3e;
             --danger: #d93025;
             --light-grey: #f8f9fa;
@@ -55,11 +57,29 @@
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary-blue); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- UI ELEMENTS --- */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .tag { background: var(--primary-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; }
-        .score { font-weight: 800; color: var(--primary-blue); }
+        /* --- NEW TOP DASHBOARD ROW --- */
+        .stats-dashboard {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .stat-card {
+            flex: 1;
+            padding: 12px 5px;
+            border-radius: 16px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #2c3e50;
+        }
+        .stat-card.blue-pill {
+            background-color: var(--light-blue-bg);
+        }
+        .stat-card.gold-pill {
+            background-color: var(--light-gold-bg);
+        }
 
+        /* --- UI ELEMENTS --- */
         .timer-track { width: 100%; height: 8px; background: #e8eaed; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
         #timer-bar { height: 100%; width: 100%; background: var(--primary-blue); transition: width 1s linear; }
 
@@ -97,34 +117,36 @@
 
     <div id="intro-view" class="hidden" style="text-align: center;">
         <div style="font-size: 4rem; margin-bottom: 15px;">⚙️</div>
-        <h1 style="color: var(--primary-blue); margin: 0;">Engineering Lab</h1>
-        <p style="color: #5f6368; margin-top: 10px;">Topic: Simple Machines (CBQs)</p>
+        <h1 style="color: var(--primary-blue); margin: 0;">Simple Machines</h1>
+        <p style="color: #5f6368; margin-top: 10px;">Grade 5 Challenge</p>
         <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dadce0; font-size: 0.95rem; line-height: 1.5;">
-            Welcome, Junior Engineer! Apply your knowledge to solve real-world problems. You have <b>2 attempts</b> per question. 
+            Welcome! Apply your knowledge to solve real-world problems. You have <b>2 attempts</b> per question. 
         </div>
-        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">START LAB CHALLENGE</button>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">START CHALLENGE</button>
     </div>
 
     <div id="quiz-view" class="hidden">
-        <div class="header">
-            <div class="tag">LAB TASK #<span id="q-num">1</span></div>
-            <div class="score">XP: <span id="score-val">0</span></div>
+        <div class="stats-dashboard">
+            <div class="stat-card blue-pill">Question <span id="q-num">1</span>/12</div>
+            <div class="stat-card blue-pill">Score: <span id="score-val">0</span></div>
+            <div class="stat-card gold-pill">Time: <span id="timer-val">45</span>s</div>
         </div>
+        
         <div class="timer-track"><div id="timer-bar"></div></div>
         <div id="q-category" class="q-title"></div>
         <div id="q-text" class="q-text"></div>
         <div id="table-area"></div>
         <div id="options-area" class="options-grid"></div>
         <div id="feedback-box" class="feedback"></div>
-        <button id="action-btn" class="hidden">NEXT TASK →</button>
+        <button id="action-btn" class="hidden">NEXT QUESTION →</button>
     </div>
 
     <div id="result-view" class="hidden" style="text-align:center;">
         <div style="font-size: 4.5rem; margin-bottom: 10px;">⚙️</div>
-        <h2 style="color: var(--primary-blue);">Lab Report Complete</h2>
+        <h2 style="color: var(--primary-blue);">Challenge Complete</h2>
         <div style="font-size: 4.5rem; font-weight: 900; color: #202124; margin: 10px 0;"><span id="final-pts">0</span>/12</div>
         <p id="result-msg" style="color:#5f6368; margin-bottom:30px;"></p>
-        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">NEW RESEARCH</button>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">RESTART CHALLENGE</button>
     </div>
 </div>
 
@@ -153,6 +175,14 @@
 
     let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
 
+    // --- SHUFFLE ENGINE ---
+    function shuffleQuestions(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
     window.onload = () => {
         setTimeout(() => {
             document.getElementById('splash-screen').style.display = 'none';
@@ -160,12 +190,13 @@
         }, 5000);
     };
 
-    function startLab() {
+    function startChallenge() {
         document.getElementById('intro-view').classList.add('hidden');
         document.getElementById('quiz-view').classList.remove('hidden');
+        shuffleQuestions(questions);
         loadQuestion();
     }
-    document.getElementById('start-btn').onclick = startLab;
+    document.getElementById('start-btn').onclick = startChallenge;
 
     function loadQuestion() {
         attempts = 0; timeLeft = 45;
@@ -173,6 +204,7 @@
         document.getElementById('feedback-box').style.display = 'none';
         document.getElementById('action-btn').classList.add('hidden');
         document.getElementById('q-num').innerText = current + 1;
+        document.getElementById('timer-val').innerText = timeLeft;
         document.getElementById('q-category').innerText = q.cat;
         document.getElementById('q-text').innerText = q.q;
         
@@ -195,6 +227,7 @@
         clearInterval(timer);
         timer = setInterval(() => {
             timeLeft--;
+            document.getElementById('timer-val').innerText = timeLeft;
             document.getElementById('timer-bar').style.width = (timeLeft/45*100) + "%";
             if(timeLeft <= 0) { clearInterval(timer); endTurn(); }
         }, 1000);
@@ -203,20 +236,20 @@
     function handleChoice(i, b) {
         if(i === questions[current].ans) {
             clearInterval(timer);
-            sfx.correct.play().catch(e => {}); // Play correct sound
+            sfx.correct.play().catch(e => {});
             b.classList.add('correct');
             score++;
             document.getElementById('score-val').innerText = score * 100;
             endTurn();
         } else {
             attempts++;
-            sfx.wrong.play().catch(e => {}); // Play wrong sound
+            sfx.wrong.play().catch(e => {});
             b.classList.add('wrong');
             b.disabled = true;
             if(attempts === 1) {
                 const f = document.getElementById('feedback-box');
                 f.className = 'feedback hint';
-                f.innerHTML = "💡 <b>LAB HINT:</b> " + questions[current].hint;
+                f.innerHTML = "💡 <b>HINT:</b> " + questions[current].hint;
                 f.style.display = 'block';
             } else {
                 clearInterval(timer);
@@ -230,7 +263,7 @@
         document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
         const f = document.getElementById('feedback-box');
         f.className = 'feedback expl';
-        f.innerHTML = "🔍 <b>SCIENTIFIC ANALYSIS:</b> " + questions[current].expl;
+        f.innerHTML = "🔍 <b>EXPLANATION:</b> " + questions[current].expl;
         f.style.display = 'block';
         document.getElementById('action-btn').classList.remove('hidden');
     }
@@ -239,7 +272,7 @@
         current++;
         if(current < questions.length) loadQuestion();
         else {
-            sfx.victory.play().catch(e => {}); // Play victory sound
+            sfx.victory.play().catch(e => {});
             showResults();
         }
     };
@@ -251,7 +284,7 @@
         const msg = document.getElementById('result-msg');
         if(score >= 10) msg.innerText = "Exceptional! You've mastered simple machines.";
         else if(score >= 7) msg.innerText = "Great job! You have a solid grasp of how machines work.";
-        else msg.innerText = "Keep investigating! Experiment with different machines.";
+        else msg.innerText = "Keep testing your knowledge! Practice with different scenarios.";
     }
 </script>
 </body>
