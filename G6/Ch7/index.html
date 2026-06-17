@@ -60,7 +60,6 @@
 
         .hidden { display: none !important; }
 
-        /* Multi-pill Horizontal HUD Layout */
         .hud-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -85,7 +84,7 @@
         .timer-track { width: 100%; height: 8px; background: #edf2f4; border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
         #timer-bar { height: 100%; width: 100%; background: var(--accent); transition: width 1s linear; }
 
-        h2 { font-size: 1.2rem; color: #2d3436; line-height: 1.4; margin-bottom: 25px; }
+        h2 { font-size: 1.15rem; color: #2d3436; line-height: 1.5; margin-bottom: 25px; font-weight: 600; }
 
         .options-list { display: grid; gap: 15px; }
         .option-item {
@@ -94,12 +93,13 @@
             padding: 16px 22px;
             border-radius: 15px;
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 600;
             color: #636e72;
             transition: 0.2s;
             text-align: left;
             width: 100%;
+            line-height: 1.3;
         }
         .option-item:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--primary); background: #f1f0ff; }
         .option-item:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -167,18 +167,18 @@
         };
 
         const questions = [
-            { q: "Riya measures a classroom using her footsteps. Her friend gets a different answer. Why?", options: ["Size changed", "Footsteps differ in length", "Wrong counting", "Uneven floor"], ans: 1, explain: "Footsteps aren't standard because everyone's feet are different sizes!" },
-            { q: "A tailor uses a measuring tape instead of hand span. What is the advantage?", options: ["Faster", "Looks longer", "Uniform and accurate", "Easier folding"], ans: 2, explain: "Standard tools like tapes ensure everyone gets the same measurement." },
-            { q: "Which unit is best for the thickness of a coin?", options: ["Kilometre", "Metre", "Centimetre", "Millimetre"], ans: 3, explain: "Millimetres are best for measuring very thin objects." },
-            { q: "Who travels the longest: Aman(500m), Neha(2km), Kabir(800m), Sara(1km)?", options: ["Aman", "Neha", "Kabir", "Sara"], ans: 1, explain: "2km equals 2000 metres, which is the longest distance!" },
-            { q: "A student starts at 1cm and ends at 15cm. What is the actual length?", options: ["15 cm", "16 cm", "14 cm", "1 cm"], ans: 2, explain: "Length = End Reading - Start Reading (15 - 1 = 14cm)." },
-            { q: "How should Rohan measure a curved garden path?", options: ["Straight ruler", "String then measure the string", "Guessing", "Footsteps"], ans: 1, explain: "Use a string to follow the curve, then straighten it against a ruler." },
-            { q: "Assertion: A passenger in a moving bus is in motion. Reason: Motion depends on reference point.", options: ["Both correct & Reason explains Assertion", "Both correct but different", "Assertion correct only", "Reason correct only"], ans: 0, explain: "Motion is relative to the observer's position!" },
-            { q: "A ceiling fan spinning at a constant speed is:", options: ["Rectilinear", "Circular", "Oscillatory", "Vibratory"], ans: 1, explain: "Moving in a circle around a fixed center is Circular Motion." },
-            { q: "A car slowing and speeding in traffic shows:", options: ["Uniform", "Non-uniform", "Circular", "Periodic"], ans: 1, explain: "Speed changes make the motion non-uniform." },
-            { q: "Identify the odd one out: Swing, Pendulum, Vibrating string, Moving train.", options: ["Swing", "Pendulum", "String", "Moving train"], ans: 3, explain: "The train moves in a line; the others are back-and-forth periodic motions." },
-            { q: "Meera (10 min) and Brother (6 min) walk 600m. Who is faster?", options: ["Meera", "Brother", "Same", "Unknown"], ans: 1, explain: "The Brother took less time, so his speed was higher." },
-            { q: "A screw being tightened shows which motions?", options: ["Turning only", "Forward only", "Circular and Translatory", "Oscillatory"], ans: 2, explain: "The screw rotates while moving forward into the surface!" }
+            { q: "Riya and her friend are measuring the width of their science classroom using their paces (footsteps). When they compare notes, Riya recorded 22 paces while her friend recorded 25 paces. What is the most likely reason for this difference?", options: ["The actual size of the classroom changed between measurements", "Their footsteps differ in length because people have different body sizes", "One of them forgot how to count numbers correctly", "The classroom floor is uneven, making one side longer"], ans: 1, explain: "Footsteps aren't standard units of measurement because everyone's feet and stride lengths are slightly different!" },
+            { q: "Ananya goes to a tailor shop to get a dress made. She notices that the tailor avoids using hand spans and instead pulls out a flexible measuring tape to find her dimensions. What is the primary advantage of doing this?", options: ["Using a tape is much faster than using hand spans", "It makes the cloth piece look longer than it actually is", "It provides a uniform, standard measurement that remains accurate for everyone", "It is easier to fold up a measuring tape than a person's hand"], ans: 2, explain: "Standard tools like measuring tapes give a fixed, reliable unit that ensures consistent results no matter who measures." },
+            { q: "Imagine you are a scientist working in a high-tech lab, and your assignment is to record the precise dimensions of a very thin object, like the thickness of a small five-rupee coin. Which of these metric units would be the best choice for your report?", options: ["Kilometre", "Metre", "Centimetre", "Millimetre"], ans: 3, explain: "Millimetres are extremely small metric sub-divisions, making them ideal for measuring tiny gaps or very thin objects accurately." },
+            { q: "Four friends took different routes to walk home from school today. Aman traveled 500m, Neha walked 2km, Kabir marched 800m, and Sara covered exactly 1km. Who traveled the longest distance among them?", options: ["Aman", "Neha", "Kabir", "Sara"], ans: 1, explain: "Since 1 kilometre equals 1000 metres, Neha's distance of 2km converts to 2000 metres, which is clearly the longest path!" },
+            { q: "While trying to find the length of a wooden block with a broken plastic ruler, a student lines up the left edge of the block at the 1cm mark instead of 0. If the right edge points directly to the 15cm mark, what is the actual true length of the block?", options: ["15 cm", "16 cm", "14 cm", "1 cm"], ans: 2, explain: "When a ruler doesn't start at zero, your True Length = Final Reading minus the Starting Reading (15cm - 1cm = 14cm)." },
+            { q: "Rohan is trying to find the exact perimeter of a wavy, curved garden path in a local park. He tries using a stiff plastic school ruler but finds it cannot bend along the curves. What method should Rohan use instead?", options: ["Use a straight ruler anyway and guess the curved parts", "Lay a flexible piece of string along the curved path first, then measure that string against a ruler", "Estimate the total length by roughly guessing based on looks", "Count his paces as he walks along the edge of the path"], ans: 1, explain: "A flexible string easily traces a curved profile. Once marked, stretching it straight next to a standard ruler reveals the exact length." },
+            { q: "Consider these two scientific statements:\nAssertion: A passenger sitting completely still inside a fast-moving highway bus is considered to be in motion.\nReason: Whether an object is moving or staying still always depends directly on the chosen reference point.\nSelect the most accurate conclusion:", options: ["Both statements are correct, and the Reason perfectly explains the Assertion", "Both statements are correct, but the Reason does not explain the Assertion", "Only the Assertion statement is factually correct", "Only the Reason statement is factually correct"], ans: 0, explain: "Motion is relative. To a person standing on the road, the passenger is moving fast along with the bus. To someone sitting inside the bus, the passenger appears stationary. Therefore, reference points change everything!" },
+            { q: "You look up at the ceiling of your room and notice an electric fan spinning around smoothly at a completely locked, constant speed. What specific type of motion is the fan blade displaying?", options: ["Rectilinear motion", "Circular motion", "Oscillatory motion", "Vibratory motion"], ans: 1, explain: "When an object rotates around a central, locked pivot point without changing its overall location, it exhibits circular motion." },
+            { q: "A car driving through a congested market keeps tapping its brakes to slow down for shoppers, then accelerates rapidly into open pockets of road space. This changing movement pattern represents:", options: ["Uniform motion", "Non-uniform motion", "Circular motion", "Periodic motion"], ans: 1, explain: "Because the car's speed changes dynamically over time rather than covering equal distances in equal intervals, its motion is non-uniform." },
+            { q: "Your science teacher shows you four examples of moving objects: a playground swing shifting back and forth, a grandfather clock pendulum rocking, a guitar string vibrating when plucked, and an express train rushing along a flat, straight line. Which object does NOT belong in this group?", options: ["The playground swing", "The clock pendulum", "The vibrating guitar string", "The moving express train"], ans: 3, explain: "The train exhibits straight-line translatory (rectilinear) motion, whereas all the other options are examples of back-and-forth periodic motions." },
+            { q: "Meera and her brother both set off from their front porch to walk to a neighborhood shop that is exactly 600 metres away. Meera takes 10 minutes to arrive, while her brother gets there in just 6 minutes. Who moved with a faster speed?", options: ["Meera was moving faster", "Her brother was moving faster", "They both traveled at the exact same speed", "The speed cannot be calculated from this data"], ans: 1, explain: "Speed is the amount of distance covered per unit of time. Because the brother covered the exact same 600m distance in less time, his speed was higher." },
+            { q: "Think carefully about what happens when a carpenter uses a handheld screwdriver to tighten a metal screw into a piece of wooden furniture. What combination of motions does the screw undergo simultaneously?", options: ["It experiences turning rotation only", "It moves forward in a straight line only", "It experiences both Circular and Translatory motion at the same time", "It displays simple oscillatory motion back and forth"], ans: 2, explain: "As the screw turns around its core center axis (circular motion), it also drives deeper downward forward into the wood grain surface (translatory motion)." }
         ];
 
         let curIdx = 0, score = 0, attempts = 0, timer, timeLeft = 45;
@@ -281,7 +281,7 @@
                         document.querySelectorAll('.option-item').forEach(b => {
                             if(!b.classList.contains('wrong')) b.disabled = false;
                         });
-                        feedback.innerHTML = `<b>Wrong!</b> You have 1 chance left.`;
+                        feedback.innerHTML = `<b>Not quite right!</b> Review the story data carefully. You have 1 final chance left.`;
                         feedback.classList.remove('hidden');
                         startTimer();
                     } else {
