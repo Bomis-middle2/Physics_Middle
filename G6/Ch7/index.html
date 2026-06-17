@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Grade 6 Science - Motion & Measurement</title>
     <style>
         :root {
@@ -14,7 +14,7 @@
             --bg: #f0f3f7;
         }
 
-        * { box-sizing: border-box; font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', sans-serif; }
+        * { box-sizing: border-box; font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
 
         body {
             margin: 0;
@@ -26,6 +26,7 @@
             align-items: center;
             min-height: 100vh;
             overflow-x: hidden;
+            padding: 10px;
         }
 
         #brand-layer {
@@ -44,10 +45,10 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .game-card {
-            width: 90%;
+            width: 100%;
             max-width: 650px;
             background: white;
-            padding: 40px;
+            padding: 35px 25px;
             border-radius: 30px;
             box-shadow: 0 20px 0px rgba(0,0,0,0.05), 0 30px 60px rgba(108, 92, 231, 0.15);
             border: 4px solid var(--primary);
@@ -57,12 +58,16 @@
 
         .hidden { display: none !important; }
 
-        .hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .badge { background: var(--primary); color: white; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
         .score-badge { background: var(--warning); color: #2d3436; }
 
-        .progress-container { width: 100%; height: 12px; background: #eee; border-radius: 10px; margin-bottom: 25px; border: 2px solid #ddd; overflow: hidden; }
+        .progress-container { width: 100%; height: 12px; background: #eee; border-radius: 10px; margin-bottom: 10px; border: 2px solid #ddd; overflow: hidden; }
         #progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); transition: width 0.5s ease; }
+
+        /* Score-Timer Display Bar Layout */
+        .timer-track { width: 100%; height: 8px; background: #edf2f4; border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
+        #timer-bar { height: 100%; width: 100%; background: var(--accent); transition: width 1s linear; }
 
         h2 { font-size: 1.2rem; color: #2d3436; line-height: 1.4; margin-bottom: 25px; }
 
@@ -77,18 +82,22 @@
             font-weight: 600;
             color: #636e72;
             transition: 0.2s;
+            text-align: left;
+            width: 100%;
         }
         .option-item:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--primary); background: #f1f0ff; }
+        .option-item:disabled { opacity: 0.6; cursor: not-allowed; }
         
-        .correct { background: var(--success) !important; color: white !important; border-color: #009473 !important; }
-        .wrong { background: var(--danger) !important; color: white !important; border-color: #b33939 !important; animation: shake 0.4s; }
+        .correct { background: var(--success) !important; color: white !important; border-color: #009473 !important; opacity: 1 !important; }
+        .wrong { background: var(--danger) !important; color: white !important; border-color: #b33939 !important; animation: shake 0.4s; opacity: 0.7 !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 
-        .feedback { margin-top: 25px; padding: 20px; border-radius: 15px; background: #f0f0ff; border: 2px dashed var(--primary); font-size: 1rem; }
+        .feedback { margin-top: 25px; padding: 20px; border-radius: 15px; background: #f0f0ff; border: 2px dashed var(--primary); font-size: 1rem; line-height: 1.4; }
         
         .btn-fancy {
             background: var(--accent); color: white; border: none; padding: 15px 35px; border-radius: 50px;
             font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 6px 0px #00aaa7;
+            display: inline-block;
         }
         .btn-fancy:active { transform: translateY(4px); box-shadow: 0 2px 0px #00aaa7; }
         .text-center { text-align: center; }
@@ -97,7 +106,7 @@
 <body>
 
     <div id="brand-layer">
-        <img src="assets/logo.png" alt="Logo">
+        <img src="assets/logo.png" onerror="this.src='https://via.placeholder.com/180x60?text=INNOVINE'" alt="Logo">
         <div class="loader"></div>
     </div>
 
@@ -105,15 +114,17 @@
         <div id="screen-start" class="text-center">
             <h1 style="color:var(--primary)">Science Lab: Motion</h1>
             <p><strong>Strict Rule:</strong> Only 2 chances per question! 🧪</p>
+            <p style="font-size: 0.95rem; color:#636e72;">Speed matters! First-time correct answers score points based on remaining time!</p>
             <button class="btn-fancy" onclick="startQuiz()">Start 🚀</button>
         </div>
 
         <div id="screen-quiz" class="hidden">
             <div class="hud">
                 <span class="badge">Question <span id="q-count">1</span>/12</span>
-                <span class="badge score-badge">⭐ Stars: <span id="score">0</span></span>
+                <span class="badge score-badge">⭐ Points: <span id="score">0</span></span>
             </div>
             <div class="progress-container"><div id="progress-bar"></div></div>
+            <div class="timer-track"><div id="timer-bar"></div></div>
             <h2 id="q-text"></h2>
             <div class="options-list" id="options-box"></div>
             <div id="feedback-box" class="feedback hidden"></div>
@@ -124,8 +135,8 @@
 
         <div id="screen-result" class="hidden text-center">
             <h2>Lab Complete!</h2>
-            <h1 id="final-score" style="font-size: 3.5rem; color: var(--warning);">0/12</h1>
-            <p id="result-msg"></p>
+            <h1 id="final-score" style="font-size: 3.2rem; color: var(--primary); margin: 15px 0;">0 Points</h1>
+            <p id="result-msg" style="margin-bottom: 25px; font-weight: 600; color: #2d3436;"></p>
             <button class="btn-fancy" onclick="location.reload()">Play Again 🔄</button>
         </div>
     </div>
@@ -152,7 +163,15 @@
             { q: "A screw being tightened shows which motions?", options: ["Turning only", "Forward only", "Circular and Translatory", "Oscillatory"], ans: 2, explain: "The screw rotates while moving forward into the surface!" }
         ];
 
-        let curIdx = 0, score = 0, attempts = 0;
+        let curIdx = 0, score = 0, attempts = 0, timer, timeLeft = 45;
+
+        // --- DECK RANDOMIZER ENGINE ---
+        function shuffleQuestions(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
 
         window.onload = () => {
             setTimeout(() => {
@@ -164,18 +183,28 @@
         function startQuiz() {
             document.getElementById('screen-start').classList.add('hidden');
             document.getElementById('screen-quiz').classList.remove('hidden');
+            shuffleQuestions(questions); // Randomizes index arrangement arrays completely
             loadQuestion();
         }
 
         function loadQuestion() {
-            const data = questions[curIdx];
+            clearInterval(timer);
             attempts = 0;
+            timeLeft = 45;
+
+            const data = questions[curIdx];
             document.getElementById('q-count').innerText = curIdx + 1;
             document.getElementById('q-text').innerText = data.q;
             document.getElementById('feedback-box').classList.add('hidden');
             document.getElementById('btn-continue').classList.add('hidden');
             document.getElementById('progress-bar').style.width = (curIdx / questions.length * 100) + '%';
             
+            // Fast reset timer metrics interface before beginning transition countdown styles
+            document.getElementById('timer-bar').style.transition = 'none';
+            document.getElementById('timer-bar').style.width = '100%';
+            document.getElementById('timer-bar').offsetHeight; 
+            document.getElementById('timer-bar').style.transition = 'width 1s linear';
+
             const box = document.getElementById('options-box');
             box.innerHTML = '';
             data.options.forEach((opt, i) => {
@@ -185,21 +214,41 @@
                 btn.onclick = () => checkAns(i, btn);
                 box.appendChild(btn);
             });
+            startTimer();
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-bar').style.width = (timeLeft / 45 * 100) + '%';
+                if(timeLeft <= 0) { 
+                    clearInterval(timer); 
+                    endTurnTimeOut(); 
+                }
+            }, 1000);
         }
 
         function checkAns(idx, btn) {
+            clearInterval(timer); // Lock counting mechanisms down right away
             const data = questions[curIdx];
             const feedback = document.getElementById('feedback-box');
             
-            // Disable everything immediately to wait for sound
             document.querySelectorAll('.option-item').forEach(b => b.disabled = true);
 
             if(idx === data.ans) {
                 btn.classList.add('correct');
-                audio.correct.play();
+                audio.correct.play().catch(e => console.log("Audio block"));
+                
                 audio.correct.onended = () => {
-                    audio.claps.play();
-                    if(attempts === 0) score++;
+                    audio.claps.play().catch(e => console.log("Audio block"));
+                    
+                    // Score calculation processing 
+                    if(attempts === 0) {
+                        score += (timeLeft * 100); 
+                    } else {
+                        score += 50; 
+                    }
+                    
                     document.getElementById('score').innerText = score;
                     feedback.innerHTML = `<b>🌟 Spot On!</b><br>${data.explain}`;
                     feedback.classList.remove('hidden');
@@ -207,28 +256,38 @@
                 };
             } else {
                 btn.classList.add('wrong');
-                audio.wrong.play();
+                audio.wrong.play().catch(e => console.log("Audio block"));
                 
                 audio.wrong.onended = () => {
                     attempts++;
                     if (attempts < 2) {
-                        // First mistake: Re-enable remaining buttons for the final chance
                         document.querySelectorAll('.option-item').forEach(b => {
                             if(!b.classList.contains('wrong')) b.disabled = false;
                         });
                         feedback.innerHTML = `<b>Wrong!</b> You have 1 chance left.`;
                         feedback.classList.remove('hidden');
+                        startTimer(); // Resume remaining countdown window time limit frame
                     } else {
-                        // Second mistake: Game Over for this question
                         const btns = document.querySelectorAll('.option-item');
-                        btns[data.ans].classList.add('correct'); // Reveal the right one
+                        btns[data.ans].classList.add('correct'); 
                         feedback.innerHTML = `<b>No more chances!</b> The correct answer was: <i>${data.options[data.ans]}</i>.<br>${data.explain}`;
                         feedback.classList.remove('hidden');
                         document.getElementById('btn-continue').classList.remove('hidden');
-                        // Buttons stay disabled
                     }
                 };
             }
+        }
+
+        function endTurnTimeOut() {
+            document.querySelectorAll('.option-item').forEach(b => b.disabled = true);
+            const data = questions[curIdx];
+            const feedback = document.getElementById('feedback-box');
+            const btns = document.querySelectorAll('.option-item');
+            
+            btns[data.ans].classList.add('correct'); 
+            feedback.innerHTML = `<b>⏰ Time out!</b> The correct answer was: <i>${data.options[data.ans]}</i>.<br>${data.explain}`;
+            feedback.classList.remove('hidden');
+            document.getElementById('btn-continue').classList.remove('hidden');
         }
 
         function nextQuestion() {
@@ -240,9 +299,16 @@
         function showResult() {
             document.getElementById('screen-quiz').classList.add('hidden');
             document.getElementById('screen-result').classList.remove('hidden');
-            document.getElementById('final-score').innerText = `${score}/12`;
-            audio.claps.play();
-            document.getElementById('result-msg').innerText = score > 8 ? "Excellent science skills!" : "Good effort! Let's study and try again.";
+            document.getElementById('final-score').innerText = `${score} Points`;
+            audio.claps.play().catch(e => console.log("Audio block"));
+            
+            if(score >= 25000) {
+                document.getElementById('result-msg').innerText = "Incredible velocity and accuracy! You are a master of physical motion! 🏆";
+            } else if(score >= 12000) {
+                document.getElementById('result-msg').innerText = "Great job! Excellent overall metric performance values.";
+            } else {
+                document.getElementById('result-msg').innerText = "Good effort! Let's study and review motion profiles once more.";
+            }
         }
     </script>
 </body>
