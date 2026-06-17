@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title> Force</title>
+    <title>Force and Energy</title>
     <style>
         :root {
-            --lab-blue: #1a73e8;
+            --primary-blue: #1a73e8;
             --science-yellow: #f9ab00;
             --success-green: #1e8e3e;
             --error-red: #d93025;
@@ -37,7 +37,7 @@
             position: relative;
             overflow: hidden;
             min-height: 550px;
-            border-top: 8px solid var(--lab-blue);
+            border-top: 8px solid var(--primary-blue);
         }
 
         /* --- LOGO SPLASH SCREEN --- */
@@ -63,7 +63,7 @@
 
         .loading-ring { 
             border: 4px solid #f3f3f3; 
-            border-top: 4px solid var(--lab-blue); 
+            border-top: 4px solid var(--primary-blue); 
             border-radius: 50%; 
             width: 40px; 
             height: 40px; 
@@ -74,11 +74,11 @@
 
         /* --- GAME UI --- */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .lab-badge { background: var(--lab-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; }
-        .score-box { font-weight: 800; color: var(--lab-blue); }
+        .badge { background: var(--primary-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; }
+        .score-box { font-weight: 800; color: var(--primary-blue); }
 
         .timer-track { width: 100%; height: 8px; background: #e8eaed; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
-        #timer-bar { height: 100%; width: 100%; background: var(--lab-blue); transition: width 1s linear; }
+        #timer-bar { height: 100%; width: 100%; background: var(--primary-blue); transition: width 1s linear; }
 
         .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.4; margin-bottom: 15px; }
 
@@ -98,11 +98,11 @@
 
         .feedback { margin-top: 15px; padding: 15px; border-radius: 14px; display: none; line-height: 1.4; font-size: 0.9rem; }
         .hint-box { background: #fff7e0; border-left: 5px solid var(--science-yellow); color: #b06000; }
-        .expl-box { background: #e8f0fe; border-left: 5px solid var(--lab-blue); color: #1967d2; }
+        .expl-box { background: #e8f0fe; border-left: 5px solid var(--primary-blue); color: #1967d2; }
 
         #action-btn { 
             width: 100%; margin-top: 20px; padding: 18px; 
-            background: var(--lab-blue); color: white; 
+            background: var(--primary-blue); color: white; 
             border: none; border-radius: 16px; font-weight: 700; 
             font-size: 1rem; cursor: pointer;
         }
@@ -119,33 +119,33 @@
     </div>
 
     <div id="intro-view" class="hidden" style="text-align: center;">
-        <div style="font-size: 3.5rem; margin-bottom: 15px;">🧪</div>
-        <h1 style="color: var(--lab-blue); margin: 0;">Force and Energy</h1>
-        <p style="color: #5f6368; margin-top: 10px;">Grade 5 Science Challenge</p>
+        <div style="font-size: 3.5rem; margin-bottom: 15px;">⚡</div>
+        <h1 style="color: var(--primary-blue); margin: 0;">Force and Energy</h1>
+        <p style="color: #5f6368; margin-top: 10px;">Grade 5 Challenge</p>
         <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dadce0;">
-            Welcome, Researcher! Analyze experimental data and identify forces. You have <b>2 attempts</b> per question.
+            Welcome! Analyze the questions and identify the correct options. You have <b>2 attempts</b> per question.
         </div>
-        <button id="start-btn" style="width:100%; padding:20px; background:var(--lab-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">START RESEARCH</button>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">START CHALLENGE</button>
     </div>
 
     <div id="quiz-view" class="hidden">
         <div class="header">
-            <div class="lab-badge">LOG #<span id="q-num">1</span></div>
-            <div class="score-box">XP: <span id="score-val">0</span></div>
+            <div class="badge">QUESTION <span id="q-num">1</span></div>
+            <div class="score-box">SCORE: <span id="score-val">0</span></div>
         </div>
         <div class="timer-track"><div id="timer-bar"></div></div>
         <div id="q-text" class="question-text"></div>
         <div id="table-area"></div>
         <div id="options-area" class="options-grid"></div>
         <div id="feedback-box" class="feedback"></div>
-        <button id="action-btn" class="hidden">NEXT LOG →</button>
+        <button id="action-btn" class="hidden">NEXT QUESTION →</button>
     </div>
 
     <div id="result-view" class="hidden" style="text-align:center;">
         <div style="font-size: 4rem; margin-bottom: 10px;">🏅</div>
-            <div style="font-size: 4.5rem; font-weight: 900; color: #3c4043; margin: 10px 0;"><span id="final-pts">0</span>/10</div>
+        <div style="font-size: 4.5rem; font-weight: 900; color: #3c4043; margin: 10px 0;"><span id="final-pts">0</span>/10</div>
         <p id="result-msg" style="color:#5f6368; margin-bottom:30px;"></p>
-        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--lab-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">RESTART RESEARCH</button>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">RESTART CHALLENGE</button>
     </div>
 </div>
 
@@ -295,7 +295,7 @@
         document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
         const f = document.getElementById('feedback-box');
         f.className = 'feedback expl-box';
-        f.innerHTML = "📝 <b>RESEARCH LOG:</b> " + questions[current].expl;
+        f.innerHTML = "📝 <b>EXPLANATION:</b> " + questions[current].expl;
         f.style.display = 'block';
         document.getElementById('action-btn').classList.remove('hidden');
     }
@@ -314,9 +314,9 @@
         document.getElementById('result-view').classList.remove('hidden');
         document.getElementById('final-pts').innerText = score;
         const msg = document.getElementById('result-msg');
-        if(score >= 9) msg.innerText = "Excellent! You are a Certified Lead.";
-        else if(score >= 7) msg.innerText = "Good job! You've passed the safety inspection.";
-        else msg.innerText = "Keep researching! Your science skills are growing.";
+        if(score >= 9) msg.innerText = "Excellent! You have a great understanding of forces.";
+        else if(score >= 7) msg.innerText = "Good job! You successfully completed the challenge.";
+        else msg.innerText = "Keep practicing! Your understanding of science is growing.";
     }
 </script>
 </body>
