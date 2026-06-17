@@ -3,27 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Science Lab: Motion</title>
+    <title>Intergalactic Observation Hub</title>
     <style>
         :root {
-            --primary-purple: #6c5ce7;
-            --mint-teal: #00cec9;
+            --space-blue: #1a73e8;
+            --nebula-purple: #8ab4f8;
+            --star-gold: #f9ab00;
+            --success: #1e8e3e;
+            --danger: #d93025;
+            --light-bg: #f8f9fa;
+            --text-main: #3c4043;
             --hud-blue: #e8f0fe;
-            --hud-orange: #fff3e0;
-            --success: #2ed573;
-            --error: #ff4757;
-            --bg-grid: #f1f2f6;
-            --text-main: #2f3542;
-            --border-light: #ced6e0;
+            --hud-orange: #fef7e0;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Comic Sans MS', 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg-grid);
-            background-image: radial-gradient(#ced6e0 1.5px, transparent 1.5px);
-            background-size: 24px 24px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e8eaed;
             color: var(--text-main);
             margin: 0;
             display: flex;
@@ -35,18 +33,18 @@
 
         #app-container {
             width: 100%;
-            max-width: 500px;
+            max-width: 480px;
             background: #ffffff;
-            border-radius: 28px;
+            border-radius: 24px;
             padding: 25px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
             position: relative;
             overflow: hidden;
-            min-height: 540px;
-            border: 3px solid var(--primary-purple);
+            min-height: 550px;
+            border-top: 8px solid var(--space-blue);
         }
 
-        /* --- SPLASH SCREEN CONTAINER --- */
+        /* --- SPLASH SCREEN --- */
         #splash-screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -58,110 +56,87 @@
             z-index: 9999;
         }
 
-        .logo-main {
-            width: 240px;
-            height: auto;
-            max-width: 80%;
-            margin-bottom: 25px;
-            object-fit: contain;
-        }
-
-        .loader-track {
-            width: 160px; height: 6px; background: #e4e7eb;
-            border-radius: 10px; position: relative; overflow: hidden;
+        .logo-main { width: 260px; height: auto; max-width: 80%; margin-bottom: 20px; object-fit: contain; }
+        
+        .loader-bar {
+            width: 150px; height: 4px; background: #e8eaed;
+            border-radius: 2px; position: relative; overflow: hidden;
         }
         .loader-fill {
-            width: 0%; height: 100%; background: var(--primary-purple);
-            animation: bootApp 5s linear forwards;
+            width: 0%; height: 100%; background: var(--space-blue);
+            animation: load 5s linear forwards;
         }
-        @keyframes bootApp { to { width: 100%; } }
+        @keyframes load { to { width: 100%; } }
 
-        /* --- INTRO & INSTRUCTIONS VIEW --- */
-        .lab-title {
-            color: var(--primary-purple);
-            font-size: 2.2rem;
-            margin: 10px 0;
-            font-weight: 800;
+        /* --- BASIC INSTRUCTIONS STYLING --- */
+        .instruction-box {
+            background: #f8f9fa;
+            border-left: 4px solid var(--space-blue);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: left;
+            margin: 20px 0;
+            font-size: 0.95rem;
+            color: #4a5568;
+            line-height: 1.4;
+            border: 1px solid #dadce0;
         }
+        .instruction-box ul { margin: 5px 0 0 20px; padding: 0; }
+        .instruction-box li { margin-bottom: 5px; }
 
-        .rule-badge {
-            font-size: 1.05rem;
-            font-weight: 700;
-            margin: 25px 0;
-            color: #000000;
-        }
-
-        #start-btn {
-            background: var(--mint-teal);
-            color: #ffffff;
-            font-family: inherit;
-            border: none;
-            padding: 16px 45px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 6px 15px rgba(0, 206, 201, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        #start-btn:active {
-            transform: scale(0.96);
-            box-shadow: 0 3px 8px rgba(0, 206, 201, 0.2);
-        }
-
-        /* --- HORIZONTAL HUD SYSTEM --- */
+        /* --- HORIZONTAL HUD COMPONENT --- */
         .hud-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 15px;
         }
         .hud-pill {
             text-align: center;
             padding: 12px 6px;
-            border-radius: 16px;
-            font-size: 0.95rem;
+            border-radius: 14px;
+            font-size: 0.9rem;
             font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: inset 0 -3px 0px rgba(0,0,0,0.06);
+            box-shadow: inset 0 -2px 0px rgba(0,0,0,0.05);
         }
-        .hud-pill.blue { background-color: var(--hud-blue); color: #1e3a8a; }
-        .hud-pill.orange { background-color: var(--hud-orange); color: #c2410c; }
+        .hud-pill.blue { background-color: var(--hud-blue); color: #1967d2; }
+        .hud-pill.orange { background-color: var(--hud-orange); color: #b06000; }
 
-        .timer-track { width: 100%; height: 8px; background: #f1f2f6; border-radius: 20px; margin-bottom: 25px; overflow: hidden; }
-        #timer-bar { height: 100%; width: 100%; background: var(--primary-purple); transition: width 1s linear; }
+        .timer-track { width: 100%; height: 8px; background: #f1f3f4; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        #timer-bar { height: 100%; width: 100%; background: var(--space-blue); transition: width 1s linear; }
 
-        /* --- INTERACTIVE PLAYGROUND --- */
-        .question-text { font-size: 1.15rem; font-weight: 700; line-height: 1.5; margin-bottom: 20px; }
+        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 20px; white-space: pre-line; }
         
-        .img-container { width: 100%; margin-bottom: 20px; border-radius: 16px; overflow: hidden; border: 2px solid var(--border-light); }
+        .img-container { width: 100%; margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 1px solid #dadce0; }
         .q-img { width: 100%; display: block; }
 
         .options-grid { display: grid; gap: 12px; }
         .opt-btn {
-            background: #ffffff; border: 2px solid var(--border-light); padding: 16px;
-            border-radius: 16px; text-align: left; font-size: 1rem; font-weight: 600;
-            color: var(--text-main); cursor: pointer; transition: all 0.2s;
-            box-shadow: 0 4px 0px var(--border-light);
+            background: #fff; border: 2px solid #dadce0; padding: 16px;
+            border-radius: 14px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
+            color: var(--text-main); font-weight: 500;
+            box-shadow: 0 3px 0px #dadce0;
         }
-        .opt-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0px var(--border-light); }
+        .opt-btn:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 2px 0px #dadce0; }
         
-        .opt-btn.correct { background: var(--success) !important; color: white; border-color: var(--success); box-shadow: 0 4px 0px #26af5f; }
-        .opt-btn.wrong { background: var(--error) !important; color: white; border-color: var(--error); box-shadow: 0 4px 0px #b8323d; opacity: 0.85; }
+        .opt-btn.correct { background: var(--success) !important; color: white; border-color: var(--success); box-shadow: 0 3px 0px #135c27; }
+        .opt-btn.wrong { background: var(--danger) !important; color: white; border-color: var(--danger); opacity: 0.7; box-shadow: 0 3px 0px #8a1f18; }
 
-        .feedback { margin-top: 20px; padding: 16px; border-radius: 16px; display: none; line-height: 1.5; font-size: 0.95rem; font-weight: 600; }
-        .hint-box { background: #ffeaa7; border: 2px solid #f1c40f; color: #b78a00; }
-        .expl-box { background: #dff9fb; border: 2px solid #81ecec; color: #0097e6; }
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 14px; display: none; line-height: 1.5; animation: fadeInUp 0.3s ease; }
+        .hint-box { background: #fef7e0; border-left: 5px solid var(--star-gold); color: #b06000; }
+        .expl-box { background: #e8f0fe; border-left: 5px solid var(--space-blue); color: #1967d2; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         #action-btn { 
-            width: 100%; margin-top: 25px; padding: 18px; 
-            background: var(--primary-purple); color: white; 
+            width: 100%; margin-top: 20px; padding: 18px; 
+            background: var(--space-blue); color: white; 
             border: none; border-radius: 16px; font-weight: 700; 
-            font-size: 1.05rem; cursor: pointer; box-shadow: 0 4px 0px #4834d4;
+            font-size: 1rem; cursor: pointer;
         }
-        #action-btn:active { transform: translateY(2px); box-shadow: 0 2px 0px #4834d4; }
 
         .hidden { display: none !important; }
     </style>
@@ -170,23 +145,32 @@
 
 <div id="app-container">
     <div id="splash-screen">
-        <img src="assets/logo.png" class="logo-main" alt="Innovine Solutions Logo">
-        <div class="loader-track"><div class="loader-fill"></div></div>
+        <img src="assets/logo.png" class="logo-main" alt="Innovine Logo">
+        <div class="loader-bar"><div class="loader-fill"></div></div>
     </div>
 
-    <div id="intro-view" class="hidden" style="text-align: center; padding-top: 40px;">
-        <h1 class="lab-title">Science Lab: Motion</h1>
-        <div class="rule-badge">Strict Rule: Only 2 chances per question! 🧪</div>
-        <div style="margin-top: 40px;">
-            <button id="start-btn">Start 🚀</button>
+    <div id="intro-view" class="hidden" style="text-align: center;">
+        <div style="font-size: 3.5rem; margin-bottom: 10px;">🔭</div>
+        <h1 style="color: var(--space-blue); margin: 0;">Intergalactic Hub</h1>
+        <p style="color: #5f6368; margin-top: 10px; font-weight: 600;">Space Cadet Rank: <b>Trainee</b></p>
+        
+        <div class="instruction-box">
+            <strong>🚀 Mission Directives:</strong>
+            <ul>
+                <li>Analyze each celestial phenomenon within <b>45 seconds</b>.</li>
+                <li>You have up to <b>2 attempts</b> to record data correctly.</li>
+                <li>A sub-optimal choice triggers a <b>Subspace Hint</b>.</li>
+            </ul>
         </div>
+
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--space-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer; margin-top: 10px;">START MISSION ⚡</button>
     </div>
 
     <div id="quiz-view" class="hidden">
         <div class="hud-row">
-            <div class="hud-pill blue">Question <span id="q-num">1</span>/10</div>
-            <div class="hud-pill blue">Score: <span id="score-val">0</span></div>
-            <div class="hud-pill orange">Time: <span id="timer-text">60s</span></div>
+            <div class="hud-pill blue">Mission <span id="q-num">1</span>/10</div>
+            <div class="hud-pill blue">EXP: <span id="score-val">0</span></div>
+            <div class="hud-pill orange"><span id="timer-text">45s</span></div>
         </div>
         <div class="timer-track"><div id="timer-bar"></div></div>
         
@@ -194,33 +178,33 @@
         <div id="image-area"></div>
         <div id="options-area" class="options-grid"></div>
         <div id="feedback-box" class="feedback"></div>
-        <button id="action-btn" class="hidden">CONTINUE MISSION →</button>
+        <button id="action-btn" class="hidden">NEXT SYSTEM →</button>
     </div>
 
-    <div id="result-view" class="hidden" style="text-align:center; padding-top: 30px;">
-        <div style="font-size: 4.5rem; margin-bottom: 15px;">🏆</div>
-        <h2 style="color: var(--primary-purple); font-size: 1.8rem; margin: 0;">Lab Evaluation Complete</h2>
-        <div style="font-size: 4.5rem; font-weight: 900; color: var(--text-main); margin: 20px 0;"><span id="final-pts">0</span>/10</div>
-        <p id="result-msg" style="color:#57606f; font-size: 1.1rem; margin-bottom: 35px; padding: 0 10px; line-height: 1.5;"></p>
-        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-purple); color:white; border:none; border-radius:16px; font-weight:700; font-size: 1rem; cursor:pointer; box-shadow: 0 4px 0px #4834d4;">RUN EXPERIMENT AGAIN</button>
+    <div id="result-view" class="hidden" style="text-align:center;">
+        <div id="result-icon" style="font-size: 4rem; margin-bottom: 10px;">🌟</div>
+        <h2 style="color: var(--space-blue);">Mission Summary</h2>
+        <div style="font-size: 4.5rem; font-weight: 900; color: var(--text-main); margin: 10px 0;"><span id="final-pts">0</span>/10</div>
+        <p id="result-msg" style="color:#5f6368; margin-bottom:30px; line-height: 1.4;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--space-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">NEW MISSION</button>
     </div>
 </div>
 
 <script>
     const questions = [
-        { q: "A car travels 100 meters in 5 seconds. What is its average speed down the straightaway track?", opts: ["10 m/s", "20 m/s", "50 m/s", "500 m/s"], ans: 1, hint: "Speed parameters are calculated using the core formula: Distance divided by Time.", expl: "Dividing 100 meters by 5 seconds yields exactly 20 m/s." },
-        { q: "Review the motion mapping. What core dimension does the slope of a position vs. time graph demonstrate?", img: "q2.png", opts: ["Total acceleration structural load", "Instantaneous velocity metric", "Cumulative distance covered", "Static mass retention"], ans: 1, hint: "Consider the change of position value relative to each unit sequence of time elapsed.", expl: "The changing rate of position over time represents velocity; therefore, the local slope directly equals velocity." },
-        { q: "If an object maintains a perfectly constant velocity state, what must its total net acceleration evaluate to?", opts: ["A value steadily multiplying", "Exactly zero", "It shifts dependent on starting mass", "A value equal to gravity"], ans: 1, hint: "Acceleration maps velocity variation. If velocity does not vary, what is the change calculation value?", expl: "Acceleration explicitly measures change over time in velocity. Zero change yields exactly zero acceleration value parameters." },
-        { q: "A rolling ball changes its speed from 2 m/s to 14 m/s over a span of 3 seconds. Calculate its average acceleration.", opts: ["2 m/s²", "4 m/s²", "6 m/s²", "12 m/s²"], ans: 1, hint: "Acceleration equals the change in speed divided by time taken.", expl: "The speed change is 12 m/s (14 minus 2). Dividing 12 m/s by 3 seconds yields 4 m/s²." },
-        { q: "Which of the following scenarios is a definitive example of an object undergoing acceleration?", opts: ["A capsule sitting completely still on a launchpad", "A train traveling due north along a straight track at a locked 60 mph", "A bicycle tracking along a circular path at a steady 10 mph", "A book resting horizontally on a flat tabletop"], ans: 2, hint: "Velocity is a vector quantity combining speed and target vector direction. Altering either variable requires acceleration.", expl: "Even at consistent speed tracking, changing curves continually alters directional vectors, constituting active acceleration." },
-        { q: "An apple breaks loose from a tree branch and drops straight to Earth. What force accelerates it downward?", opts: ["Atmospheric pressure variance", "Earth's gravitational pulling force", "Centrifugal rotational inertia", "Magnetic alignment displacement"], ans: 1, hint: "It is the universal attraction force active between any massive objects.", expl: "Gravity pulls all unanchored masses towards the center of the Earth at a standardized localized rate." },
-        { q: "What does a flat, completely horizontal line mean on a Speed vs. Time graph?", opts: ["The object has come to a dead stop", "The object is traveling with a constant speed profile", "The object is accelerating at a uniform pace", "The object is returning to its initial origin point"], ans: 1, hint: "Look closely at the vertical axis label: speed. If the line is flat, that specific value is not moving up or down.", expl: "A horizontal line tells us that as time moves forward, the speed value stays exactly the same." },
-        { q: "A student runs 3 kilometers east, then turns around and runs 2 kilometers west. What is their final total displacement?", opts: ["1 kilometer east", "1 kilometer west", "5 kilometers east", "5 kilometers total"], ans: 0, hint: "Displacement tracks the straight-line shortcut distance from the starting line to the finish line.", expl: "The total path length is 5 kilometers, but the final net change in position is just 1 kilometer east of the origin point." },
-        { q: "Analyze the specialized experimental system data chart provided in the lab monitor view.", img: "q9.png", opts: ["Object properties show non-uniform acceleration patterns", "System demonstrates uniform velocity profile tracking", "Object maintains a static, non-moving equilibrium position", "Velocity scales exponentially relative to mass"], ans: 1, hint: "Observe whether position values shift by equivalent increments across each sequence block of time.", expl: "Linear position tracking directly establishes constant velocity output parameters across all timeline targets." },
-        { q: "If you drop a heavy bowling ball and a light tennis ball at the exact same moment inside a vacuum chamber with zero air resistance, which hits the floor first?", opts: ["The heavy bowling ball", "The light tennis ball", "Both hit the floor at the exact same moment", "The ball with the larger surface area"], ans: 2, hint: "Without air blocking the way, gravity accelerates all falling masses at the exact same rate.", expl: "In a total vacuum, gravity acts equally on all matter. Both items fall and accelerate down in perfect synchronization." }
+        { q: "Aarav can't see the stars from his city balcony, but his friend in a remote village sees a sky full of stars. Why?", opts: ["The city is closer to the Sun", "Light pollution from streetlights hides the faint stars", "Stars don't shine over cities", "Aarav needs stronger sunglasses"], ans: 1, hint: "Cities use a lot of artificial lights at night.", expl: "Artificial light pollution brightens the night sky, making the much fainter light from distant stars invisible." },
+        { q: "If you see a group of stars in the northern sky that looks like a 'Big Spoon,' which constellation is it?", img: "q2.jpg", opts: ["Orion (The Hunter)", "Ursa Major (The Big Dipper)", "Cassiopeia", "The Milky Way"], ans: 1, hint: "It is often used to find the North Star.", expl: "Ursa Major contains the seven bright stars known as the Big Dipper, which resembles a large ladle or spoon." },
+        { q: "Why is discovering an 'Exoplanet' orbiting a star similar to our Sun exciting?", opts: ["We can power our flashlights with it", "Exoplanets are made of gold", "It might be a planet that supports life", "It is closer to Earth than the Moon"], ans: 2, hint: "Think about humanity's search for a new home.", expl: "Finding planets in the 'habitable zone' of other stars is the first step toward finding life beyond Earth." },
+        { q: "Why does a comet's tail always point away from the Sun?", opts: ["The comet is moving backward", "Solar wind and heat push gas and dust away", "Heavy rocks fall behind it", "The tail is just a shadow"], ans: 1, hint: "The Sun is constantly 'blowing' particles out into space.", expl: "Solar radiation and solar wind push the comet's coma (gas and dust) away from the Sun, regardless of the comet's direction." },
+        { q: "Statement: Planets do not have their own light.\nReason: Planets act like mirrors and reflect Sun light.", opts: ["Both are true and reason explains statement", "Statement is true, Reason is false", "Statement is false", "Both are false"], ans: 0, hint: "Planets are like the Moon in this regard.", expl: "Planets are non-luminous bodies; we only see them because they reflect the light from the Sun." },
+        { q: "Sneha put the 'Asteroid Belt' between Earth and Mars. Why is this wrong?", opts: ["It is located between Mars and Jupiter", "There are no asteroids in our solar system", "Asteroids only exist outside the Milky Way", "It should be on the Sun's surface"], ans: 0, hint: "It separates the rocky planets from the gas giants.", expl: "The Asteroid Belt is the region between the orbits of Mars and Jupiter where most asteroids are found." },
+        { q: "Which of these is NOT a member of our Solar System?", opts: ["The Moon", "Halley’s Comet", "The North Star (Polaris)", "The Planet Saturn"], ans: 2, hint: "Our Solar System has only ONE star.", expl: "The North Star is a distant star many light-years away; our Solar System consists only of objects orbiting our Sun." },
+        { q: "You see a sudden, bright streak of light. Your brother says 'A star fell down!' How do you correct him?", opts: ["It was a comet hitting the Moon", "It was a meteor burning in our atmosphere", "It was a fast exoplanet", "It was a piece of the Sun"], ans: 1, hint: "People often call them 'shooting stars.'", expl: "Meteors are small pieces of space rock that heat up and glow due to friction as they enter Earth's atmosphere." },
+        { q: "Using binoculars to look at the Moon, what feature will you see more clearly?", img: "q9.jpg", opts: ["Flags left by astronauts", "Craters and mountain ranges", "Liquid water oceans", "Green forests"], ans: 1, hint: "The Moon is a rocky, dry place with many impacts.", expl: "Binoculars reveal the rugged landscape of the Moon, including its deep craters and high peaks." },
+        { q: "What are the BEST conditions to organize a 'Star Gazing' night for your school?", opts: ["A rainy night with clouds", "Full moon in the center of the city", "Clear, moonless night far from city lights", "A sunny afternoon"], ans: 2, hint: "You want the darkest sky possible.", expl: "A dark location away from city lights and a moonless sky provide the best contrast to see faint stars and galaxies." }
     ];
 
-    let current = 0, score = 0, attempts = 0, timer, timeLeft = 60;
+    let current = 0, score = 0, attempts = 0, timer, timeLeft = 45;
 
     window.onload = () => {
         setTimeout(() => {
@@ -236,7 +220,7 @@
     };
 
     function loadQuestion() {
-        attempts = 0; timeLeft = 60;
+        attempts = 0; timeLeft = 45;
         const q = questions[current];
         document.getElementById('feedback-box').style.display = 'none';
         document.getElementById('action-btn').classList.add('hidden');
@@ -245,7 +229,7 @@
         document.getElementById('timer-text').innerText = timeLeft + "s";
         
         const imgArea = document.getElementById('image-area');
-        imgArea.innerHTML = q.img ? `<div class="img-container"><img src="assets/${q.img}" class="q-img" alt="Data Monitor View"></div>` : "";
+        imgArea.innerHTML = q.img ? `<div class="img-container"><img src="assets/${q.img}" class="q-img" alt="Observation Target"></div>` : "";
         
         const area = document.getElementById('options-area');
         area.innerHTML = "";
@@ -253,7 +237,7 @@
             const b = document.createElement('button');
             b.className = 'opt-btn';
             b.innerText = o;
-            b.onclick = () => verifySelection(i, b);
+            b.onclick = () => handleChoice(i, b);
             area.appendChild(b);
         });
         startTimer();
@@ -264,17 +248,17 @@
         timer = setInterval(() => {
             timeLeft--;
             document.getElementById('timer-text').innerText = timeLeft + "s";
-            document.getElementById('timer-bar').style.width = (timeLeft/60*100) + "%";
+            document.getElementById('timer-bar').style.width = (timeLeft/45*100) + "%";
             if(timeLeft <= 0) { clearInterval(timer); endTurn(); }
         }, 1000);
     }
 
-    function verifySelection(i, b) {
+    function handleChoice(i, b) {
         if(i === questions[current].ans) {
             clearInterval(timer);
             b.classList.add('correct');
             score++;
-            document.getElementById('score-val').innerText = score;
+            document.getElementById('score-val').innerText = score * 100;
             endTurn();
         } else {
             attempts++;
@@ -283,7 +267,7 @@
             if(attempts === 1) {
                 const f = document.getElementById('feedback-box');
                 f.className = 'feedback hint-box';
-                f.innerHTML = "💡 <b>HINT:</b> " + questions[current].hint;
+                f.innerHTML = "📡 <b>HINT:</b> " + questions[current].hint;
                 f.style.display = 'block';
             } else {
                 clearInterval(timer);
@@ -297,7 +281,7 @@
         document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
         const f = document.getElementById('feedback-box');
         f.className = 'feedback expl-box';
-        f.innerHTML = "🧪 <b>LAB ANALYSIS:</b> " + questions[current].expl;
+        f.innerHTML = "🔭 <b>HUB LOG:</b> " + questions[current].expl;
         f.style.display = 'block';
         document.getElementById('action-btn').classList.remove('hidden');
     }
@@ -305,17 +289,17 @@
     document.getElementById('action-btn').onclick = () => {
         current++;
         if(current < questions.length) loadQuestion();
-        else evaluatePerformance();
+        else showResults();
     };
 
-    function evaluatePerformance() {
+    function showResults() {
         document.getElementById('quiz-view').classList.add('hidden');
         document.getElementById('result-view').classList.remove('hidden');
         document.getElementById('final-pts').innerText = score;
         const msg = document.getElementById('result-msg');
-        if(score >= 9) msg.innerText = "Superb! You are a master physicist. Your predictive calculations match true spatial mechanics perfectly.";
-        else if(score >= 6) msg.innerText = "Good performance, lab technician! You have a firm grasp of relative motion dynamics.";
-        else msg.innerText = "Experiment parameters require attention. Re-evaluate core physics calculations and run the simulations again!";
+        if(score >= 9) msg.innerText = "Exceptional work, Commander! You are ready to lead our interstellar explorations.";
+        else if(score >= 7) msg.innerText = "Well done, Cadet! You've earned your Observation License.";
+        else msg.innerText = "Keep studying the stars, Cadet. The universe is full of secrets to discover!";
     }
 </script>
 </body>
