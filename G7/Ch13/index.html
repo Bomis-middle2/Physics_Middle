@@ -19,13 +19,14 @@
 
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--light-bg);
+            background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
             color: var(--text-dark);
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 12px;
         }
 
         #app-container {
@@ -35,14 +36,16 @@
             border-radius: 28px;
             padding: 25px;
             margin: 10px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
             position: relative;
             overflow: hidden;
-            min-height: 550px;
+            min-height: 580px;
             border-top: 10px solid var(--primary-blue);
+            display: flex;
+            flex-direction: column;
         }
 
-        /* --- SPLASH SCREEN (Blinks Once) --- */
+        /* --- STABLE 5-SECOND SPLASH SHIELD LAYER --- */
         #splash-screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -52,58 +55,89 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            animation: blinkOnce 2s ease-in-out forwards;
+            transition: opacity 0.5s ease-out;
         }
 
         .splash-logo {
             max-width: 200px;
             max-height: 200px;
             object-fit: contain;
+            margin-bottom: 15px;
         }
 
-        @keyframes blinkOnce {
-            0% { opacity: 0; }
-            25% { opacity: 1; }
-            75% { opacity: 1; }
-            100% { opacity: 0; pointer-events: none; }
+        .splash-brand-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--primary-blue);
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
-        /* --- GAME UI --- */
+        /* --- ARCHITECTURE COMPONENTS --- */
+        .view-frame {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .case-badge { background: var(--primary-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; letter-spacing: 1px; }
         .score-box { font-weight: 800; color: var(--primary-blue); }
 
-        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 20px; }
+        .question-text { font-size: 1.05rem; font-weight: 600; line-height: 1.5; margin-bottom: 18px; color: #1e293b; }
         
+        /* HIGH-CONTRAST VECTOR ART CANVAS */
         .image-container { 
-            width: 100%; margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 2px solid #f1f3f5;
-            display: flex; justify-content: center; background: #fff; padding: 10px;
+            width: 100%; 
+            margin-bottom: 20px; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            border: 2px dashed #cbd5e1;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            background: #f8fafc; 
+            padding: 15px;
+            min-height: 140px;
         }
-        .q-img { max-height: 160px; object-fit: contain; display: block; }
+
+        /* Pure CSS Graphic Visualizations */
+        .shadow-render-box { display: flex; align-items: center; gap: 15px; }
+        .light-bulb { font-size: 2rem; filter: drop-shadow(0 0 8px #f59e0b); }
+        .opaque-block { width: 40px; height: 40px; background: #475569; border-radius: 4px; }
+        .shadow-cast { width: 60px; height: 60px; background: #0f172a; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.8rem; }
+        .shadow-cast.penumbra { border: 4px solid #64748b; }
+
+        .reflection-vector-box { position: relative; width: 160px; height: 100px; border-bottom: 4px solid #94a3b8; }
+        .normal-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; border-left: 2px dashed #64748b; }
+        .ray-line { position: absolute; top: 20px; width: 70px; height: 2px; background: #ef4444; transform-origin: right center; }
+        .ray-line.incident { left: 13px; transform: rotate(30deg); }
+        .ray-line.reflected { right: 13px; transform: rotate(-30deg); transform-origin: left center; background: #22c55e; }
+        .vector-lbl { position: absolute; font-size: 0.75rem; font-weight: 700; color: #475569; }
 
         .options-grid { display: grid; gap: 12px; }
         .opt-btn {
-            background: #fff; border: 2px solid #edf2f4; padding: 16px;
-            border-radius: 15px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
-            color: var(--text-dark); font-weight: 500; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            background: #fff; border: 2.5px solid #e2e8f0; padding: 15px;
+            border-radius: 15px; text-align: left; font-size: 0.95rem; cursor: pointer; transition: 0.2s;
+            color: var(--text-dark); font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.01);
         }
-        .opt-btn:hover { border-color: var(--primary-blue); }
+        .opt-btn:hover:not(:disabled) { border-color: var(--primary-blue); background: #f8fafc; }
         
-        .opt-btn.correct { background: var(--success-green) !important; color: white; border-color: var(--success-green); transform: scale(1.02); }
-        .opt-btn.wrong { background: var(--error-red) !important; color: white; border-color: var(--error-red); opacity: 0.7; }
+        .opt-btn.correct { background: var(--success-green) !important; color: white !important; border-color: var(--success-green) !important; font-weight: 700; transform: scale(1.01); }
+        .opt-btn.wrong { background: var(--error-red) !important; color: white !important; border-color: var(--error-red) !important; opacity: 0.85; }
 
-        .feedback { margin-top: 20px; padding: 15px; border-radius: 15px; display: none; line-height: 1.5; margin-bottom: 10px; animation: slideUp 0.4s ease; }
-        .hint-mode { background: #fff3cd; border-left: 5px solid var(--electric-yellow); color: #856404; }
-        .expl-mode { background: #d1ecf1; border-left: 5px solid var(--primary-blue); color: #0c5460; }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .feedback { margin-top: 20px; padding: 16px; border-radius: 15px; display: none; line-height: 1.5; margin-bottom: 15px; font-size: 0.92rem; }
+        .hint-mode { background: #fffde7; border-left: 5px solid var(--electric-yellow); color: #856404; border-top: 1px solid #fef9e7; border-right: 1px solid #fef9e7; border-bottom: 1px solid #fef9e7; }
+        .expl-mode { background: #ecfdf5; border-left: 5px solid var(--success-green); color: #065f46; border-top: 1px solid #d1fae5; border-right: 1px solid #d1fae5; border-bottom: 1px solid #d1fae5; }
 
         #action-btn { 
-            width: 100%; margin-top: 20px; padding: 18px; 
+            width: 100%; margin-top: auto; padding: 18px; 
             background: var(--primary-blue); color: white; 
             border: none; border-radius: 16px; font-weight: 800; 
-            font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            font-size: 1.05rem; cursor: pointer; box-shadow: 0 4px 15px rgba(67, 97, 238, 0.25);
+            transition: all 0.2s;
         }
+        #action-btn:hover { background: #314ecc; }
 
         .hidden { display: none !important; }
     </style>
@@ -112,22 +146,24 @@
 
 <div id="app-container">
     <div id="splash-screen">
-        <img src="assets/logo.png" alt="Innovine Logo" class="splash-logo">
+        <img src="assets/logo.png" alt="Innovine Logo" class="splash-logo" onerror="this.style.display='none'; document.getElementById('fallback-logo-text').style.display='block';">
+        <div id="fallback-logo-text" class="splash-brand-title" style="display:none; margin-bottom:10px;">INNOVINE</div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: #64748b; letter-spacing: 1px; text-transform: uppercase;">Shadows & Reflection Lab</div>
     </div>
 
-    <div id="intro-view" class="hidden" style="text-align: center;">
+    <div id="intro-view" class="view-frame hidden" style="text-align: center; justify-content: center;">
         <div style="margin-bottom: 15px;">
-            <img src="assets/logo.png" alt="Innovine Logo" style="max-height: 60px; object-fit: contain;">
         </div>
-        <h1 style="color: var(--primary-blue); margin: 0; font-weight: 800;">Shadows & Reflection</h1>
-        <p style="color: #6c757d; margin-top: 5px; margin-bottom: 20px;">Light and Its Interactions</p>
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dee2e6;">
-            Welcome to the Optical Lab. Ready to align mirror vectors and analyze shadow blocks? You have <b>2 attempts</b> per optical structural checkpoint.
+        <h1 style="color: var(--primary-blue); margin: 0; font-weight: 800; font-size: 1.65rem;">Shadows & Reflection</h1>
+        <p style="color: #64748b; margin-top: 4px; margin-bottom: 20px; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px;">Light and Its Interactions</p>
+        
+        <div style="background: #f8fafc; padding: 20px; border-radius: 20px; margin: 15px 0 25px 0; text-align: left; border: 2px dashed #cbd5e1; font-size: 0.95rem; line-height: 1.5; color: #475569;">
+            Welcome to the Optical Lab. Ready to align mirror vectors and analyze shadow blocks? You have up to <b>2 active attempts</b> per structural framework node.
         </div>
-        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">ENGAGE SYSTEM</button>
+        <button id="start-btn" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.05rem; cursor:pointer; box-shadow: 0 4px 14px rgba(67, 97, 238, 0.3);">ENGAGE SYSTEM</button>
     </div>
 
-    <div id="quiz-view" class="hidden">
+    <div id="quiz-view" class="view-frame hidden">
         <div class="header">
             <div class="case-badge">NODE #<span id="q-num">1</span></div>
             <div class="score-box">LUMENS: <span id="score-val">0</span> lm</div>
@@ -139,44 +175,70 @@
         <button id="action-btn" class="hidden">CONTINUE →</button>
     </div>
 
-    <div id="result-view" class="hidden" style="text-align:center;">
-        <div id="result-icon" style="font-size: 4rem; margin-bottom: 10px;">🏆</div>
-        <h2 style="color: var(--primary-blue);">Mission Report</h2>
-        <div style="font-size: 4.5rem; font-weight: 900; color: var(--text-dark); margin: 10px 0;"><span id="final-pts">0</span>/1000</div>
-        <p id="result-msg" style="color:#6c757d; margin-bottom:30px; line-height: 1.4;"></p>
-        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">REBOOT SYSTEM</button>
+    <div id="result-view" class="view-frame hidden" style="text-align:center; justify-content: center;">
+        <div id="result-icon" style="font-size: 4.5rem; margin-bottom: 5px;">🏆</div>
+        <h2 style="color: var(--primary-blue); margin: 5px 0 10px 0; font-size: 1.5rem;">Mission Report</h2>
+        <div style="font-size: 3.8rem; font-weight: 900; color: var(--text-dark); margin: 10px 0;"><span id="final-pts">0</span> / 1000</div>
+        <p id="result-msg" style="color:#64748b; margin-bottom:30px; line-height: 1.5; font-size: 0.95rem; padding: 0 10px;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);">REBOOT SYSTEM</button>
     </div>
 </div>
 
 <script>
-    const questions = [
+    // Comprehensive Competency Question Base Pool Object Mapping
+    const questionsPool = [
         { q: "Rahul is standing in a completely dark room with a wooden chair. He shines a torch directly at the chair. What will he see on the wall behind the chair?", opts: ["A bright, colorful image of the chair.", "A dark patch (shadow) because the wooden chair is opaque.", "Nothing at all, because wood absorbs all light.", "A glowing reflection of the torch."], ans: 1, hint: "Think about what occurs when an opaque object blocks traveling light paths.", expl: "Shadows are formed when an opaque object obstructs the path of light, creating a dark area where light cannot reach." },
-        { q: "Look at the diagram of the shadow. What is the name of the central, darkest part labeled 'A'?", img: "assets/q2.png", opts: ["Umbra", "Penumbra", "Reflection", "Mirror image"], ans: 0, hint: "Focus on the zone of total structural obstruction where no light leaks through.", expl: "The umbra is the region of total darkness where no light from the source reaches the structural target screen." },
+        { q: "Look at the rendered shadow profile layout. What is the specific designation for the central, completely black segment marked 'A'?", renderKey: "UMBRA_CANVAS", opts: ["Umbra", "Penumbra", "Specular Reflection", "Diffused Boundary"], ans: 0, hint: "Focus on the zone of total structural obstruction where no light leaks through.", expl: "The umbra is the region of total darkness where no light from the source reaches the structural target screen." },
         { q: "Material X allows clear vision. Material Y allows blurry vision. Material Z blocks all vision. Which material is ideal for a bathroom window requiring light but privacy?", opts: ["Material X (Transparent)", "Material Y (Translucent)", "Material Z (Opaque)", "None of the above."], ans: 1, hint: "Look for the category that passes light rays but scatters their neat alignment.", expl: "Translucent materials allow some light to pass through but scatter it, so objects on the other side are not clearly visible." },
         { q: "During a Solar Eclipse, the Moon comes between the Sun and the Earth. What causes the 'Total Solar Eclipse' in certain areas?", opts: ["The Earth's reflection on the Moon.", "Those parts of the Earth fall into the Moon’s Umbra (darkest shadow).", "The Sun turns off for a few minutes.", "The Moon reflects the Sun's light away from Earth."], ans: 1, hint: "An eclipse is a massive planetary variation of basic shadow projection rules.", expl: "An eclipse is a natural example of shadow formation where one heavenly body completely blocks the light path of another." },
-        { q: "Assertion: We see our face in a still lake, but not a splashing one. Reason: Moving water causes diffused reflection, scattering light. Which is true?", opts: ["Both Assertion and Reason are true, and the reason explains the statement.", "The statement is true, but the reason is false.", "The statement is false.", "Both are false."], ans: 0, hint: "Consider the surface structural conditions required to generate regular versus scattered reflections.", expl: "For a clear specular reflection (Regular Reflection), the target surface profile must be perfectly smooth and still." },
+        { 
+            q: "Analyze the physics concepts regarding water surfaces below:\n\nAssertion (A): We see our clear face on a still lake, but the reflection completely breaks apart on a splashing lake.\nReason (R): Moving water introduces thousands of random angular wave slants, causing diffused reflection that scatters light away.", 
+            opts: [
+                "A) Both (A) and (R) are true, and (R) is the correct explanation for (A).", 
+                "B) Both (A) and (R) are true, but (R) is NOT the correct explanation for (A).", 
+                "C) (A) is true, but (R) is false.", 
+                "D) (A) is false, but (R) is true."
+            ], 
+            ans: 0, 
+            hint: "Consider the surface structural conditions required to generate regular versus scattered reflections.", 
+            expl: "For a clear reflection, the surface must be flat and smooth (specular). Disturbed water introduces complex surface changes that randomize the angle of incidence, breaking up the image." 
+        },
         { q: "Anjali says, 'To make my teddy bear's shadow smaller on the wall, I should move the teddy closer to the torch.' Why is she wrong?", opts: ["Shadows don't change size.", "Moving an object closer to the light source makes the shadow larger, not smaller.", "Moving it closer makes the shadow disappear.", "The wall must be moved closer to the torch instead."], ans: 1, hint: "Think about whether a closer object intercepts a wider or narrower cone of diverging light rays.", expl: "As an object moves closer to a point source of light, it intercepts a wider angle of light rays, expanding its shadow cast profile." },
         { q: "Identify the Luminous Object from the following list:", opts: ["The Moon", "A Metal Plate", "A Firefly", "A Mirror"], ans: 2, hint: "Which entity produces and projects its own intrinsic chemical or thermal light beams?", expl: "Luminous objects emit their own light autonomously. The Moon, metals, and mirrors merely reflect external bouncing rays." },
-        { q: "If the angle between the incident ray and the normal is 30 degrees, what will be the angle of reflection?", img: "assets/q8.png", opts: ["60 degrees", "90 degrees", "30 degrees", "0 degrees"], ans: 2, hint: "Recall the fundamental geometric tracking equality rule of reflection physics.", expl: "According to the Laws of Reflection, the angle of incidence is strictly equal to the angle of reflection relative to the normal line." },
-        { q: "A shopkeeper wants to prevent theft in his small shop by seeing around corners. Which of these should he install?", opts: ["A large wooden board.", "A translucent glass pane.", "A mirror placed at a 45-degree angle.", "A pinhole camera."], ans: 3, hint: "Which tool works by changing the vector direction of traveling light beams via reflection?", expl: "Mirrors deliberately change the direction of light paths, enabling operators to observe components outside direct sight lines." },
+        { q: "If the tracking angle between the incoming incident ray and the perpendicular normal path is exactly 30 degrees, what is the resulting angle of reflection?", renderKey: "REFLECTION_CANVAS", opts: ["60 degrees", "90 degrees", "30 degrees", "0 degrees"], ans: 2, hint: "Recall the fundamental geometric tracking equality rule of reflection physics.", expl: "According to the Laws of Reflection, the angle of incidence is strictly equal to the angle of reflection relative to the normal line." },
+        { q: "A shopkeeper wants to prevent theft in his small shop by seeing around corners. Which of these should he install?", opts: ["A large wooden board.", "A translucent glass pane.", "A mirror placed at a 45-degree angle.", "A pinhole camera."], ans: 2, hint: "Which tool works by changing the vector direction of traveling light beams via reflection?", expl: "Mirrors deliberately change the direction of light paths, enabling operators to observe components outside direct sight lines." },
         { q: "Why is it strongly advised never to view a solar eclipse with naked, unprotected eyes?", opts: ["The Moon becomes too bright to look at.", "The intense light from the Sun's periphery can damage the retina.", "The shadow will fall on your eyes and make you blind.", "It is bad luck."], ans: 1, hint: "Think about the density of raw energy coming from exposed peripheral solar structures.", expl: "Even during high eclipse coverage, peripheral focus points emit high-intensity rays capable of thermal retina degradation." }
     ];
 
     let current = 0, score = 0, attempts = 0;
     
-    // --- AUDIO INSTANCES ---
+    // Audio Node Assignments
     const sndC = new Audio('assets/correct.mp3');
     const sndW = new Audio('assets/wrong.mp3');
     const sndF = new Audio('assets/freesound_community-claps-44774.mp3');
 
-    window.onload = () => {
+    // Strict 5-Second Visually Non-Blinking Brand Display Timeout
+    window.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
-            document.getElementById('splash-screen').style.display = 'none';
-            document.getElementById('intro-view').classList.remove('hidden');
-        }, 2000);
-    };
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+                document.getElementById('intro-view').classList.remove('hidden');
+            }, 500);
+        }, 5000);
+    });
+
+    // Array Randomizer Engine
+    function shuffleData(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
 
     document.getElementById('start-btn').onclick = () => {
+        shuffleData(questionsPool); // Master Shuffle: Mixes database order of items completely
         document.getElementById('intro-view').classList.add('hidden');
         document.getElementById('quiz-view').classList.remove('hidden');
         loadQuestion();
@@ -184,63 +246,104 @@
 
     function loadQuestion() {
         attempts = 0;
-        const q = questions[current];
+        const q = questionsPool[current];
         document.getElementById('feedback-box').style.display = 'none';
         document.getElementById('action-btn').classList.add('hidden');
         document.getElementById('q-num').innerText = current + 1;
         document.getElementById('q-text').innerText = q.q;
         
         const imgArea = document.getElementById('image-area');
-        imgArea.innerHTML = q.img ? `<div class="image-container"><img src="${q.img}" class="q-img"></div>` : "";
+        imgArea.innerHTML = "";
+        
+        // Native Dynamic Graphic Generator Engine
+        if (q.renderKey) {
+            imgArea.className = "image-container";
+            if (q.renderKey === "UMBRA_CANVAS") {
+                imgArea.innerHTML = `
+                    <div class="shadow-render-box">
+                        <div class="light-bulb">💡</div>
+                        <div class="opaque-block"></div>
+                        <div class="shadow-cast">A</div>
+                        <div class="shadow-cast penumbra">B</div>
+                    </div>
+                `;
+            } else if (q.renderKey === "REFLECTION_CANVAS") {
+                imgArea.innerHTML = `
+                    <div class="reflection-vector-box">
+                        <div class="normal-line"></div>
+                        <div class="ray-line incident"></div>
+                        <div class="ray-line reflected"></div>
+                        <div class="vector-lbl" style="left:25px; top:45px;">30°</div>
+                        <div class="vector-lbl" style="right:35px; top:45px;">?</div>
+                        <div class="vector-lbl" style="left:72px; top:-15px;">Normal</div>
+                    </div>
+                `;
+            }
+        } else {
+            imgArea.className = "";
+        }
         
         const area = document.getElementById('options-area');
         area.innerHTML = "";
+
+        // Anchor Option String Extraction for Choice Shuffle Routines
+        const textTargetAnchor = q.opts[q.ans];
+        shuffleData(q.opts); // Secondary Shuffle: Shuffles choices positions
+        const resolvedCorrectIndex = q.opts.indexOf(textTargetAnchor);
+        
         q.opts.forEach((o, i) => {
             const b = document.createElement('button');
             b.className = 'opt-btn';
             b.innerText = o;
-            b.onclick = () => handleChoice(i, b);
+            b.onclick = () => handleChoice(i, resolvedCorrectIndex, b);
             area.appendChild(b);
         });
     }
 
-    function handleChoice(i, b) {
-        if(i === questions[current].ans) {
-            b.classList.add('correct');
+    function handleChoice(clickedIdx, correctIdx, btnNode) {
+        if(clickedIdx === correctIdx) {
+            btnNode.classList.add('correct');
             score += 100;
             document.getElementById('score-val').innerText = score;
-            sndC.play().catch(e => console.log("Audio playing..."));
-            endTurn();
+            sndC.currentTime = 0;
+            sndC.play().catch(e => console.log("Audio node activation buffered"));
+            endTurn(correctIdx);
         } else {
             attempts++;
-            b.classList.add('wrong');
-            b.disabled = true;
-            sndW.play().catch(e => console.log("Audio playing..."));
+            btnNode.classList.add('wrong');
+            btnNode.disabled = true;
+            sndW.currentTime = 0;
+            sndW.play().catch(e => console.log("Audio node activation buffered"));
+            
             if(attempts === 1) {
                 const f = document.getElementById('feedback-box');
                 f.className = 'feedback hint-mode';
-                f.innerHTML = "🔍 <b>DIAGNOSTIC HINT:</b> " + questions[current].hint;
+                f.innerHTML = "🔍 <b>DIAGNOSTIC HINT:</b> " + questionsPool[current].hint;
                 f.style.display = 'block';
             } else {
-                endTurn();
+                endTurn(correctIdx);
             }
         }
     }
 
-    function endTurn() {
+    function endTurn(correctIdx) {
         document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
-        document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
+        document.querySelectorAll('.opt-btn')[correctIdx].classList.add('correct');
+        
         const f = document.getElementById('feedback-box');
         f.className = 'feedback expl-mode';
-        f.innerHTML = "📋 <b>LEARNING HUB:</b> " + questions[current].expl;
+        f.innerHTML = "📋 <b>LEARNING HUB:</b> " + questionsPool[current].expl;
         f.style.display = 'block';
         document.getElementById('action-btn').classList.remove('hidden');
     }
 
     document.getElementById('action-btn').onclick = () => {
         current++;
-        if(current < questions.length) loadQuestion();
-        else showResults();
+        if(current < questionsPool.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
     };
 
     function showResults() {
@@ -248,7 +351,8 @@
         document.getElementById('result-view').classList.remove('hidden');
         document.getElementById('final-pts').innerText = score;
         
-        sndF.play().catch(e => console.log("Audio playback blocked"));
+        sndF.currentTime = 0;
+        sndF.play().catch(e => console.log("Audio system waiting on context switch"));
         
         const msg = document.getElementById('result-msg');
         if(score >= 900) msg.innerText = "Luminous output! Your optical tracking vectors and shadow calculations are pristine.";
