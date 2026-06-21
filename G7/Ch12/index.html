@@ -19,13 +19,14 @@
 
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--light-bg);
+            background: linear-gradient(135deg, #e0e6ed 0%, #b0c4de 100%);
             color: var(--text-dark);
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 12px;
         }
 
         #app-container {
@@ -35,14 +36,16 @@
             border-radius: 28px;
             padding: 25px;
             margin: 10px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
             position: relative;
             overflow: hidden;
-            min-height: 550px;
+            min-height: 560px;
             border-top: 10px solid var(--primary-blue);
+            display: flex;
+            flex-direction: column;
         }
 
-        /* --- SPLASH SCREEN (Blinks Once) --- */
+        /* --- STABLE 5-SECOND INNOVINE SPLASH LAYER --- */
         #splash-screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -52,71 +55,79 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            animation: blinkOnce 2s ease-in-out forwards;
+            transition: opacity 0.5s ease-out;
         }
 
         .splash-logo {
             max-width: 200px;
             max-height: 200px;
             object-fit: contain;
+            margin-bottom: 15px;
         }
 
-        @keyframes blinkOnce {
-            0% { opacity: 0; }
-            25% { opacity: 1; }
-            75% { opacity: 1; }
-            100% { opacity: 0; pointer-events: none; }
+        .splash-brand-text {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary-blue);
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
-        /* --- GAME UI --- */
+        /* --- INTERACTIVE VIEW FRAMES --- */
+        .view-frame {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .case-badge { background: var(--primary-blue); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; letter-spacing: 1px; }
         .score-box { font-weight: 800; color: var(--primary-blue); }
 
-        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 20px; }
+        .question-text { font-size: 1.1rem; font-weight: 600; line-height: 1.5; margin-bottom: 20px; color: #1a1c23; }
         
-        /* ENLARGED CONTAINER FOR IMAGES (Specially optimized for q8 & maps) */
+        /* ENLARGED DISPLAY CANVAS BOX */
         .image-container { 
             width: 100%; 
             margin-bottom: 20px; 
-            border-radius: 15px; 
+            border-radius: 16px; 
             overflow: hidden; 
-            border: 2px solid #f1f3f5;
+            border: 2px dashed #cbd5e1;
             display: flex; 
             justify-content: center; 
-            background: #fff; 
-            padding: 5px;
+            background: #f8fafc; 
+            padding: 10px;
         }
         .q-img { 
             width: 100%;
-            max-height: 240px; /* Increased from 160px for higher visibility */
+            max-height: 240px; 
             object-fit: contain; 
             display: block; 
         }
 
         .options-grid { display: grid; gap: 12px; }
         .opt-btn {
-            background: #fff; border: 2px solid #edf2f4; padding: 16px;
-            border-radius: 15px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s;
-            color: var(--text-dark); font-weight: 500; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            background: #fff; border: 2.5px solid #e2e8f0; padding: 16px;
+            border-radius: 15px; text-align: left; font-size: 0.98rem; cursor: pointer; transition: 0.2s;
+            color: var(--text-dark); font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.01);
         }
-        .opt-btn:hover { border-color: var(--primary-blue); }
+        .opt-btn:hover:not(:disabled) { border-color: var(--primary-blue); background: #fdfeff; }
         
-        .opt-btn.correct { background: var(--success-green) !important; color: white; border-color: var(--success-green); transform: scale(1.02); }
-        .opt-btn.wrong { background: var(--error-red) !important; color: white; border-color: var(--error-red); opacity: 0.7; }
+        .opt-btn.correct { background: var(--success-green) !important; color: white !important; border-color: var(--success-green) !important; font-weight: 700; transform: scale(1.01); }
+        .opt-btn.wrong { background: var(--error-red) !important; color: white !important; border-color: var(--error-red) !important; opacity: 0.85; }
 
-        .feedback { margin-top: 20px; padding: 15px; border-radius: 15px; display: none; line-height: 1.5; margin-bottom: 10px; animation: slideUp 0.4s ease; }
-        .hint-mode { background: #fff3cd; border-left: 5px solid var(--electric-yellow); color: #856404; }
-        .expl-mode { background: #d1ecf1; border-left: 5px solid var(--primary-blue); color: #0c5460; }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .feedback { margin-top: 20px; padding: 16px; border-radius: 15px; display: none; line-height: 1.5; margin-bottom: 15px; font-size: 0.95rem; }
+        .hint-mode { background: #fffde7; border-left: 5px solid var(--electric-yellow); color: #856404; border-top: 1px solid #fef9e7; border-right: 1px solid #fef9e7; border-bottom: 1px solid #fef9e7; }
+        .expl-mode { background: #ecfdf5; border-left: 5px solid var(--success-green); color: #065f46; border-top: 1px solid #d1fae5; border-right: 1px solid #d1fae5; border-bottom: 1px solid #d1fae5; }
 
         #action-btn { 
-            width: 100%; margin-top: 20px; padding: 18px; 
+            width: 100%; margin-top: auto; padding: 18px; 
             background: var(--primary-blue); color: white; 
             border: none; border-radius: 16px; font-weight: 800; 
-            font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(67, 97, 238, 0.25);
+            transition: all 0.2s;
         }
+        #action-btn:hover { background: #314ecc; }
 
         .hidden { display: none !important; }
     </style>
@@ -125,22 +136,25 @@
 
 <div id="app-container">
     <div id="splash-screen">
-        <img src="assets/logo.png" alt="Innovine Logo" class="splash-logo">
+        <img src="assets/logo.png" alt="Innovine Logo" class="splash-logo" onerror="this.style.display='none'; document.getElementById('fallback-text').style.display='block';">
+        <div id="fallback-text" class="splash-brand-text" style="display:none; margin-bottom:10px;">INNOVINE</div>
+        <div style="font-size: 0.9rem; font-weight: 700; color: #64748b; letter-spacing: 1px; text-transform: uppercase;">Optical Science Matrix</div>
     </div>
 
-    <div id="intro-view" class="hidden" style="text-align: center;">
+    <div id="intro-view" class="view-frame hidden" style="text-align: center; justify-content: center;">
         <div style="margin-bottom: 15px;">
-            <img src="assets/logo.png" alt="Innovine Logo" style="max-height: 60px; object-fit: contain;">
+            <img src="assets/logo.png" alt="Innovine Logo" style="max-height: 55px; object-fit: contain;">
         </div>
-        <h1 style="color: var(--primary-blue); margin: 0; font-weight: 800;">Optical Science</h1>
-        <p style="color: #6c757d; margin-top: 5px; margin-bottom: 20px;">The Physics of Light</p>
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dee2e6;">
-            Welcome to Optical Mission Control. Ready to track mirror reflections and chart light paths? You have <b>2 attempts</b> per structural network node.
+        <h1 style="color: var(--primary-blue); margin: 0; font-weight: 800; font-size: 1.8rem;">Optical Science</h1>
+        <p style="color: #64748b; margin-top: 4px; margin-bottom: 20px; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px;">The Physics of Light</p>
+        
+        <div style="background: #f8fafc; padding: 20px; border-radius: 20px; margin: 15px 0 25px 0; text-align: left; border: 2px dashed #cbd5e1; font-size: 0.95rem; line-height: 1.5; color: #475569;">
+            Welcome to Optical Mission Control. Ready to track mirror reflections, monitor focal inversions, and chart light paths? You have up to <b>2 active attempts</b> per structural framework node.
         </div>
-        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer;">ENGAGE SYSTEM</button>
+        <button id="start-btn" style="width:100%; padding:20px; background:var(--primary-blue); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.1rem; cursor:pointer; box-shadow: 0 4px 14px rgba(67, 97, 238, 0.3);">ENGAGE SYSTEM</button>
     </div>
 
-    <div id="quiz-view" class="hidden">
+    <div id="quiz-view" class="view-frame hidden">
         <div class="header">
             <div class="case-badge">NODE #<span id="q-num">1</span></div>
             <div class="score-box">LUMENS: <span id="score-val">0</span> lm</div>
@@ -152,18 +166,18 @@
         <button id="action-btn" class="hidden">CONTINUE →</button>
     </div>
 
-    <div id="result-view" class="hidden" style="text-align:center;">
-        <div id="result-icon" style="font-size: 4rem; margin-bottom: 10px;">🏆</div>
-        <h2 style="color: var(--primary-blue);">Mission Report</h2>
-        <div style="font-size: 4.5rem; font-weight: 900; color: var(--text-dark); margin: 10px 0;"><span id="final-pts">0</span>/1000</div>
-        <p id="result-msg" style="color:#6c757d; margin-bottom:30px; line-height: 1.4;"></p>
-        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer;">REBOOT SYSTEM</button>
+    <div id="result-view" class="view-frame hidden" style="text-align:center; justify-content: center;">
+        <div id="result-icon" style="font-size: 4.5rem; margin-bottom: 5px;">🏆</div>
+        <h2 style="color: var(--primary-blue); margin: 5px 0 10px 0; font-size: 1.6rem;">Mission Report</h2>
+        <div style="font-size: 4rem; font-weight: 900; color: var(--text-dark); margin: 10px 0;"><span id="final-pts">0</span> / 1000</div>
+        <p id="result-msg" style="color:#64748b; margin-bottom:30px; line-height: 1.5; font-size: 0.98rem; padding: 0 10px;"></p>
+        <button onclick="location.reload()" style="width:100%; padding:18px; background:var(--primary-blue); color:white; border:none; border-radius:16px; font-weight:700; cursor:pointer; font-size: 1rem; box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);">REBOOT SYSTEM</button>
     </div>
 </div>
 
 <script>
-    // Shuffled answers across mixed keys (A, B, C, or D positions) to prevent predictability
-    const questions = [
+    // Complete Master Diagnostic Question Pool
+    const questionsPool = [
         { q: "You are standing in front of a mirror and raise your left hand. The image raises its right hand. This is called:", opts: ["Reflection", "Refraction", "Lateral Inversion", "Shadow formation"], ans: 2, hint: "Think about how a plane mirror swaps horizontal directions sideways.", expl: "This horizontal reversal effect is called lateral inversion, where the left side of the object appears as the right side of its reflection." },
         { q: "Why can't you see the candle flame through the bent tube?", img: "assets/q2.png", opts: ["Light is blocked by air.", "Light travels in a straight line (Rectilinear Propagation).", "The tube is too dark.", "Light reflects off the bend."], ans: 1, hint: "Recall how light propagates through a structural medium without mirrors.", expl: "Light exhibits rectilinear propagation, meaning it travels exclusively in straight lines. It cannot naturally turn or bend around the tube walls." },
         { q: "An object is placed 2 meters in front of a plane mirror. How far is the image from the object?", opts: ["2 meters", "0 meters", "1 meter", "4 meters"], ans: 3, hint: "Add the object-to-mirror distance to the mirror-to-image distance.", expl: "In a plane mirror, the image forms the exact same distance behind the mirror surface as the object is in front of it: 2m + 2m = 4 meters." },
@@ -178,19 +192,33 @@
 
     let current = 0, score = 0, attempts = 0;
     
-    // --- AUDIO INSTANCES ---
+    // Core Audio Nodes
     const sndC = new Audio('assets/correct.mp3');
     const sndW = new Audio('assets/wrong.mp3');
     const sndF = new Audio('assets/freesound_community-claps-44774.mp3');
 
-    window.onload = () => {
+    // Strict 5-Second Brand Visibility Tracker
+    window.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
-            document.getElementById('splash-screen').style.display = 'none';
-            document.getElementById('intro-view').classList.remove('hidden');
-        }, 2000);
-    };
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+                document.getElementById('intro-view').classList.remove('hidden');
+            }, 500);
+        }, 5000);
+    });
+
+    // Master Dual-Level Shuffle Implementation
+    function shuffleArray(targetArray) {
+        for (let i = targetArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [targetArray[i], targetArray[j]] = [targetArray[j], targetArray[i]];
+        }
+    }
 
     document.getElementById('start-btn').onclick = () => {
+        shuffleArray(questionsPool); // Shuffles the master order of questions
         document.getElementById('intro-view').classList.add('hidden');
         document.getElementById('quiz-view').classList.remove('hidden');
         loadQuestion();
@@ -198,7 +226,7 @@
 
     function loadQuestion() {
         attempts = 0;
-        const q = questions[current];
+        const q = questionsPool[current];
         document.getElementById('feedback-box').style.display = 'none';
         document.getElementById('action-btn').classList.add('hidden');
         document.getElementById('q-num').innerText = current + 1;
@@ -209,52 +237,65 @@
         
         const area = document.getElementById('options-area');
         area.innerHTML = "";
+
+        // Internal Option Text Anchor Extraction for Shuffling
+        const correctTextAnchor = q.opts[q.ans];
+        shuffleArray(q.opts); // Option collection position randomizer
+        const newCorrectIdx = q.opts.indexOf(correctTextAnchor);
+        
         q.opts.forEach((o, i) => {
             const b = document.createElement('button');
             b.className = 'opt-btn';
             b.innerText = o;
-            b.onclick = () => handleChoice(i, b);
+            b.onclick = () => handleChoice(i, newCorrectIdx, b);
             area.appendChild(b);
         });
     }
 
-    function handleChoice(i, b) {
-        if(i === questions[current].ans) {
-            b.classList.add('correct');
+    function handleChoice(clickedIdx, correctIdx, btnNode) {
+        if(clickedIdx === correctIdx) {
+            btnNode.classList.add('correct');
             score += 100;
             document.getElementById('score-val').innerText = score;
-            sndC.play().catch(e => console.log("Audio playing..."));
-            endTurn();
+            sndC.currentTime = 0;
+            sndC.play().catch(e => console.log("Audio waiting for context interaction..."));
+            endTurn(correctIdx);
         } else {
             attempts++;
-            b.classList.add('wrong');
-            b.disabled = true;
-            sndW.play().catch(e => console.log("Audio playing..."));
+            btnNode.classList.add('wrong');
+            btnNode.disabled = true;
+            sndW.currentTime = 0;
+            sndW.play().catch(e => console.log("Audio waiting for context interaction..."));
+            
             if(attempts === 1) {
                 const f = document.getElementById('feedback-box');
                 f.className = 'feedback hint-mode';
-                f.innerHTML = "🔍 <b>DIAGNOSTIC HINT:</b> " + questions[current].hint;
+                f.innerHTML = "🔍 <b>DIAGNOSTIC HINT:</b> " + questionsPool[current].hint;
                 f.style.display = 'block';
             } else {
-                endTurn();
+                endTurn(correctIdx);
             }
         }
     }
 
-    function endTurn() {
+    function endTurn(correctIdx) {
         document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
-        document.querySelectorAll('.opt-btn')[questions[current].ans].classList.add('correct');
+        document.querySelectorAll('.opt-btn')[correctIdx].classList.add('correct');
+        
         const f = document.getElementById('feedback-box');
         f.className = 'feedback expl-mode';
-        f.innerHTML = "📋 <b>LEARNING HUB:</b> " + questions[current].expl;
+        f.innerHTML = "📋 <b>LEARNING HUB:</b> " + questionsPool[current].expl;
         f.style.display = 'block';
         document.getElementById('action-btn').classList.remove('hidden');
     }
 
     document.getElementById('action-btn').onclick = () => {
         current++;
-        if(current < questions.length) loadQuestion();
-        else showResults();
+        if(current < questionsPool.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
     };
 
     function showResults() {
@@ -262,7 +303,8 @@
         document.getElementById('result-view').classList.remove('hidden');
         document.getElementById('final-pts').innerText = score;
         
-        sndF.play().catch(e => console.log("Audio playback blocked"));
+        sndF.currentTime = 0;
+        sndF.play().catch(e => console.log("Audio presentation blocked by environment constraints"));
         
         const msg = document.getElementById('result-msg');
         if(score >= 900) msg.innerText = "Highly luminous! Your optical tracking rays and inversion mechanics are beautifully calibrated.";
