@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 8 Physics - Pressure Mastery</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --bg: #f4f7f9;
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Branding Overlay */
+        #brand-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.8s ease;
+        }
+        #brand-layer img { max-width: 220px; }
+
+        .bg-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+        }
+
+        .game-card {
+            width: 95%;
+            max-width: 700px;
+            background: #fff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .hidden { display: none !important; }
+
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .timer-container {
+            width: 100%;
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            margin-bottom: 20px;
+        }
+
+        #timer-bar {
+            height: 100%;
+            width: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+            transition: width 1s linear;
+        }
+
+        h2 { font-size: 1.1rem; color: var(--primary); margin-bottom: 15px; line-height: 1.5; }
+
+        .options-grid { display: grid; gap: 10px; }
+
+        .opt-btn {
+            background: #fff;
+            border: 2px solid #e0e6ed;
+            padding: 12px 15px;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover:not(:disabled) { border-color: var(--accent); background: #f0f7ff; }
+
+        .opt-btn.correct { background: var(--success) !important; color: #fff; border-color: var(--success); }
+        .opt-btn.wrong { background: var(--danger) !important; color: #fff; border-color: var(--danger); }
+
+        .feedback-text {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            background: #f0f7ff;
+            border-left: 4px solid var(--accent);
+        }
+
+        .action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: bold;
+            float: right;
+        }
+
+        .text-center { text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div id="brand-layer">
+        <img src="assets/logo.png" alt="Innovine Logo">
+    </div>
+
+    <div class="bg-layer"></div>
+
+    <div class="game-card">
+        <div id="screen-intro" class="text-center">
+            <h1 style="color:var(--primary)">Chapter 2: Pressure</h1>
+            <p>Grade 8 | Advanced Competency Challenge</p>
+            <p style="color: #7f8c8d;">Analyze real-world physics scenarios involving Atmospheric and Liquid pressure.</p>
+            <button class="action-btn" style="float:none" onclick="initGame()">Start Challenge</button>
+        </div>
+
+        <div id="screen-quiz" class="hidden">
+            <div class="hud">
+                <div>TASK: <span id="q-idx">1</span>/10</div>
+                <div>SCORE: <span id="score-val">0</span></div>
+            </div>
+            <div class="timer-container"><div id="timer-bar"></div></div>
+
+            <h2 id="q-text"></h2>
+            
+            <div class="options-grid" id="options-box"></div>
+            <div id="feedback-box" class="feedback-text hidden"></div>
+            
+            <button id="btn-next" class="action-btn hidden" onclick="handleNext()">Next Task</button>
+        </div>
+
+        <div id="screen-result" class="hidden text-center">
+            <h2>Challenge Complete!</h2>
+            <h1 id="final-score" style="font-size: 3.5rem; color: var(--accent);">0/10</h1>
+            <p id="result-text"></p>
+            <button class="action-btn" style="float:none" onclick="location.reload()">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "A fountain pen often leaks when a traveler reaches the peak of a high mountain. Why does this happen?",
+                options: ["The cold mountain air makes the ink expand.", "Lower outside atmospheric pressure allows the higher internal pressure to push ink out.", "Gravity is much weaker at the top of the mountain.", "The traveler's body heat increases at high altitudes."],
+                ans: 1,
+                hint: "Inside the pen, air is trapped at sea-level pressure. What happens to air pressure as we go up?",
+                explain: "Correct! At high altitudes, atmospheric pressure is low. The sea-level pressure inside the pen is now higher than the outside air, forcing the ink out."
+            },
+            {
+                q: "An engineer is designing a dam. Why must the wall at the bottom of the dam be significantly thicker than at the top?",
+                options: ["To protect against underwater animals.", "Liquid pressure increases with depth, exerting more force at the bottom.", "To save concrete by making the top thinner.", "To allow fish to swim more easily near the surface."],
+                ans: 1,
+                hint: "Does a taller column of water weigh more or less at the bottom?",
+                explain: "Correct! The pressure of a liquid increases as you go deeper because of the weight of the water column above it."
+            },
+            {
+                q: "Heavy military tanks use continuous 'caterpillar tracks' instead of standard wheels. What is the physics advantage here?",
+                options: ["Tracks are lighter than rubber tires.", "The large surface area of the tracks reduces pressure on the ground.", "Tracks increase the speed of the tank.", "Tracks reduce the total mass of the vehicle."],
+                ans: 1,
+                hint: "Pressure = Force / Area. If you increase the area, what happens to the pressure?",
+                explain: "Correct! By spreading the massive weight over a larger area, the pressure on the ground is reduced, preventing the tank from sinking into soft mud."
+            },
+            {
+                q: "You are trying to cut a piece of fruit. Why is it easier to cut with the sharp edge of a knife than with the blunt side?",
+                options: ["The sharp edge has more mass.", "The sharp edge has a smaller area, creating higher pressure for the same force.", "The blunt side has too much friction.", "Sharp edges are naturally hotter than blunt edges."],
+                ans: 1,
+                hint: "A smaller contact area concentrates the force you apply.",
+                explain: "Exactly! Pressure is inversely proportional to area. A tiny area results in very high pressure, which easily breaks through the fruit's skin."
+            },
+            {
+                q: "A scuba diver descends 50 meters into the ocean. Why must they wear a specialized suit?",
+                options: ["To keep their skin dry.", "To withstand the immense liquid pressure from the water above.", "To hide from predators.", "To increase their buoyancy."],
+                ans: 1,
+                hint: "Think about the weight of 50 meters of water pressing down on every square inch of the body.",
+                explain: "Correct! Human bodies are not built to withstand the crushing pressure found deep underwater without mechanical protection."
+            },
+            {
+                q: "Why do school bags usually have wide straps instead of thin strings?",
+                options: ["Wide straps are cheaper to manufacture.", "Wide straps increase the pressure on your shoulders.", "Wide straps distribute the weight over a larger area, reducing pressure.", "Wide straps make the bag look bigger."],
+                ans: 2,
+                hint: "Thin strings would 'dig' into your skin because the force is concentrated.",
+                explain: "Correct! Increasing the area of contact reduces the pressure on your shoulders, making the heavy bag comfortable to carry."
+            },
+            {
+                q: "When you drink juice using a straw, you 'suck' the air out of the straw. What actually pushes the liquid up into your mouth?",
+                options: ["Your lungs pulling the liquid.", "Gravity acting on the juice.", "Atmospheric pressure pushing down on the surface of the juice.", "The straw creating a magnetic pull."],
+                ans: 2,
+                hint: "When you remove air, you create a low-pressure zone. What is pushing from the outside?",
+                explain: "Correct! By removing air, you create lower pressure in the straw. The higher atmospheric pressure outside pushes the juice up to fill the void."
+            },
+            {
+                q: "Why does a rubber suction cup stick so firmly to a smooth glass window?",
+                options: ["The rubber is naturally sticky.", "Air pressure from the outside pushes it against the glass.", "A vacuum inside pulls the glass toward the rubber.", "The glass is magnetic."],
+                ans: 1,
+                hint: "When you press the cup, you squeeze the air out. What is left on the outside?",
+                explain: "Exactly! With no air inside, the huge atmospheric pressure on the outside holds the cup tightly against the surface."
+            },
+            {
+                q: "Two containers, A (narrow) and B (very wide), are both filled with water to a height of 20cm. Which container has higher pressure at the bottom?",
+                options: ["Container A", "Container B", "Both have the same pressure.", "It depends on the volume of water."],
+                ans: 2,
+                hint: "Does liquid pressure depend on the width of the container or just the depth?",
+                explain: "Correct! Liquid pressure depends only on the depth and density of the liquid, not the shape or width of the container."
+            },
+            {
+                q: "If you were to walk on a frozen lake that was starting to crack, why is it safer to lie down and crawl than to stand up?",
+                options: ["Crawling is faster than walking.", "Lying down increases your surface area and reduces pressure on the ice.", "Gravity is stronger when you are standing.", "The ice is warmer near the surface."],
+                ans: 1,
+                hint: "When you stand, your entire weight is on two small feet. When you lie down, where is that weight?",
+                explain: "Correct! By lying flat, you distribute your weight over a much larger area, which lowers the pressure and prevents the ice from breaking."
+            }
+        ];
+
+        let cur = 0, score = 0, timeLeft = 45, timer, attempts = 0;
+
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('brand-layer').style.opacity = '0';
+                setTimeout(() => document.getElementById('brand-layer').classList.add('hidden'), 800);
+            }, 3000);
+        };
+
+        function initGame() {
+            document.getElementById('screen-intro').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            loadQ();
+        }
+
+        function loadQ() {
+            const d = questions[cur];
+            attempts = 0;
+            document.getElementById('q-idx').innerText = cur + 1;
+            document.getElementById('q-text').innerText = d.q;
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('btn-next').classList.add('hidden');
+            
+            const box = document.getElementById('options-box');
+            box.innerHTML = '';
+            d.options.forEach((o, i) => {
+                const b = document.createElement('button');
+                b.className = 'opt-btn';
+                b.innerText = o;
+                b.onclick = () => check(i, b);
+                box.appendChild(b);
+            });
+            startT();
+        }
+
+        function startT() {
+            clearInterval(timer);
+            timeLeft = 45;
+            const bar = document.getElementById('timer-bar');
+            bar.style.width = '100%';
+            timer = setInterval(() => {
+                timeLeft--;
+                bar.style.width = (timeLeft/45*100)+'%';
+                if(timeLeft <= 0) { clearInterval(timer); reveal(); }
+            }, 1000);
+        }
+
+        function check(i, b) {
+            const d = questions[cur];
+            const f = document.getElementById('feedback-box');
+            if(i === d.ans) {
+                clearInterval(timer);
+                b.classList.add('correct');
+                score++;
+                document.getElementById('score-val').innerText = score;
+                f.innerHTML = `<strong>Correct!</strong> ${d.explain}`;
+                f.classList.remove('hidden');
+                finish();
+            } else {
+                attempts++;
+                b.classList.add('wrong');
+                b.disabled = true;
+                if(attempts === 1) {
+                    f.innerHTML = `Not quite. <strong>Hint:</strong> ${d.hint}`;
+                    f.classList.remove('hidden');
+                } else { 
+                    clearInterval(timer); 
+                    reveal(); 
+                }
+            }
+        }
+
+        function reveal() {
+            const d = questions[cur];
+            const btns = document.querySelectorAll('.opt-btn');
+            btns[d.ans].classList.add('correct');
+            document.getElementById('feedback-box').innerHTML = `<strong>Answer:</strong> ${d.explain}`;
+            document.getElementById('feedback-box').classList.remove('hidden');
+            finish();
+        }
+
+        function finish() {
+            document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+            document.getElementById('btn-next').classList.remove('hidden');
+        }
+
+        function handleNext() {
+            cur++;
+            if(cur < questions.length) loadQ();
+            else {
+                document.getElementById('screen-quiz').classList.add('hidden');
+                document.getElementById('screen-result').classList.remove('hidden');
+                document.getElementById('final-score').innerText = `${score}/10`;
+                document.getElementById('result-text').innerText = score > 7 ? "Excellent! You are a Pressure Master." : "Good effort! Review the relationship between Force, Area, and Pressure.";
+            }
+        }
+    </script>
+</body>
+</html>
