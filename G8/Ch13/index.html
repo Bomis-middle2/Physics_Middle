@@ -52,6 +52,19 @@
             margin-bottom: 25px;
         }
 
+        .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
         .header h1 {
             font-size: 1.4rem;
             color: var(--accent-blue);
@@ -203,7 +216,10 @@
 <div id="quiz-container">
     <!-- Quiz Header -->
     <div class="header">
-        <h1>CBQ Assessment: Chapter 13</h1>
+        <div class="brand-header">
+            <img src="assets/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+            <h1>CBQ Assessment: Chapter 13</h1>
+        </div>
         <span class="badge" id="progress-badge">Question 1/5</span>
     </div>
 
@@ -245,6 +261,18 @@
 </div>
 
 <script>
+    // --- Audio Asset Preloading ---
+    const correctSound = new Audio('correct.mp3');
+    const wrongSound = new Audio('wrong.mp3');
+
+    function playSound(sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => {
+            // Handles browser autoplay policy restrictions silently
+            console.log("Audio play blocked by browser policy until user interaction.");
+        });
+    }
+
     // --- Competency-Based Questions Data ---
     const cbqQuestions = [
         {
@@ -366,10 +394,12 @@
 
         if (index === q.answer) {
             buttons[index].classList.add('correct');
+            playSound(correctSound);
             score++;
         } else {
             buttons[index].classList.add('wrong');
             buttons[q.answer].classList.add('correct'); // Highlight right answer
+            playSound(wrongSound);
         }
 
         // Disable all option buttons
