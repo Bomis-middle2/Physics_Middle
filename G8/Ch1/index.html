@@ -1,1 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science CBQ Quiz: Exploring the Investigative World of Science</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #cbd5e1;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 650px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* 1. Logo Screen */
+        #logo-screen {
+            display: none;
+            min-height: 300px;
+        }
+
+        #logo-screen.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app-logo {
+            max-width: 280px;
+            max-height: 160px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* UI Cards & Typography */
+        .meta-card {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        .meta-card p {
+            margin: 8px 0;
+            font-size: 1rem;
+        }
+
+        h1, h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        /* Game Header */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .timer-badge {
+            background: #fee2e2;
+            color: var(--danger);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .attempts-badge {
+            background: #fef3c7;
+            color: var(--warning);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: var(--text);
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .btn-option {
+            background-color: #ffffff;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text);
+            width: 100%;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            background-color: #eff6ff;
+            border-color: var(--primary);
+        }
+
+        .btn-option:disabled {
+            cursor: not-allowed;
+        }
+
+        .btn-option.correct {
+            background-color: #dcfce7 !important;
+            border-color: var(--success) !important;
+            color: #14532d !important;
+            font-weight: bold;
+        }
+
+        .btn-option.incorrect {
+            background-color: #fee2e2 !important;
+            border-color: var(--danger) !important;
+            color: #7f1d1d !important;
+            opacity: 0.6;
+        }
+
+        .feedback-text {
+            font-weight: 600;
+            min-height: 24px;
+            margin-bottom: 10px;
+            text-align: left;
+            color: var(--warning);
+        }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-weight: 600;
+        }
+
+        .btn-action:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .score-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 15px 0;
+        }
+
+        .footer-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Logo Screen -->
+    <div id="logo-screen" class="screen active">
+        <img src="assets/logo.png" alt="Innovine Logo" class="app-logo">
+    </div>
+
+    <!-- 2. Intro Screen -->
+    <div id="intro-screen" class="screen">
+        <h1>Quiz Overview</h1>
+        <div class="meta-card">
+            <p><strong>Subject:</strong> General Science</p>
+            <p><strong>Topic:</strong> Chapter 1: Exploring the Investigative World of Science</p>
+            <p><strong>Type:</strong> Competency-Based Questions (CBQ)</p>
+            <p><strong>Total Questions:</strong> <span id="intro-q-count">0</span></p>
+            <p><strong>Time Limit:</strong> 45 seconds per question</p>
+            <p><strong>Rules:</strong> 2 chances per question to find the correct answer!</p>
+        </div>
+        <button class="btn-action" onclick="startQuiz()">Start Quiz</button>
+    </div>
+
+    <!-- 3. Game Area Screen -->
+    <div id="game-screen" class="screen">
+        <div class="game-header">
+            <span>Score: <span id="live-score">0</span></span>
+            <span class="timer-badge">⏱️ <span id="timer">45</span>s</span>
+            <span class="attempts-badge">Chances: <span id="attempts-left">2</span>/2</span>
+            <span>Q: <span id="q-idx">1</span>/<span id="q-total">0</span></span>
+        </div>
+
+        <div id="question" class="question-text"></div>
+        <div id="options" class="options-grid"></div>
+
+        <div class="footer-controls">
+            <div id="feedback" class="feedback-text"></div>
+            <button id="next-btn" class="btn-action" style="display: none;" onclick="nextQuestion()">Next Question</button>
+        </div>
+    </div>
+
+    <!-- 4. End Screen -->
+    <div id="end-screen" class="screen">
+        <h2>Quiz Completed!</h2>
+        <div class="meta-card" style="text-align: center;">
+            <p>Your Final Score</p>
+            <div id="final-score" class="score-display">0 / 0</div>
+        </div>
+        <button class="btn-action" onclick="restartQuiz()">Try Again</button>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Q1. A student notices that bread gets moldy faster in a dark cupboard than on an open kitchen counter. She guesses that darkness speeds up mold growth. What step of scientific inquiry does this initial guess represent?",
+                options: [
+                    "A) Analyzing collected data",
+                    "B) Formulating a hypothesis",
+                    "C) Reaching a final conclusion",
+                    "D) Designing an apparatus"
+                ],
+                correct: 1
+            },
+            {
+                question: "Q2. Two students measure the bounce height of a tennis ball on three different floor surfaces (wood, tile, and carpet). Which variable must they keep constant to ensure a fair test?",
+                options: [
+                    "A) The floor surface material",
+                    "B) The bounce height achieved by the ball",
+                    "C) The height from which the ball is dropped",
+                    "D) The noise made when the ball hits the floor"
+                ],
+                correct: 2
+            },
+            {
+                question: "Q3. During a lab experiment, Rohan accidentally breaks a glass beaker containing an acidic solution. What is the correct immediate step he should take according to laboratory safety protocols?",
+                options: [
+                    "A) Clean up the broken glass using bare hands immediately",
+                    "B) Notify the teacher/lab supervisor immediately before taking action",
+                    "C) Wash the floor with water without wearing gloves",
+                    "D) Ignore the spill and continue working on the experiment"
+                ],
+                correct: 1
+            },
+            {
+                question: "Q4. An experiment was performed to see if adding salt to water increases its boiling point. Water without salt boiled at 100°C, while water with 10g salt boiled at 102°C. What role does the beaker of plain water play in this investigation?",
+                options: [
+                    "A) Dependent variable",
+                    "B) Experimental group",
+                    "C) Control group",
+                    "D) Constant factor"
+                ],
+                correct: 2
+            },
+            {
+                question: "Q5. A scientist records the temperature of a reaction mixture every 30 seconds: 25°C, 28°C, 31°C, and 34°C. What type of scientific observation is being recorded here?",
+                options: [
+                    "A) Qualitative observation",
+                    "B) Quantitative observation",
+                    "C) Subjective inference",
+                    "D) Theoretical assumption"
+                ],
+                correct: 1
+            },
+            {
+                question: "Q6. Meera observes that leaves turn yellow in autumn and states: 'The leaves turn yellow because the tree is losing water.' Why is Meera's statement considered an inference rather than an observation?",
+                options: [
+                    "A) It is based directly on sight with no logical reasoning",
+                    "B) It attempts to explain the cause behind an observed event based on prior knowledge",
+                    "C) It is measured precisely using scientific laboratory instruments",
+                    "D) It is an universally accepted scientific fact proven by experiments"
+                ],
+                correct: 1
+            },
+            {
+                question: "Q7. What makes a hypothesis scientifically useful during an investigation?",
+                options: [
+                    "A) It must always turn out to be correct at the end of the experiment",
+                    "B) It must be testable through experiments or observations",
+                    "C) It must be written in mathematical symbols only",
+                    "D) It must match the opinions of famous scientists"
+                ],
+                correct: 1
+            },
+            {
+                question: "Q8. A group of students wants to measure the mass of a small rock accurately in grams. Which laboratory instrument is best suited for this measurement?",
+                options: [
+                    "A) Graduated measuring cylinder",
+                    "B) Electronic balance / Beam balance",
+                    "C) Laboratory alcohol thermometer",
+                    "D) Standard metric ruler"
+                ],
+                correct: 1
+            },
+            {
+                question: "Q9. Why do scientists publish their experimental procedures and findings in peer-reviewed journals?",
+                options: [
+                    "A) To prevent other scientists from repeating the experiment",
+                    "B) To allow other scientists to verify results and replicate the work",
+                    "C) To keep experimental techniques completely secret",
+                    "D) To ensure no further changes are ever made to the theory"
+                ],
+                correct: 1
+            },
+            {
+                question: "Q10. While conducting an experiment on plant growth, a student finds that 2 out of 20 plants grew significantly taller than all others. What should the student do with this unexpected result?",
+                options: [
+                    "A) Delete the unusual readings so the graph looks clean",
+                    "B) Record all data accurately and investigate reasons for the discrepancy",
+                    "C) Change the values to match the average growth of other plants",
+                    "D) Stop the entire investigation and discard all findings"
+                ],
+                correct: 1
+            }
+        ];
+
+        // Audio Objects
+        const correctSound = new Audio('assets/correct.mp3');
+        const wrongSound = new Audio('assets/wrong.mp3');
+
+        function playSound(audio) {
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log("Audio play blocked or file not found:", e));
+        }
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerVal = 45;
+        let timerInterval = null;
+        let attemptsLeft = 2;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('intro-q-count').textContent = quizData.length;
+            setTimeout(() => {
+                switchScreen('intro-screen');
+            }, 5000);
+        });
+
+        function switchScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            switchScreen('game-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            timerVal = 45;
+            attemptsLeft = 2;
+            document.getElementById('live-score').textContent = score;
+            document.getElementById('q-idx').textContent = currentQuestionIndex + 1;
+            document.getElementById('q-total').textContent = quizData.length;
+            document.getElementById('attempts-left').textContent = attemptsLeft;
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('feedback').textContent = '';
+
+            const currentQuiz = quizData[currentQuestionIndex];
+            document.getElementById('question').innerText = currentQuiz.question;
+
+            const optionsElement = document.getElementById('options');
+            optionsElement.innerHTML = "";
+
+            currentQuiz.options.forEach((option, index) => {
+                const button = document.createElement("button");
+                button.innerText = option;
+                button.classList.add("btn-option");
+                button.onclick = () => selectOption(index, button);
+                optionsElement.appendChild(button);
+            });
+
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            document.getElementById('timer').textContent = timerVal;
+            timerInterval = setInterval(() => {
+                timerVal--;
+                document.getElementById('timer').textContent = timerVal;
+                if (timerVal <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function selectOption(index, button) {
+            const correctIndex = quizData[currentQuestionIndex].correct;
+            const buttons = document.querySelectorAll(".btn-option");
+
+            if (index === correctIndex) {
+                // Correct Answer
+                clearInterval(timerInterval);
+                playSound(correctSound);
+                button.classList.add("correct");
+                buttons.forEach(btn => btn.disabled = true);
+                
+                score++;
+                document.getElementById('live-score').textContent = score;
+                document.getElementById('feedback').textContent = "✨ Correct!";
+                document.getElementById('feedback').style.color = "var(--success)";
+                document.getElementById('next-btn').style.display = 'inline-block';
+            } else {
+                // Incorrect Answer
+                attemptsLeft--;
+                document.getElementById('attempts-left').textContent = attemptsLeft;
+                playSound(wrongSound);
+                button.classList.add("incorrect");
+                button.disabled = true;
+
+                if (attemptsLeft > 0) {
+                    document.getElementById('feedback').textContent = "❌ Incorrect attempt 1/2. Try again!";
+                    document.getElementById('feedback').style.color = "var(--warning)";
+                } else {
+                    // Out of attempts: reveal answer
+                    clearInterval(timerInterval);
+                    buttons.forEach(btn => btn.disabled = true);
+                    buttons[correctIndex].classList.add("correct");
+                    document.getElementById('feedback').textContent = "❌ Out of chances!";
+                    document.getElementById('feedback').style.color = "var(--danger)";
+                    document.getElementById('next-btn').style.display = 'inline-block';
+                }
+            }
+        }
+
+        function handleTimeout() {
+            playSound(wrongSound);
+            const buttons = document.querySelectorAll(".btn-option");
+            buttons.forEach(btn => btn.disabled = true);
+            const correctIndex = quizData[currentQuestionIndex].correct;
+            buttons[correctIndex].classList.add("correct");
+
+            document.getElementById('feedback').textContent = "⏱️ Time's up!";
+            document.getElementById('feedback').style.color = "var(--danger)";
+            document.getElementById('next-btn').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('final-score').textContent = `${score} / ${quizData.length}`;
+            switchScreen('end-screen');
+        }
+
+        function restartQuiz() {
+            switchScreen('intro-screen');
+        }
+    </script>
+</body>
+</html>
