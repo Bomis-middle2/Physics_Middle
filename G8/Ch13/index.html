@@ -1,1 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defender of Earth: Chapter 13 Science Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
+        body {
+            background-color: #0b0d1b;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            width: 800px;
+            height: 600px;
+            background: radial-gradient(circle at center, #111836 0%, #050711 100%);
+            border: 3px solid #3b82f6;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #60a5fa;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            margin-bottom: 25px;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            margin: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.6);
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        /* HUD Overlay */
+        #hud {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .hud-item {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #334155;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        /* Question Overlay */
+        #quiz-card {
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #60a5fa;
+            border-radius: 12px;
+            padding: 25px;
+            width: 85%;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+            z-index: 20;
+        }
+
+        #question-text {
+            font-size: 1.25rem;
+            color: #f8fafc;
+            margin-bottom: 20px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .option-btn {
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #e2e8f0;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            text-align: left;
+            transition: background 0.2s;
+        }
+
+        .option-btn:hover {
+            background: #334155;
+            border-color: #60a5fa;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .feedback {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            height: 24px;
+        }
+
+        .feedback.correct { color: #4ade80; }
+        .feedback.wrong { color: #f87171; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- HUD -->
+    <div id="hud" class="hidden">
+        <div class="hud-item">Earth Shield Health: <span id="health-val" style="color: #4ade80;">100%</span></div>
+        <div class="hud-item">Score: <span id="score-val" style="color: #60a5fa;">0</span></div>
+        <div class="hud-item">Level: <span id="level-val" style="color: #facc15;">1/5</span></div>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen">
+        <h1>Earth Defender: Chapter 13</h1>
+        <p>Protect planet Earth from incoming solar flares using your magnetic shield, and restore the planet's balance by answering key questions on Chapter 13 science concepts!</p>
+        <button class="btn" onclick="startGame()">Start Mission</button>
+    </div>
+
+    <!-- Arcade Canvas Phase -->
+    <canvas id="game-canvas" class="hidden"></canvas>
+
+    <!-- Quiz Overlay Phase -->
+    <div id="quiz-screen" class="screen hidden">
+        <div id="quiz-card">
+            <h2 style="color: #facc15; margin-bottom: 10px;">Science Challenge!</h2>
+            <div id="question-text">Question goes here...</div>
+            <div class="options-grid" id="options-container"></div>
+            <div id="feedback" class="feedback"></div>
+        </div>
+    </div>
+
+    <!-- Game Over / Victory Screen -->
+    <div id="end-screen" class="screen hidden">
+        <h1 id="end-title">Mission Accomplished!</h1>
+        <p id="end-desc">You successfully protected Earth's biosphere, hydrosphere, and geosphere.</p>
+        <p>Final Score: <span id="final-score" style="color:#60a5fa; font-weight:bold;">0</span></p>
+        <button class="btn" onclick="restartGame()">Play Again</button>
+    </div>
+</div>
+
+<script>
+    // --- Questions Database based on Chapter 13 ---
+    const questions = [
+        {
+            q: "What is the special region around a star where temperatures allow liquid water to exist?",
+            options: ["Ozone Zone", "Habitable / Goldilocks Zone", "Solar Wind Area", "Geosphere Zone"],
+            answer: 1
+        },
+        {
+            q: "Why is Venus hotter than Mercury despite being farther from the Sun?",
+            options: ["It is closer to Mars", "It has no atmosphere", "Runaway greenhouse effect from dense CO2", "It absorbs solar wind directly"],
+            answer: 2
+        },
+        {
+            q: "What shields Earth from harmful solar wind and cosmic radiation?",
+            options: ["Earth's Magnetic Field", "The Ocean Currents", "Tectonic Plates", "The Core's Volcanic Activity"],
+            answer: 0
+        },
+        {
+            q: "Which type of reproduction involves two parents and produces unique offspring?",
+            options: ["Binary Fission", "Vegetative Propagation", "Asexual Reproduction", "Sexual Reproduction"],
+            answer: 3
+        },
+        {
+            q: "What constitutes the 'Triple Planetary Crisis' facing Earth today?",
+            options: ["Earthquakes, Tsunamis, Volcanism", "Climate Change, Loss of Biodiversity, Pollution", "Solar Wind, UV Rays, Cosmic Dust", "Deforestation, Drought, Floods"],
+            answer: 1
+        }
+    ];
+
+    // --- State Variables ---
+    let health = 100;
+    let score = 0;
+    let currentLevel = 0;
+    let gameState = "START"; // START, ARCADE, QUIZ, END
+    let particles = [];
+    let shieldAngle = 0;
+    let animationFrameId;
+
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+        canvas.width = 800;
+        canvas.height = 600;
+    }
+    resizeCanvas();
+
+    // Mouse control for shield
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left - canvas.width / 2;
+        const mouseY = e.clientY - rect.top - canvas.height / 2;
+        shieldAngle = Math.atan2(mouseY, mouseX);
+    });
+
+    function startGame() {
+        health = 100;
+        score = 0;
+        currentLevel = 0;
+        showScreen('ARCADE');
+        startArcadePhase();
+    }
+
+    function restartGame() {
+        startGame();
+    }
+
+    function showScreen(state) {
+        gameState = state;
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('end-screen').classList.add('hidden');
+        document.getElementById('game-canvas').classList.add('hidden');
+        document.getElementById('hud').classList.add('hidden');
+
+        if (state === 'ARCADE') {
+            document.getElementById('game-canvas').classList.remove('hidden');
+            document.getElementById('hud').classList.remove('hidden');
+        } else if (state === 'QUIZ') {
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            document.getElementById('hud').classList.remove('hidden');
+        } else if (state === 'START') {
+            document.getElementById('start-screen').classList.remove('hidden');
+        } else if (state === 'END') {
+            document.getElementById('end-screen').classList.remove('hidden');
+        }
+        updateHUD();
+    }
+
+    function updateHUD() {
+        document.getElementById('health-val').innerText = `${Math.max(0, health)}%`;
+        document.getElementById('score-val').innerText = score;
+        document.getElementById('level-val').innerText = `${currentLevel + 1}/${questions.length}`;
+    }
+
+    // --- Arcade Phase (Protect Earth) ---
+    function startArcadePhase() {
+        particles = [];
+        let particlesSpawned = 0;
+        const totalParticles = 15 + currentLevel * 5;
+
+        const spawnInterval = setInterval(() => {
+            if (gameState !== 'ARCADE') {
+                clearInterval(spawnInterval);
+                return;
+            }
+
+            // Spawn particles around screen edge targeting center
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 400;
+            particles.push({
+                x: 400 + Math.cos(angle) * dist,
+                y: 300 + Math.sin(angle) * dist,
+                vx: -Math.cos(angle) * (2 + currentLevel * 0.5),
+                vy: -Math.sin(angle) * (2 + currentLevel * 0.5),
+                active: true
+            });
+
+            particlesSpawned++;
+            if (particlesSpawned >= totalParticles) {
+                clearInterval(spawnInterval);
+            }
+        }, 600);
+
+        loopArcade();
+    }
+
+    function loopArcade() {
+        if (gameState !== 'ARCADE') return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const centerX = 400;
+        const centerY = 300;
+        const earthRadius = 45;
+        const shieldRadius = 75;
+
+        // Draw Earth
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, earthRadius, 0, Math.PI * 2);
+        ctx.fillStyle = '#2563eb';
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#60a5fa';
+        ctx.stroke();
+
+        // Draw Shield
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, shieldRadius, shieldAngle - 0.5, shieldAngle + 0.5);
+        ctx.lineWidth = 8;
+        ctx.strokeStyle = '#38bdf8';
+        ctx.stroke();
+
+        // Update & Draw Particles (Solar Wind)
+        let activeLeft = false;
+
+        particles.forEach(p => {
+            if (!p.active) return;
+            activeLeft = true;
+
+            p.x += p.vx;
+            p.y += p.vy;
+
+            // Draw particle
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#f97316';
+            ctx.fill();
+
+            // Distance from center
+            const dx = p.x - centerX;
+            const dy = p.y - centerY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            // Particle angle from center
+            const pAngle = Math.atan2(dy, dx);
+
+            // Check shield collision
+            if (dist <= shieldRadius + 5 && dist >= shieldRadius - 10) {
+                let diff = Math.abs(pAngle - shieldAngle);
+                // Normalize angle diff
+                while (diff > Math.PI) diff -= Math.PI * 2;
+                diff = Math.abs(diff);
+
+                if (diff < 0.5) {
+                    p.active = false; // Blocked by shield!
+                    score += 10;
+                    updateHUD();
+                }
+            }
+
+            // Check Earth collision
+            if (dist <= earthRadius) {
+                p.active = false;
+                health -= 10;
+                updateHUD();
+
+                if (health <= 0) {
+                    endGame(false);
+                }
+            }
+        });
+
+        if (health > 0) {
+            if (particles.length > 0 && particles.every(p => !p.active)) {
+                // Wave cleared -> Move to Quiz Phase
+                setTimeout(() => {
+                    showScreen('QUIZ');
+                    loadQuestion();
+                }, 500);
+                return;
+            }
+            animationFrameId = requestAnimationFrame(loopArcade);
+        }
+    }
+
+    // --- Quiz Phase ---
+    function loadQuestion() {
+        const qData = questions[currentLevel];
+        document.getElementById('question-text').innerText = qData.q;
+        document.getElementById('feedback').innerText = '';
+        
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+
+        qData.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = `${idx + 1}. ${opt}`;
+            btn.onclick = () => handleAnswer(idx);
+            container.appendChild(btn);
+        });
+    }
+
+    function handleAnswer(selectedIndex) {
+        const qData = questions[currentLevel];
+        const feedbackEl = document.getElementById('feedback');
+
+        if (selectedIndex === qData.answer) {
+            feedbackEl.innerText = "Correct! Earth's balance is restored.";
+            feedbackEl.className = "feedback correct";
+            score += 50;
+            health = Math.min(100, health + 15); // Bonus health
+            updateHUD();
+
+            setTimeout(() => {
+                currentLevel++;
+                if (currentLevel < questions.length) {
+                    showScreen('ARCADE');
+                    startArcadePhase();
+                } else {
+                    endGame(true);
+                }
+            }, 1200);
+        } else {
+            feedbackEl.innerText = "Incorrect! Review Chapter 13 concepts.";
+            feedbackEl.className = "feedback wrong";
+            health -= 15;
+            updateHUD();
+
+            if (health <= 0) {
+                setTimeout(() => endGame(false), 1200);
+            }
+        }
+    }
+
+    // --- End Game ---
+    function endGame(victory) {
+        showScreen('END');
+        document.getElementById('final-score').innerText = score;
+        if (victory) {
+            document.getElementById('end-title').innerText = "Mission Accomplished!";
+            document.getElementById('end-desc').innerText = "You defended Earth from solar rays and mastered Chapter 13 science concepts!";
+        } else {
+            document.getElementById('end-title').innerText = "Mission Failed";
+            document.getElementById('end-desc').innerText = "Earth's shield collapsed. Re-read Chapter 13 and try again!";
+        }
+    }
+</script>
+
+</body>
+</html>
