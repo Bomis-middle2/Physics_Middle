@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade 8 Physics - Pressure Mastery</title>
+    <title>Grade 8 Science - Friction Interactive</title>
     <style>
         :root {
             --primary: #2c3e50;
-            --accent: #3498db;
+            --accent: #e67e22;
             --success: #27ae60;
             --danger: #e74c3c;
-            --bg: #f4f7f9;
+            --bg: #ecf0f1;
         }
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
 
         body {
             margin: 0;
@@ -25,106 +25,144 @@
             overflow: hidden;
         }
 
-        /* Branding Overlay */
+        /* Logo Branding Layer */
         #brand-layer {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: #ffffff;
+            background: white;
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 2000;
             transition: opacity 0.8s ease;
         }
-        #brand-layer img { max-width: 220px; }
+        #brand-layer img { max-width: 250px; }
 
-        .bg-layer {
+        /* Background Visuals */
+        .bg-elements {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
-            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            background: linear-gradient(135deg, #d5d8dc 0%, #aab7b8 100%);
         }
 
+        .floating-star {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 20px;
+            animation: float 8s infinite linear;
+        }
+
+        @keyframes float {
+            from { transform: translateY(110vh) rotate(0deg); }
+            to { transform: translateY(-10vh) rotate(360deg); }
+        }
+
+        /* Container */
         .game-card {
             width: 95%;
-            max-width: 700px;
-            background: #fff;
-            border-radius: 15px;
+            max-width: 750px;
+            background: white;
             padding: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
             position: relative;
             z-index: 10;
         }
 
         .hidden { display: none !important; }
 
+        /* HUD */
         .hud {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
-            font-weight: 600;
+            font-weight: bold;
             color: var(--primary);
         }
 
-        .timer-container {
+        .timer-track {
             width: 100%;
-            height: 6px;
+            height: 8px;
             background: #eee;
-            border-radius: 3px;
-            margin-bottom: 20px;
+            border-radius: 4px;
+            margin-bottom: 25px;
         }
 
         #timer-bar {
-            height: 100%;
             width: 100%;
+            height: 100%;
             background: var(--accent);
-            border-radius: 3px;
+            border-radius: 4px;
             transition: width 1s linear;
         }
 
-        h2 { font-size: 1.1rem; color: var(--primary); margin-bottom: 15px; line-height: 1.5; }
-
-        .options-grid { display: grid; gap: 10px; }
-
-        .opt-btn {
-            background: #fff;
-            border: 2px solid #e0e6ed;
-            padding: 12px 15px;
-            border-radius: 8px;
+        /* Question Content */
+        h2 { 
+            font-size: 1.15rem; 
+            margin-bottom: 20px; 
+            line-height: 1.5; 
+            color: #2c3e50;
             text-align: left;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: all 0.2s;
         }
 
-        .opt-btn:hover:not(:disabled) { border-color: var(--accent); background: #f0f7ff; }
+        .options-list {
+            display: grid;
+            gap: 10px;
+        }
 
-        .opt-btn.correct { background: var(--success) !important; color: #fff; border-color: var(--success); }
-        .opt-btn.wrong { background: var(--danger) !important; color: #fff; border-color: var(--danger); }
+        .option-item {
+            background: #fff;
+            border: 2px solid #dcdde1;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            transition: 0.2s;
+            font-weight: 500;
+        }
 
-        .feedback-text {
+        .option-item:hover:not(:disabled) {
+            border-color: var(--accent);
+            background: #fff8f0;
+        }
+
+        .correct { background: var(--success) !important; color: white; border-color: #219150; }
+        .wrong { background: var(--danger) !important; color: white; border-color: #c0392b; }
+
+        .feedback {
             margin-top: 15px;
-            padding: 12px;
+            padding: 15px;
             border-radius: 8px;
             font-size: 0.9rem;
-            line-height: 1.4;
-            background: #f0f7ff;
-            border-left: 4px solid var(--accent);
+            line-height: 1.5;
+            background: #f8f9fa;
+            border-left: 5px solid var(--primary);
         }
 
-        .action-btn {
+        .btn-next {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 14px 30px;
             border-radius: 8px;
             cursor: pointer;
-            margin-top: 15px;
-            font-weight: bold;
             float: right;
+            margin-top: 20px;
+            font-weight: bold;
         }
 
         .text-center { text-align: center; }
+
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 12px; height: 12px;
+            background: gold;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            z-index: 100;
+        }
     </style>
 </head>
 <body>
@@ -133,208 +171,242 @@
         <img src="assets/logo.png" alt="Innovine Logo">
     </div>
 
-    <div class="bg-layer"></div>
+    <div class="bg-elements" id="stars"></div>
 
     <div class="game-card">
-        <div id="screen-intro" class="text-center">
-            <h1 style="color:var(--primary)">Chapter 2: Pressure</h1>
-            <p>Grade 8 | Advanced Competency Challenge</p>
-            <p style="color: #7f8c8d;">Analyze real-world physics scenarios involving Atmospheric and Liquid pressure.</p>
-            <button class="action-btn" style="float:none" onclick="initGame()">Start Challenge</button>
+        <div id="screen-start" class="text-center">
+            <h1 style="color:var(--primary)">Chapter 3: Friction</h1>
+            <p style="color: #7f8c8d;">Grade 8 Science</p>
+            <p>Explore why friction is considered a 'necessary evil' through real-life scientific scenarios.</p>
+            <button class="btn-next" style="float:none" onclick="startQuiz()">Begin Mission</button>
         </div>
 
         <div id="screen-quiz" class="hidden">
             <div class="hud">
-                <div>TASK: <span id="q-idx">1</span>/10</div>
-                <div>SCORE: <span id="score-val">0</span></div>
+                <span>TASK: <span id="q-count">1</span>/10</span>
+                <span>PTS: <span id="score">0</span></span>
             </div>
-            <div class="timer-container"><div id="timer-bar"></div></div>
+            <div class="timer-track"><div id="timer-bar"></div></div>
 
             <h2 id="q-text"></h2>
             
-            <div class="options-grid" id="options-box"></div>
-            <div id="feedback-box" class="feedback-text hidden"></div>
+            <div class="options-list" id="options-box"></div>
+            <div id="feedback-box" class="feedback hidden"></div>
             
-            <button id="btn-next" class="action-btn hidden" onclick="handleNext()">Next Task</button>
+            <button id="btn-continue" class="btn-next hidden" onclick="nextQuestion()">Next Task</button>
         </div>
 
         <div id="screen-result" class="hidden text-center">
-            <h2>Challenge Complete!</h2>
-            <h1 id="final-score" style="font-size: 3.5rem; color: var(--accent);">0/10</h1>
-            <p id="result-text"></p>
-            <button class="action-btn" style="float:none" onclick="location.reload()">Try Again</button>
+            <h2 style="font-size: 2rem;">Mission Complete!</h2>
+            <h1 id="final-score" style="font-size: 4rem; color: var(--accent);">0/10</h1>
+            <p id="result-msg"></p>
+            <button class="btn-next" style="float:none" onclick="location.reload()">Restart Quiz</button>
         </div>
     </div>
 
     <script>
         const questions = [
             {
-                q: "A fountain pen often leaks when a traveler reaches the peak of a high mountain. Why does this happen?",
-                options: ["The cold mountain air makes the ink expand.", "Lower outside atmospheric pressure allows the higher internal pressure to push ink out.", "Gravity is much weaker at the top of the mountain.", "The traveler's body heat increases at high altitudes."],
+                q: "A professional mountaineer wears boots fitted with sharp metal spikes called crampons while climbing a steep ice glacier. What is the primary scientific reason for this equipment?",
+                options: ["To make the boots lightweight.", "To increase friction by creating more grip on the ice.", "To help the ice melt and become sticky.", "To reduce the surface area contact."],
                 ans: 1,
-                hint: "Inside the pen, air is trapped at sea-level pressure. What happens to air pressure as we go up?",
-                explain: "Correct! At high altitudes, atmospheric pressure is low. The sea-level pressure inside the pen is now higher than the outside air, forcing the ink out."
+                hint: "Spikes penetrate the smooth ice. Does this increase or decrease surface irregularities?",
+                explain: "Correct! Crampons increase the irregularities that interlock with the ice, providing the friction needed to prevent a dangerous slip."
             },
             {
-                q: "An engineer is designing a dam. Why must the wall at the bottom of the dam be significantly thicker than at the top?",
-                options: ["To protect against underwater animals.", "Liquid pressure increases with depth, exerting more force at the bottom.", "To save concrete by making the top thinner.", "To allow fish to swim more easily near the surface."],
+                q: "A carpenter notices a wooden door hinge is squeaking loudly and is difficult to move. He pours a few drops of machine oil into the joint. How does the oil solve the problem?",
+                options: ["The oil hardens the hinge.", "It creates a thin layer that reduces friction between metal parts.", "It increases the weight of the door to keep it steady.", "Oil increases friction to stop the noise."],
                 ans: 1,
-                hint: "Does a taller column of water weigh more or less at the bottom?",
-                explain: "Correct! The pressure of a liquid increases as you go deeper because of the weight of the water column above it."
+                hint: "Oil is a lubricant. Lubricants fill in the microscopic hills and valleys of a surface.",
+                explain: "Exactly! Lubricants form a thin film that prevents surfaces from rubbing directly against each other, allowing them to glide smoothly."
             },
             {
-                q: "Heavy military tanks use continuous 'caterpillar tracks' instead of standard wheels. What is the physics advantage here?",
-                options: ["Tracks are lighter than rubber tires.", "The large surface area of the tracks reduces pressure on the ground.", "Tracks increase the speed of the tank.", "Tracks reduce the total mass of the vehicle."],
+                q: "A student finds it much easier to pull a heavy travel bag when it has wheels than when it doesn't. Which physics principle explains this difference?",
+                options: ["Wheels reduce the total mass of the bag.", "Rolling friction is significantly less than sliding friction.", "The wheels increase the gravitational pull.", "Air resistance is lower with wheels."],
                 ans: 1,
-                hint: "Pressure = Force / Area. If you increase the area, what happens to the pressure?",
-                explain: "Correct! By spreading the massive weight over a larger area, the pressure on the ground is reduced, preventing the tank from sinking into soft mud."
+                hint: "Think about the effort needed to slide a heavy box versus rolling a log.",
+                explain: "Correct! Rolling friction is always much smaller than sliding friction, which is why wheels are a fundamental invention for transportation."
             },
             {
-                q: "You are trying to cut a piece of fruit. Why is it easier to cut with the sharp edge of a knife than with the blunt side?",
-                options: ["The sharp edge has more mass.", "The sharp edge has a smaller area, creating higher pressure for the same force.", "The blunt side has too much friction.", "Sharp edges are naturally hotter than blunt edges."],
+                q: "High-speed trains and luxury sports cars are designed with a narrow, pointed 'streamlined' shape. Why is this specific design necessary for high-speed travel?",
+                options: ["To make the vehicle look attractive.", "To reduce fluid friction (air drag) at high speeds.", "To increase the downward weight of the vehicle.", "To help the vehicle stop faster."],
                 ans: 1,
-                hint: "A smaller contact area concentrates the force you apply.",
-                explain: "Exactly! Pressure is inversely proportional to area. A tiny area results in very high pressure, which easily breaks through the fruit's skin."
+                hint: "Air exerts a resistive force on anything moving through it, known as drag.",
+                explain: "Correct! A streamlined shape allows air to flow smoothly around the object, minimizing the resistive force of fluid friction."
             },
             {
-                q: "A scuba diver descends 50 meters into the ocean. Why must they wear a specialized suit?",
-                options: ["To keep their skin dry.", "To withstand the immense liquid pressure from the water above.", "To hide from predators.", "To increase their buoyancy."],
+                q: "When a matchstick is struck against the rough side of a matchbox, it immediately ignites. Which conversion of energy is happening here due to friction?",
+                options: ["Chemical energy into light only.", "Mechanical energy into heat energy through friction.", "Heat energy into magnetic energy.", "Friction removes oxygen to start the fire."],
                 ans: 1,
-                hint: "Think about the weight of 50 meters of water pressing down on every square inch of the body.",
-                explain: "Correct! Human bodies are not built to withstand the crushing pressure found deep underwater without mechanical protection."
+                hint: "Rubbing surfaces together generates something you can feel with your palms.",
+                explain: "Correct! Friction between the rough surfaces converts the motion (mechanical energy) into heat, which is enough to ignite the phosphorus."
             },
             {
-                q: "Why do school bags usually have wide straps instead of thin strings?",
-                options: ["Wide straps are cheaper to manufacture.", "Wide straps increase the pressure on your shoulders.", "Wide straps distribute the weight over a larger area, reducing pressure.", "Wide straps make the bag look bigger."],
+                q: "In a school experiment, a toy car is tested on different surfaces. Which of these surfaces will allow the car to travel the FARTHEST distance after a single push?",
+                options: ["A dry concrete pavement.", "A sheet of rough sandpaper.", "A marble floor covered in soapy water.", "A thick, plush woolen carpet."],
                 ans: 2,
-                hint: "Thin strings would 'dig' into your skin because the force is concentrated.",
-                explain: "Correct! Increasing the area of contact reduces the pressure on your shoulders, making the heavy bag comfortable to carry."
+                hint: "The car will travel farthest where the opposing force of friction is the lowest.",
+                explain: "Exactly! Soapy water acts as a lubricant, filling surface irregularities and creating a very smooth interface with minimal friction."
             },
             {
-                q: "When you drink juice using a straw, you 'suck' the air out of the straw. What actually pushes the liquid up into your mouth?",
-                options: ["Your lungs pulling the liquid.", "Gravity acting on the juice.", "Atmospheric pressure pushing down on the surface of the juice.", "The straw creating a magnetic pull."],
-                ans: 2,
-                hint: "When you remove air, you create a low-pressure zone. What is pushing from the outside?",
-                explain: "Correct! By removing air, you create lower pressure in the straw. The higher atmospheric pressure outside pushes the juice up to fill the void."
-            },
-            {
-                q: "Why does a rubber suction cup stick so firmly to a smooth glass window?",
-                options: ["The rubber is naturally sticky.", "Air pressure from the outside pushes it against the glass.", "A vacuum inside pulls the glass toward the rubber.", "The glass is magnetic."],
+                q: "Mechanics observe that the brake pads of a motorcycle become thin and smooth after months of use. What does this demonstrate about the nature of friction?",
+                options: ["Friction helps build up the material.", "Friction causes wear and tear of surfaces in contact.", "Friction only happens when surfaces are new.", "Brake pads become more effective as they get thinner."],
                 ans: 1,
-                hint: "When you press the cup, you squeeze the air out. What is left on the outside?",
-                explain: "Exactly! With no air inside, the huge atmospheric pressure on the outside holds the cup tightly against the surface."
+                hint: "Think about how your pencil gets shorter the more you write with it.",
+                explain: "Correct! One major disadvantage of friction is that it causes the surfaces of moving parts to wear out over time."
             },
             {
-                q: "Two containers, A (narrow) and B (very wide), are both filled with water to a height of 20cm. Which container has higher pressure at the bottom?",
-                options: ["Container A", "Container B", "Both have the same pressure.", "It depends on the volume of water."],
-                ans: 2,
-                hint: "Does liquid pressure depend on the width of the container or just the depth?",
-                explain: "Correct! Liquid pressure depends only on the depth and density of the liquid, not the shape or width of the container."
-            },
-            {
-                q: "If you were to walk on a frozen lake that was starting to crack, why is it safer to lie down and crawl than to stand up?",
-                options: ["Crawling is faster than walking.", "Lying down increases your surface area and reduces pressure on the ice.", "Gravity is stronger when you are standing.", "The ice is warmer near the surface."],
+                q: "Before a performance on the parallel bars, a gymnast applies a white, chalky powder (Magnesium Carbonate) to her palms. What is the goal of this action?",
+                options: ["To make her hands slide easily across the bar.", "To increase friction for a secure and stable grip.", "To reduce the heat produced by her hands.", "To make her hands look uniform."],
                 ans: 1,
-                hint: "When you stand, your entire weight is on two small feet. When you lie down, where is that weight?",
-                explain: "Correct! By lying flat, you distribute your weight over a much larger area, which lowers the pressure and prevents the ice from breaking."
+                hint: "Sweat acts as a lubricant, making hands slippery. How does powder help?",
+                explain: "Correct! The powder absorbs moisture and increases surface roughness, ensuring the gymnast doesn't lose her grip due to low friction."
+            },
+            {
+                q: "A student argues that friction is only a nuisance because it causes heat and wear. Which of these examples proves that friction is actually a 'Necessary Evil'?",
+                options: ["Overheating of car engines.", "The ability to write with a pen on paper.", "The rusting of iron parts.", "The noise made by a machine."],
+                ans: 1,
+                hint: "Imagine trying to write on a glass sheet coated with oil.",
+                explain: "Correct! Without friction, the tip of the pen would slide uncontrollably, and no ink would be deposited on the paper."
+            },
+            {
+                q: "To keep a heavy box moving across a floor at a constant speed, you must provide a continuous push. If you stop pushing, the box stops. Why?",
+                options: ["Gravity pulls the box downward.", "Friction acts in the opposite direction of motion.", "The box runs out of internal energy.", "The air pressure stops the box."],
+                ans: 1,
+                hint: "Friction is an opposing force that is always present between two sliding surfaces.",
+                explain: "Correct! Friction continuously opposes the motion; therefore, an external force is required to balance it and maintain speed."
             }
         ];
 
-        let cur = 0, score = 0, timeLeft = 45, timer, attempts = 0;
+        let curIdx = 0, score = 0, timer, timeLeft = 45, attempts = 0;
 
         window.onload = () => {
             setTimeout(() => {
                 document.getElementById('brand-layer').style.opacity = '0';
                 setTimeout(() => document.getElementById('brand-layer').classList.add('hidden'), 800);
-            }, 3000);
+            }, 3000); // Reduced delay for better UX
+            genStars();
         };
 
-        function initGame() {
-            document.getElementById('screen-intro').classList.add('hidden');
-            document.getElementById('screen-quiz').classList.remove('hidden');
-            loadQ();
+        function genStars() {
+            const container = document.getElementById('stars');
+            for(let i=0; i<15; i++) {
+                const s = document.createElement('div');
+                s.className = 'floating-star';
+                s.innerText = '★';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.animationDelay = Math.random() * 8 + 's';
+                container.appendChild(s);
+            }
         }
 
-        function loadQ() {
-            const d = questions[cur];
+        function startQuiz() {
+            document.getElementById('screen-start').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const data = questions[curIdx];
             attempts = 0;
-            document.getElementById('q-idx').innerText = cur + 1;
-            document.getElementById('q-text').innerText = d.q;
+            document.getElementById('q-count').innerText = curIdx + 1;
+            document.getElementById('q-text').innerText = data.q;
             document.getElementById('feedback-box').classList.add('hidden');
-            document.getElementById('btn-next').classList.add('hidden');
+            document.getElementById('btn-continue').classList.add('hidden');
             
             const box = document.getElementById('options-box');
             box.innerHTML = '';
-            d.options.forEach((o, i) => {
-                const b = document.createElement('button');
-                b.className = 'opt-btn';
-                b.innerText = o;
-                b.onclick = () => check(i, b);
-                box.appendChild(b);
+            data.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-item';
+                btn.innerText = opt;
+                btn.onclick = () => checkAns(i, btn);
+                box.appendChild(btn);
             });
-            startT();
+            startTimer();
         }
 
-        function startT() {
+        function startTimer() {
             clearInterval(timer);
             timeLeft = 45;
             const bar = document.getElementById('timer-bar');
             bar.style.width = '100%';
             timer = setInterval(() => {
                 timeLeft--;
-                bar.style.width = (timeLeft/45*100)+'%';
-                if(timeLeft <= 0) { clearInterval(timer); reveal(); }
+                bar.style.width = (timeLeft/45 * 100) + '%';
+                if(timeLeft <= 0) { clearInterval(timer); revealCorrect(); }
             }, 1000);
         }
 
-        function check(i, b) {
-            const d = questions[cur];
-            const f = document.getElementById('feedback-box');
-            if(i === d.ans) {
+        function checkAns(idx, btn) {
+            const data = questions[curIdx];
+            const feedback = document.getElementById('feedback-box');
+            
+            if(idx === data.ans) {
                 clearInterval(timer);
-                b.classList.add('correct');
+                btn.classList.add('correct');
                 score++;
-                document.getElementById('score-val').innerText = score;
-                f.innerHTML = `<strong>Correct!</strong> ${d.explain}`;
-                f.classList.remove('hidden');
-                finish();
+                document.getElementById('score').innerText = score;
+                feedback.innerHTML = `<b style="color:var(--success)">Excellent Observation!</b><br>${data.explain}`;
+                feedback.classList.remove('hidden');
+                triggerConfetti();
+                disableOptions();
+                document.getElementById('btn-continue').classList.remove('hidden');
             } else {
                 attempts++;
-                b.classList.add('wrong');
-                b.disabled = true;
+                btn.classList.add('wrong');
+                btn.disabled = true;
                 if(attempts === 1) {
-                    f.innerHTML = `Not quite. <strong>Hint:</strong> ${d.hint}`;
-                    f.classList.remove('hidden');
-                } else { 
-                    clearInterval(timer); 
-                    reveal(); 
+                    feedback.innerHTML = `<b style="color:var(--danger)">Analysis Incomplete.</b><br>Hint: ${data.hint}`;
+                    feedback.classList.remove('hidden');
+                } else {
+                    clearInterval(timer);
+                    revealCorrect();
                 }
             }
         }
 
-        function reveal() {
-            const d = questions[cur];
-            const btns = document.querySelectorAll('.opt-btn');
-            btns[d.ans].classList.add('correct');
-            document.getElementById('feedback-box').innerHTML = `<strong>Answer:</strong> ${d.explain}`;
+        function revealCorrect() {
+            const data = questions[curIdx];
+            const btns = document.querySelectorAll('.option-item');
+            btns[data.ans].classList.add('correct');
+            document.getElementById('feedback-box').innerHTML = `<b style="color:var(--primary)">Scientific Conclusion:</b><br>${data.explain}`;
             document.getElementById('feedback-box').classList.remove('hidden');
-            finish();
+            disableOptions();
+            document.getElementById('btn-continue').classList.remove('hidden');
         }
 
-        function finish() {
-            document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
-            document.getElementById('btn-next').classList.remove('hidden');
+        function disableOptions() {
+            document.querySelectorAll('.option-item').forEach(b => b.disabled = true);
         }
 
-        function handleNext() {
-            cur++;
-            if(cur < questions.length) loadQ();
-            else {
-                document.getElementById('screen-quiz').classList.add('hidden');
-                document.getElementById('screen-result').classList.remove('hidden');
-                document.getElementById('final-score').innerText = `${score}/10`;
-                document.getElementById('result-text').innerText = score > 7 ? "Excellent! You are a Pressure Master." : "Good effort! Review the relationship between Force, Area, and Pressure.";
+        function triggerConfetti() {
+            for(let i=0; i<12; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = (Math.random() * 80 + 10) + '%';
+                c.style.top = (Math.random() * 50 + 20) + '%';
+                c.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 50%)`;
+                document.querySelector('.game-card').appendChild(c);
+                setTimeout(() => c.remove(), 1000);
             }
+        }
+
+        function nextQuestion() {
+            curIdx++;
+            if(curIdx < questions.length) loadQuestion();
+            else showResult();
+        }
+
+        function showResult() {
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-result').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `${score}/10`;
+            let msg = "";
+            if(score === 10) msg = "Scientific Master! You perfectly understand the dynamics of friction.";
+            else if(score > 7) msg = "Great job! You have a solid grasp of how forces interact in real life.";
+            else msg = "Good effort! Try reviewing the differences between rolling, sliding, and fluid friction.";
+            document.getElementById('result-msg').innerText = msg;
         }
     </script>
 </body>
