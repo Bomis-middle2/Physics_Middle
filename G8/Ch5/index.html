@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Grade 8 Physics - Pressure Mastery</title>
     <style>
         :root {
@@ -14,47 +13,58 @@
             --bg: #f4f7f9;
         }
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        * { 
+            box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
             margin: 0;
+            padding: 12px;
             background: var(--bg);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
+            min-height: 100dvh;
+            overflow-x: hidden;
         }
 
         /* Branding Overlay */
         #brand-layer {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            inset: 0;
             background: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 2000;
             transition: opacity 0.8s ease;
+            padding: 20px;
         }
-        #brand-layer img { max-width: 220px; }
+        #brand-layer img { max-width: 180px; width: 60%; height: auto; }
 
         .bg-layer {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            inset: 0;
             z-index: -1;
             background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
         }
 
         .game-card {
-            width: 95%;
-            max-width: 700px;
+            width: 100%;
+            max-width: 550px;
+            max-height: 92vh;
             background: #fff;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            padding: 20px 18px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
             position: relative;
             z-index: 10;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
         }
 
         .hidden { display: none !important; }
@@ -62,17 +72,19 @@
         .hud {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            font-weight: 600;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
             color: var(--primary);
         }
 
         .timer-container {
             width: 100%;
-            height: 6px;
+            height: 5px;
             background: #eee;
             border-radius: 3px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            overflow: hidden;
         }
 
         #timer-bar {
@@ -83,49 +95,85 @@
             transition: width 1s linear;
         }
 
-        h2 { font-size: 1.1rem; color: var(--primary); margin-bottom: 15px; line-height: 1.5; }
+        h2 { 
+            font-size: 0.95rem; 
+            color: var(--primary); 
+            margin: 0 0 12px 0; 
+            line-height: 1.45;
+            font-weight: 600;
+        }
 
-        .options-grid { display: grid; gap: 10px; }
+        .options-grid { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+        }
 
         .opt-btn {
             background: #fff;
-            border: 2px solid #e0e6ed;
-            padding: 12px 15px;
-            border-radius: 8px;
+            border: 1.5px solid #e0e6ed;
+            padding: 12px 14px;
+            border-radius: 10px;
             text-align: left;
             cursor: pointer;
-            font-size: 0.95rem;
-            transition: all 0.2s;
+            font-size: 0.85rem;
+            line-height: 1.35;
+            color: #334155;
+            transition: background 0.2s, border-color 0.2s;
+            min-height: 48px;
+            touch-action: manipulation;
         }
 
-        .opt-btn:hover:not(:disabled) { border-color: var(--accent); background: #f0f7ff; }
+        .opt-btn:active:not(:disabled) { 
+            border-color: var(--accent); 
+            background: #f0f7ff; 
+        }
 
         .opt-btn.correct { background: var(--success) !important; color: #fff; border-color: var(--success); }
         .opt-btn.wrong { background: var(--danger) !important; color: #fff; border-color: var(--danger); }
 
         .feedback-text {
-            margin-top: 15px;
-            padding: 12px;
+            margin-top: 12px;
+            padding: 10px 12px;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.82rem;
             line-height: 1.4;
             background: #f0f7ff;
             border-left: 4px solid var(--accent);
+            color: #1e293b;
         }
 
         .action-btn {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
+            padding: 14px 20px;
+            border-radius: 10px;
             cursor: pointer;
             margin-top: 15px;
-            font-weight: bold;
-            float: right;
+            font-weight: 700;
+            font-size: 0.95rem;
+            width: 100%;
+            touch-action: manipulation;
         }
 
         .text-center { text-align: center; }
+
+        .intro-title {
+            font-size: 1.4rem;
+            margin: 0 0 5px 0;
+        }
+        
+        .intro-sub {
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        .intro-desc {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -138,10 +186,10 @@
 
     <div class="game-card">
         <div id="screen-intro" class="text-center">
-            <h1 style="color:var(--primary)">Chapter 2: Pressure</h1>
-            <p>Grade 8 | Advanced Competency Challenge</p>
-            <p style="color: #7f8c8d;">Analyze real-world physics scenarios involving Atmospheric and Liquid pressure.</p>
-            <button class="action-btn" style="float:none" onclick="initGame()">Start Challenge</button>
+            <h1 class="intro-title" style="color:var(--primary)">Chapter 2: Pressure</h1>
+            <p class="intro-sub">Grade 8 | Advanced Competency Challenge</p>
+            <p class="intro-desc">Analyze real-world physics scenarios involving Atmospheric and Liquid pressure.</p>
+            <button class="action-btn" onclick="initGame()">Start Challenge</button>
         </div>
 
         <div id="screen-quiz" class="hidden">
@@ -160,14 +208,24 @@
         </div>
 
         <div id="screen-result" class="hidden text-center">
-            <h2>Challenge Complete!</h2>
-            <h1 id="final-score" style="font-size: 3.5rem; color: var(--accent);">0/10</h1>
-            <p id="result-text"></p>
-            <button class="action-btn" style="float:none" onclick="location.reload()">Try Again</button>
+            <h2 style="font-size:1.2rem;">Challenge Complete!</h2>
+            <h1 id="final-score" style="font-size: 3rem; color: var(--accent); margin: 10px 0;">0/10</h1>
+            <p id="result-text" style="font-size: 0.9rem; color: #64748b; margin-bottom: 20px;"></p>
+            <button class="action-btn" onclick="location.reload()">Try Again</button>
         </div>
     </div>
 
     <script>
+        // Preload Sound Effects
+        const sndCorrect = new Audio('assets/correct.mp3');
+        const sndWrong = new Audio('assets/wrong.mp3');
+        const sndClaps = new Audio('assets/freesound_community-claps-44774.mp3');
+
+        function playSound(audio) {
+            audio.currentTime = 0;
+            audio.play().catch(err => console.log('Audio play blocked until user gesture.', err));
+        }
+
         const questions = [
             {
                 q: "A fountain pen often leaks when a traveler reaches the peak of a high mountain. Why does this happen?",
@@ -284,7 +342,11 @@
             timer = setInterval(() => {
                 timeLeft--;
                 bar.style.width = (timeLeft/45*100)+'%';
-                if(timeLeft <= 0) { clearInterval(timer); reveal(); }
+                if(timeLeft <= 0) { 
+                    clearInterval(timer); 
+                    playSound(sndWrong);
+                    reveal(); 
+                }
             }, 1000);
         }
 
@@ -293,6 +355,7 @@
             const f = document.getElementById('feedback-box');
             if(i === d.ans) {
                 clearInterval(timer);
+                playSound(sndCorrect);
                 b.classList.add('correct');
                 score++;
                 document.getElementById('score-val').innerText = score;
@@ -301,6 +364,7 @@
                 finish();
             } else {
                 attempts++;
+                playSound(sndWrong);
                 b.classList.add('wrong');
                 b.disabled = true;
                 if(attempts === 1) {
@@ -333,6 +397,7 @@
             else {
                 document.getElementById('screen-quiz').classList.add('hidden');
                 document.getElementById('screen-result').classList.remove('hidden');
+                playSound(sndClaps);
                 document.getElementById('final-score').innerText = `${score}/10`;
                 document.getElementById('result-text').innerText = score > 7 ? "Excellent! You are a Pressure Master." : "Good effort! Review the relationship between Force, Area, and Pressure.";
             }
