@@ -116,9 +116,7 @@
     </div>
 
     <div id="intro-view" class="hidden" style="text-align: center;">
-        <div style="margin-bottom: 15px;">
-           
-        </div>
+        <div style="margin-bottom: 15px;"></div>
         <h1 style="color: var(--primary-blue); margin: 0; font-weight: 800;">Electro-Guard</h1>
         <p style="color: #6c757d; margin-top: 5px; margin-bottom: 20px;">Electrical Safety Mission Control</p>
         <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dee2e6;">
@@ -169,6 +167,14 @@
     const sndW = new Audio('assets/wrong.mp3');
     const sndF = new Audio('assets/freesound_community-claps-44774.mp3');
 
+    // Fisher-Yates Shuffle Function
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
     window.onload = () => {
         setTimeout(() => {
             document.getElementById('splash-screen').style.display = 'none';
@@ -177,6 +183,7 @@
     };
 
     document.getElementById('start-btn').onclick = () => {
+        shuffleArray(questions); // Randomizes the questions array on every new game session
         document.getElementById('intro-view').classList.add('hidden');
         document.getElementById('quiz-view').classList.remove('hidden');
         loadQuestion();
