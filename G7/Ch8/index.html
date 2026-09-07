@@ -116,9 +116,6 @@
     </div>
 
     <div id="intro-view" class="hidden" style="text-align: center;">
-        <div style="margin-bottom: 15px;">
-           
-        </div>
         <h1 style="color: var(--primary-blue); margin: 0; font-weight: 800;">Time & Motion</h1>
         <p style="color: #6c757d; margin-top: 5px; margin-bottom: 20px;">The Physics of Speed</p>
         <div style="background: #f8f9fa; padding: 20px; border-radius: 20px; margin: 25px 0; text-align: left; border: 1px dashed #dee2e6;">
@@ -164,10 +161,15 @@
 
     let current = 0, score = 0, attempts = 0;
     
-    // --- AUDIO INSTANCES ---
+    // --- AUDIO INSTANCES (Asset Files) ---
     const sndC = new Audio('assets/correct.mp3');
     const sndW = new Audio('assets/wrong.mp3');
     const sndF = new Audio('assets/freesound_community-claps-44774.mp3');
+
+    // Preload audio files
+    sndC.preload = 'auto';
+    sndW.preload = 'auto';
+    sndF.preload = 'auto';
 
     window.onload = () => {
         setTimeout(() => {
@@ -204,18 +206,23 @@
         });
     }
 
+    function playAudio(sound) {
+        sound.currentTime = 0; // Reset sound to beginning for repeated clicks
+        sound.play().catch(e => console.log("Audio waiting for user interaction:", e));
+    }
+
     function handleChoice(i, b) {
         if(i === questions[current].ans) {
             b.classList.add('correct');
             score += 100;
             document.getElementById('score-val').innerText = score;
-            sndC.play().catch(e => console.log("Audio waiting for interaction"));
+            playAudio(sndC);
             endTurn();
         } else {
             attempts++;
             b.classList.add('wrong');
             b.disabled = true;
-            sndW.play().catch(e => console.log("Audio waiting for interaction"));
+            playAudio(sndW);
             if(attempts === 1) {
                 const f = document.getElementById('feedback-box');
                 f.className = 'feedback hint-mode';
@@ -248,7 +255,7 @@
         document.getElementById('result-view').classList.remove('hidden');
         document.getElementById('final-pts').innerText = score;
         
-        sndF.play().catch(e => console.log("Audio playback blocked"));
+        playAudio(sndF);
         
         const msg = document.getElementById('result-msg');
         if(score >= 900) msg.innerText = "Exceptional velocity! Your mathematical calculations and motion tracks are perfectly aligned.";
